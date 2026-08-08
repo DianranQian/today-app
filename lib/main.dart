@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'apps/contact/contact_app.dart';
 import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
 import 'apps/wear/wear_app.dart';
@@ -74,7 +75,7 @@ class HomeEntryPage extends StatelessWidget {
             title: '今天联系谁',
             subtitle: '提醒联系久未问候的亲友',
             color: const Color(0xFF7E57C2),
-            onTap: () => _showComingSoon(context, '今天联系谁'),
+            onTap: () => _openApp(context, const ContactAppPage()),
           ),
           const SizedBox(height: 24),
           Center(
@@ -142,15 +143,6 @@ class HomeEntryPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showComingSoon(BuildContext context, String name) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('「$name」开发中，敬请期待'),
-        behavior: SnackBarBehavior.floating,
       ),
     );
   }
