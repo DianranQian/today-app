@@ -4,6 +4,8 @@ import 'go_models.dart';
 
 class GoDataStore {
   static List<PlaceItem> places = [];
+  /// 避免近期重复（7 天）
+  static bool avoidRecent = true;
   static List<GoHistoryRecord> history = [];
 
   static Future<void> load() async {
@@ -23,6 +25,8 @@ class GoDataStore {
     } else {
       places = getDefaultPlaces();
     }
+
+    avoidRecent = prefs.getBool('go_avoid_recent') ?? true;
 
     final historyJson = prefs.getString('go_history');
     if (historyJson != null && historyJson.isNotEmpty) {

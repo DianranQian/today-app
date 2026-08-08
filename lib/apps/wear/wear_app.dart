@@ -4,8 +4,9 @@ import '../../core/theme.dart';
 import 'wear_data_store.dart';
 import 'wear_home_page.dart';
 import 'wear_manage_page.dart';
+import 'wear_settings_page.dart';
 
-/// 「今天穿什么」子应用：首页 + 管理 两个 Tab
+/// 「今天穿什么」子应用：首页 / 管理 / 设置 三个 Tab
 class WearAppPage extends StatefulWidget {
   const WearAppPage({super.key});
 
@@ -35,13 +36,12 @@ class _WearAppPageState extends State<WearAppPage> {
     return Theme(
       data: buildAppTheme(seed: AppSettings.seedFor(AppId.wear)),
       child: Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          WearHomePage(),
-          WearManagePage(),
-        ],
-      ),
+      // 条件切换：切 Tab 时重建页面，保证设置/导入后数据即时刷新
+      body: switch (_currentIndex) {
+        0 => const WearHomePage(),
+        1 => const WearManagePage(),
+        _ => const WearSettingsPage(),
+      },
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
@@ -54,6 +54,10 @@ class _WearAppPageState extends State<WearAppPage> {
               icon: Icon(Icons.checkroom_outlined),
               selectedIcon: Icon(Icons.checkroom),
               label: '管理'),
+          NavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings),
+              label: '设置'),
         ],
       ),
       ),

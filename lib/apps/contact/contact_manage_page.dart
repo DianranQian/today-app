@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/widgets/profile_dialog.dart';
 import '../../core/image_helper.dart';
 import 'contact_models.dart';
@@ -18,6 +19,17 @@ class _ContactManagePageState extends State<ContactManagePage> {
   final _searchCtrl = TextEditingController();
   ContactFrequency _frequency = ContactFrequency.monthly;
   String? _imagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    // 读取设置页配置的默认频率
+    SharedPreferences.getInstance().then((prefs) {
+      if (!mounted) return;
+      setState(() => _frequency = ContactFrequencyExt.fromString(
+          prefs.getString('contact_default_frequency') ?? 'monthly'));
+    });
+  }
 
   @override
   void dispose() {

@@ -45,9 +45,11 @@ class _GoHomePageState extends State<GoHomePage> {
     if (_maxPriceTier != null) {
       pool = pool.where((p) => p.priceTier <= _maxPriceTier!).toList();
     }
-    final recent = GoDataStore.getRecentPlaceNames();
-    if (pool.any((p) => !recent.contains(p.name))) {
-      pool = pool.where((p) => !recent.contains(p.name)).toList();
+    if (GoDataStore.avoidRecent) {
+      final recent = GoDataStore.getRecentPlaceNames();
+      if (pool.any((p) => !recent.contains(p.name))) {
+        pool = pool.where((p) => !recent.contains(p.name)).toList();
+      }
     }
     if (pool.isEmpty) {
       _showToast('当前类型下没有去处，去管理页添加吧！');

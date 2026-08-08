@@ -5,6 +5,8 @@ import 'wear_models.dart';
 
 class WearDataStore {
   static List<OutfitItem> outfits = [];
+  /// 避免近期重复（7 天）
+  static bool avoidRecent = true;
   static List<WearHistoryRecord> history = [];
 
   static Future<void> load() async {
@@ -24,6 +26,8 @@ class WearDataStore {
     } else {
       outfits = getDefaultOutfits();
     }
+
+    avoidRecent = prefs.getBool('wear_avoid_recent') ?? true;
 
     final historyJson = prefs.getString('wear_history');
     if (historyJson != null && historyJson.isNotEmpty) {

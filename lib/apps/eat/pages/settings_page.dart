@@ -1,5 +1,9 @@
-import '../models/food_item.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../../core/backup.dart';
+import '../models/food_item.dart';
 import '../data/data_store.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -164,6 +168,27 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 12),
           _buildAvoidCard(),
           const SizedBox(height: 12),
+          // 本应用数据导入导出
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.upload_file, color: Colors.orange),
+                  title: const Text('导出本应用数据'),
+                  subtitle: const Text('菜谱/饮品/历史（ZIP 含照片，JSON 纯数据）'),
+                  onTap: () => _exportApp(),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.download, color: Colors.orange),
+                  title: const Text('导入本应用数据'),
+                  subtitle: const Text('从 ZIP/JSON 恢复（立即生效）'),
+                  onTap: () => _importApp(),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
           Card(
             child: Column(
               children: [
@@ -287,6 +312,74 @@ class _SettingsPageState extends State<SettingsPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
     );
+  }
+
+  /// 导出本应用数据（弹窗选 ZIP/JSON 并分享/存下载）
+  Future<void> _exportApp() async {
+    final action = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('导出「今天吃什么」数据'),
+        content: const Text('ZIP 含照片，JSON 为纯数据。'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, 'zip'),
+              child: const Text('ZIP（含照片）')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, 'json'),
+              child: const Text('JSON（纯数据）')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('取消')),
+        ],
+      ),
+    );
+    if (action == null) return;
+    try {
+      final file = await BackupService.exportApp('eat',
+          withImages: action == 'zip');
+      if (!mounted) return;
+      final shareAction = await showDialog<String>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('导出完成'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, 'share'),
+                child: const Text('分享')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('关闭')),
+          ],
+        ),
+      );
+      if (shareAction == 'share') {
+        await Share.shareXFiles([XFile(file.path)],
+            subject: '今天吃什么 数据', text: '今天吃什么 数据');
+      }
+    } catch (e) {
+      _showToast('导出失败：$e');
+    }
+  }
+
+  /// 导入本应用数据（写回 + 热更新）
+  Future<void> _importApp() async {
+    final picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['zip', 'json'],
+    );
+    if (picked == null || picked.files.isEmpty) return;
+    final path = picked.files.single.path;
+    if (path == null) return;
+    try {
+      final restored = await BackupService.importApp('eat', path);
+      await DataStore.load();
+      if (!mounted) return;
+      setState(() {});
+      _showToast('导入成功（$restored 项），已生效');
+    } catch (e) {
+      _showToast('导入失败：$e');
+    }
   }
 
   void _showDonationDialog() {

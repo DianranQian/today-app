@@ -36,4 +36,23 @@ void main() {
     expect(find.text('附近'), findsOneWidget);
     expect(find.text('设置'), findsOneWidget);
   });
+
+  testWidgets('主框架有工具/计划 Tab，计划页可切换', (WidgetTester tester) async {
+    await pumpApp(tester);
+
+    expect(find.text('工具'), findsOneWidget);
+    expect(find.text('计划'), findsOneWidget);
+
+    // 切到计划 Tab：条件切换重建页面，显示空状态
+    await tester.tap(find.text('计划'));
+    await tester.pumpAndSettle();
+    expect(find.text('计划清单'), findsOneWidget);
+    expect(find.textContaining('还没有计划'), findsOneWidget);
+  });
+
+  testWidgets('主页显示打赏入口（Android）', (WidgetTester tester) async {
+    await pumpApp(tester);
+
+    expect(find.text('今天做什么 v0.1.0 · ♥ 支持一下'), findsOneWidget);
+  });
 }

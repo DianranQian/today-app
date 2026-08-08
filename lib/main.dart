@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'apps/contact/contact_app.dart';
 import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
 import 'apps/wear/wear_app.dart';
 import 'core/app_settings.dart';
+import 'core/donation.dart';
 import 'core/plan_store.dart';
 import 'core/theme.dart';
 import 'core/widgets/date_selector.dart';
@@ -46,13 +49,8 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _index,
-        children: const [
-          HomeEntryPage(),
-          PlanPage(),
-        ],
-      ),
+      // 条件切换：每次切到「计划」Tab 时重建，确保读取最新计划数据
+      body: _index == 0 ? const HomeEntryPage() : const PlanPage(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
@@ -134,12 +132,29 @@ class HomeEntryPage extends StatelessWidget {
             onTap: () => _openApp(context, const ContactAppPage()),
           ),
           const SizedBox(height: 24),
-          Center(
-            child: Text(
-              '今天做什么 v0.1.0 · 开源项目',
-              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+          // 打赏入口（iOS 审核风险，构建时隐藏）
+          if (!Platform.isIOS)
+            Center(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(20),
+                onTap: () => showDonationDialog(context),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: Text(
+                    '今天做什么 v0.1.0 · ♥ 支持一下',
+                    style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                  ),
+                ),
+              ),
+            )
+          else
+            Center(
+              child: Text(
+                '今天做什么 v0.1.0',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
             ),
-          ),
         ],
       ),
     );

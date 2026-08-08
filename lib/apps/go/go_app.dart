@@ -5,8 +5,9 @@ import 'go_data_store.dart';
 import 'go_home_page.dart';
 import 'go_manage_page.dart';
 import 'go_nearby_page.dart';
+import 'go_settings_page.dart';
 
-/// 「今天去哪」子应用：首页 + 管理 两个 Tab
+/// 「今天去哪」子应用：首页 / 附近 / 管理 / 设置 四个 Tab
 class GoAppPage extends StatefulWidget {
   const GoAppPage({super.key});
 
@@ -36,14 +37,13 @@ class _GoAppPageState extends State<GoAppPage> {
     return Theme(
       data: buildAppTheme(seed: AppSettings.seedFor(AppId.go)),
       child: Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: const [
-          GoHomePage(),
-          GoNearbyPage(),
-          GoManagePage(),
-        ],
-      ),
+      // 条件切换：切 Tab 时重建页面，保证设置/导入后数据即时刷新
+      body: switch (_currentIndex) {
+        0 => const GoHomePage(),
+        1 => const GoNearbyPage(),
+        2 => const GoManagePage(),
+        _ => const GoSettingsPage(),
+      },
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
@@ -60,6 +60,10 @@ class _GoAppPageState extends State<GoAppPage> {
               icon: Icon(Icons.place_outlined),
               selectedIcon: Icon(Icons.place),
               label: '管理'),
+          NavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings),
+              label: '设置'),
         ],
       ),
       ),

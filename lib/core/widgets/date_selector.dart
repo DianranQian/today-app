@@ -30,12 +30,10 @@ class TargetDateSelector extends StatelessWidget {
       child: Row(
         children: List.generate(3, (i) {
           final isSelected = targetDateOffset == i;
-          final date = DateTime.now().add(Duration(days: i));
-          final label = '${labels[i]} · ${seasonFor(date).label}季';
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ChoiceChip(
-              label: Text(label),
+              label: Text(labels[i]),
               selected: isSelected,
               onSelected: enabled
                   ? (_) {

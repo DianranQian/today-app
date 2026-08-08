@@ -73,9 +73,11 @@ class _WearHomePageState extends State<WearHomePage> {
 
     var pool = WearDataStore.getFilteredOutfits(
         scene: _selectedScene, temperature: _temperature);
-    final recent = WearDataStore.getRecentOutfitNames();
-    if (pool.any((o) => !recent.contains(o.name))) {
-      pool = pool.where((o) => !recent.contains(o.name)).toList();
+    if (WearDataStore.avoidRecent) {
+      final recent = WearDataStore.getRecentOutfitNames();
+      if (pool.any((o) => !recent.contains(o.name))) {
+        pool = pool.where((o) => !recent.contains(o.name)).toList();
+      }
     }
     if (pool.isEmpty) {
       _showToast('当前条件下没有穿搭，试试放宽温度或场景');
