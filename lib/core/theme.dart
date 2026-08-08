@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
-/// 「今天做什么」主题工厂：四子应用各自的主题色由 seed 派生（M3 tonal palette）
+/// 「今天做什么」主题工厂：四子应用各自的主题色由 seed 派生
+///
+/// 注意：M3 默认 primary 是 seed 的 40 色调（偏暗），
+/// 这里强制 primary = 种子原色，让主题色更亮更艳。
 ThemeData buildAppTheme({required Color seed}) {
   return ThemeData(
-    colorSchemeSeed: seed,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: seed,
+      primary: seed,
+    ),
     useMaterial3: true,
     brightness: Brightness.light,
     fontFamilyFallback: const [

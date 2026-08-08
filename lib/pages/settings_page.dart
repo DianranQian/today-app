@@ -233,7 +233,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              '今天做什么 v0.2.0 · GPL-3.0 开源',
+              '今天做什么 v0.1.0 · GPL-3.0 开源',
               style: TextStyle(color: Colors.grey[400], fontSize: 12),
             ),
           ),

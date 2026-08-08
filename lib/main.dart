@@ -4,7 +4,6 @@ import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
 import 'apps/wear/wear_app.dart';
 import 'core/app_settings.dart';
-import 'core/donation.dart';
 import 'core/theme.dart';
 import 'pages/settings_page.dart';
 
@@ -91,14 +90,6 @@ class HomeEntryPage extends StatelessWidget {
             onTap: () => _openApp(context, const ContactAppPage()),
           ),
           const SizedBox(height: 24),
-          Center(
-            child: TextButton.icon(
-              onPressed: () => showDonationDialog(context),
-              icon: const Icon(Icons.favorite, color: Colors.red, size: 18),
-              label: const Text('赛博乞讨'),
-            ),
-          ),
-          const SizedBox(height: 8),
           Center(
             child: Text(
               '今天做什么 v0.1.0 · 开源项目',
