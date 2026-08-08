@@ -1,5 +1,51 @@
 import '../../core/season.dart';
 
+/// 性别
+enum WearGender { male, female, unisex }
+
+extension WearGenderExt on WearGender {
+  String get label {
+    switch (this) {
+      case WearGender.male: return '男';
+      case WearGender.female: return '女';
+      case WearGender.unisex: return '通用';
+    }
+  }
+
+  static WearGender fromString(String s) {
+    switch (s) {
+      case 'male': return WearGender.male;
+      case 'female': return WearGender.female;
+      default: return WearGender.unisex;
+    }
+  }
+}
+
+/// 人群
+enum WearGroup { student, office, elder, child, all }
+
+extension WearGroupExt on WearGroup {
+  String get label {
+    switch (this) {
+      case WearGroup.student: return '学生';
+      case WearGroup.office: return '上班族';
+      case WearGroup.elder: return '长辈';
+      case WearGroup.child: return '儿童';
+      case WearGroup.all: return '通用';
+    }
+  }
+
+  static WearGroup fromString(String s) {
+    switch (s) {
+      case 'student': return WearGroup.student;
+      case 'office': return WearGroup.office;
+      case 'elder': return WearGroup.elder;
+      case 'child': return WearGroup.child;
+      default: return WearGroup.all;
+    }
+  }
+}
+
 /// 穿搭场景
 enum WearScene { daily, sport, formal, date, commute, all }
 
@@ -33,6 +79,8 @@ class OutfitItem {
   String emoji;
   WearScene scene;
   Set<Season> seasons;
+  WearGender gender;
+  WearGroup group;
   /// 适宜温度区间（摄氏度），null 表示不限
   int? tempMin;
   int? tempMax;
@@ -42,6 +90,8 @@ class OutfitItem {
     this.emoji = '👕',
     this.scene = WearScene.all,
     Set<Season>? seasons,
+    this.gender = WearGender.unisex,
+    this.group = WearGroup.all,
     this.tempMin,
     this.tempMax,
   }) : seasons = seasons ?? {};
@@ -51,6 +101,8 @@ class OutfitItem {
     'emoji': emoji,
     'scene': scene.name,
     'seasons': seasons.map((s) => s.name).toList(),
+    'gender': gender.name,
+    'group': group.name,
     'tempMin': tempMin,
     'tempMax': tempMax,
   };
@@ -62,6 +114,8 @@ class OutfitItem {
     seasons: (json['seasons'] as List<dynamic>?)
         ?.map((e) => SeasonExt.fromString(e as String))
         .toSet() ?? {},
+    gender: WearGenderExt.fromString(json['gender'] as String? ?? 'unisex'),
+    group: WearGroupExt.fromString(json['group'] as String? ?? 'all'),
     tempMin: json['tempMin'] as int?,
     tempMax: json['tempMax'] as int?,
   );

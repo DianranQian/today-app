@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../core/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/season.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/slot_machine.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
@@ -14,6 +15,8 @@ class WearHomePage extends StatefulWidget {
 
 class _WearHomePageState extends State<WearHomePage> {
   WearScene _selectedScene = WearScene.all;
+  WearGender _selectedGender = WearGender.unisex;
+  WearGroup _selectedGroup = WearGroup.all;
   int? _temperature; // null = 不限温度
 
   OutfitItem? _picked;
@@ -24,6 +27,30 @@ class _WearHomePageState extends State<WearHomePage> {
   List<OutfitItem> _rollItems = [];
   int _finalRollIndex = 0;
   FixedExtentScrollController? _wheelController;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+  }
+
+  /// 记忆性别/人群偏好
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _selectedGender = WearGenderExt.fromString(
+          prefs.getString('wear_gender') ?? 'unisex');
+      _selectedGroup =
+          WearGroupExt.fromString(prefs.getString('wear_group') ?? 'all');
+    });
+  }
+
+  Future<void> _savePrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('wear_gender', _selectedGender.name);
+    prefs.setString('wear_group', _selectedGroup.name);
+  }
 
   @override
   void dispose() {
@@ -142,6 +169,10 @@ class _WearHomePageState extends State<WearHomePage> {
           const SizedBox(height: 8),
           _buildSceneSelector(),
           const SizedBox(height: 12),
+          _buildGenderSelector(),
+          const SizedBox(height: 8),
+          _buildGroupSelector(),
+          const SizedBox(height: 12),
           _buildTempSelector(),
           const SizedBox(height: 24),
           _buildResultCard(),
@@ -203,6 +234,79 @@ class _WearHomePageState extends State<WearHomePage> {
                   : (_) => setState(() {
                         _selectedScene = s;
                         _picked = null;
+                      }),
+              selectedColor: Theme.of(context).colorScheme.primary,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : null,
+                fontWeight: isSelected ? FontWeight.w600 : null,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  /// 性别选择（记忆偏好）
+  Widget _buildGenderSelector() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: WearGender.values.map((g) {
+          final isSelected = _selectedGender == g;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              avatar: Icon(
+                switch (g) {
+                  WearGender.male => Icons.male,
+                  WearGender.female => Icons.female,
+                  WearGender.unisex => Icons.accessibility_new,
+                },
+                size: 16,
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.primary,
+              ),
+              label: Text(g.label),
+              selected: isSelected,
+              onSelected: _isPicking
+                  ? null
+                  : (_) => setState(() {
+                        _selectedGender = g;
+                        _picked = null;
+                        _savePrefs();
+                      }),
+              selectedColor: Theme.of(context).colorScheme.primary,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : null,
+                fontWeight: isSelected ? FontWeight.w600 : null,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  /// 人群选择（记忆偏好）
+  Widget _buildGroupSelector() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: WearGroup.values.map((g) {
+          final isSelected = _selectedGroup == g;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(g.label),
+              selected: isSelected,
+              onSelected: _isPicking
+                  ? null
+                  : (_) => setState(() {
+                        _selectedGroup = g;
+                        _picked = null;
+                        _savePrefs();
                       }),
               selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(

@@ -15,6 +15,8 @@ class _WearManagePageState extends State<WearManagePage> {
   final _emojiCtrl = TextEditingController();
   final _searchCtrl = TextEditingController();
   WearScene _scene = WearScene.daily;
+  WearGender _gender = WearGender.unisex;
+  WearGroup _group = WearGroup.all;
   int? _tempMin;
   int? _tempMax;
 
@@ -40,6 +42,8 @@ class _WearManagePageState extends State<WearManagePage> {
       name: name,
       emoji: _emojiCtrl.text.trim().isNotEmpty ? _emojiCtrl.text.trim() : '👕',
       scene: _scene,
+      gender: _gender,
+      group: _group,
       tempMin: _tempMin,
       tempMax: _tempMax,
     ));
@@ -136,6 +140,45 @@ class _WearManagePageState extends State<WearManagePage> {
                         ),
                       ),
                       const SizedBox(width: 8),
+                      Expanded(
+                        child: DropdownButtonFormField<WearGender>(
+                          value: _gender,
+                          decoration: const InputDecoration(
+                            labelText: '性别',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          items: [
+                            for (final g in WearGender.values)
+                              DropdownMenuItem(
+                                  value: g, child: Text(g.label)),
+                          ],
+                          onChanged: (v) => setState(() => _gender = v!),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: DropdownButtonFormField<WearGroup>(
+                          value: _group,
+                          decoration: const InputDecoration(
+                            labelText: '人群',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          items: [
+                            for (final g in WearGroup.values)
+                              if (g != WearGroup.all)
+                                DropdownMenuItem(
+                                    value: g, child: Text(g.label)),
+                          ],
+                          onChanged: (v) => setState(() => _group = v!),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
                       Expanded(
                         child: DropdownButtonFormField<int?>(
                           value: _tempMin,
