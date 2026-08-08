@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/slot_machine.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
 
@@ -620,24 +621,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     return Column(
       children: [
-        // 独立一行提示（主题色底）
-        Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF6B35).withAlpha(40),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.casino, size: 16, color: Color(0xFFFF6B35)),
-              SizedBox(width: 6),
-              Text('正在转动，稍等片刻...',
-                  style: TextStyle(fontSize: 13, color: Color(0xFFB24A1C))),
-            ],
-          ),
-        ),
+        const RollingHint(),
         Card(
           clipBehavior: Clip.antiAlias,
           child: SizedBox(
@@ -647,152 +631,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildReel('菜', _dishWheelController, _dishRollItems),
+                  SlotReel(
+                    label: '菜',
+                    items: _dishRollItems,
+                    controller: _dishWheelController,
+                    emojiOf: (d) => d.displayEmoji,
+                    nameOf: (d) => d.name,
+                  ),
                   if (_hasStapleReel)
-                    _buildReel('主食', _stapleWheelController, _stapleRollItems),
+                    SlotReel(
+                      label: '主食',
+                      items: _stapleRollItems,
+                      controller: _stapleWheelController,
+                      emojiOf: (d) => d.displayEmoji,
+                      nameOf: (d) => d.name,
+                    ),
                   if (_hasDrinkReel)
-                    _buildReel('饮品', _drinkWheelController, _drinkRollItems),
+                    SlotReel(
+                      label: '饮品',
+                      items: _drinkRollItems,
+                      controller: _drinkWheelController,
+                      emojiOf: (d) => d.displayEmoji,
+                      nameOf: (d) => d.name,
+                    ),
                 ],
               ),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildReel(String label, FixedExtentScrollController? controller,
-      List<FoodItem> items, {int flex = 1}) {
-    const itemHeight = 56.0;
-    const wheelHeight = 176.0;
-    final theme = Theme.of(context);
-    final bg = theme.cardTheme.color ?? theme.colorScheme.surfaceContainerLow;
-
-    return Expanded(
-      flex: flex,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFF6B35).withAlpha(14),
-          border: Border.all(color: const Color(0xFFFF6B35).withAlpha(70)),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            // 列标题条（主题色加深）
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              color: const Color(0xFFFF6B35).withAlpha(45),
-              child: Text(label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF8A3D1C),
-                      fontWeight: FontWeight.w600)),
-            ),
-            SizedBox(
-              height: wheelHeight,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: ListWheelScrollView.useDelegate(
-                        controller: controller,
-                        itemExtent: itemHeight,
-                        physics: const FixedExtentScrollPhysics(),
-                        useMagnifier: true,
-                        magnification: 1.12,
-                        overAndUnderCenterOpacity: 0.45,
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          childCount: items.length,
-                          builder: (context, i) => Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 4),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(items[i].displayEmoji,
-                                      style: const TextStyle(fontSize: 22)),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: Text(items[i].name,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // 上下渐隐，营造滚轮窗口效果
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 36,
-                    child: IgnorePointer(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [bg, bg.withAlpha(0)],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 36,
-                    child: IgnorePointer(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [bg, bg.withAlpha(0)],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // 选中窗口圆角矩形描边（白色半透明，四条边可见）
-                  Positioned(
-                    top: (wheelHeight - itemHeight) / 2,
-                    left: 6,
-                    right: 6,
-                    height: itemHeight,
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white.withAlpha(200),
-                            width: 1.5,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white.withAlpha(20),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/slot_machine.dart';
 import 'go_models.dart';
 import 'go_data_store.dart';
 
@@ -282,156 +283,24 @@ class _GoHomePageState extends State<GoHomePage> {
 
     return Column(
       children: [
-        Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF6B35).withAlpha(40),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.casino, size: 16, color: Color(0xFFFF6B35)),
-              SizedBox(width: 6),
-              Text('正在转动，稍等片刻...',
-                  style: TextStyle(fontSize: 13, color: Color(0xFFB24A1C))),
-            ],
-          ),
-        ),
+        const RollingHint(),
         Card(
           clipBehavior: Clip.antiAlias,
           child: SizedBox(
             height: wheelHeight + 40,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: _buildReel('去处', _wheelController, _rollItems),
+              child: SlotReel(
+                label: '去处',
+                items: _rollItems,
+                controller: _wheelController,
+                emojiOf: (p) => p.emoji,
+                nameOf: (p) => p.name,
+              ),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildReel(String label, FixedExtentScrollController? controller,
-      List<PlaceItem> items) {
-    const itemHeight = 56.0;
-    const wheelHeight = 176.0;
-    final bg = Theme.of(context).cardTheme.color ??
-        Theme.of(context).colorScheme.surfaceContainerLow;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 3),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFF6B35).withAlpha(14),
-        border: Border.all(color: const Color(0xFFFF6B35).withAlpha(70)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 3),
-            color: const Color(0xFFFF6B35).withAlpha(45),
-            child: Text(label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF8A3D1C),
-                    fontWeight: FontWeight.w600)),
-          ),
-          SizedBox(
-            height: wheelHeight,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: ListWheelScrollView.useDelegate(
-                      controller: controller,
-                      itemExtent: itemHeight,
-                      physics: const FixedExtentScrollPhysics(),
-                      useMagnifier: true,
-                      magnification: 1.12,
-                      overAndUnderCenterOpacity: 0.45,
-                      childDelegate: ListWheelChildBuilderDelegate(
-                        childCount: items.length,
-                        builder: (context, i) => Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(items[i].emoji,
-                                    style: const TextStyle(fontSize: 22)),
-                                const SizedBox(width: 6),
-                                Flexible(
-                                  child: Text(items[i].name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // 上下渐隐
-                Positioned(
-                  top: 0, left: 0, right: 0, height: 36,
-                  child: IgnorePointer(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [bg, bg.withAlpha(0)],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0, left: 0, right: 0, height: 36,
-                  child: IgnorePointer(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [bg, bg.withAlpha(0)],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // 选中窗口圆角描边
-                Positioned(
-                  top: (wheelHeight - itemHeight) / 2,
-                  left: 6,
-                  right: 6,
-                  height: itemHeight,
-                  child: IgnorePointer(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.white.withAlpha(200), width: 1.5),
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white.withAlpha(20),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
