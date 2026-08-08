@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'apps/eat/eat_app.dart';
+import 'apps/go/go_app.dart';
 import 'core/donation.dart';
 import 'core/theme.dart';
 
@@ -56,7 +57,7 @@ class HomeEntryPage extends StatelessWidget {
             title: '今天去哪',
             subtitle: '随机推荐去处，出门不再纠结',
             color: const Color(0xFF4CAF50),
-            onTap: () => _showComingSoon(context, '今天去哪'),
+            onTap: () => _openApp(context, const GoAppPage()),
           ),
           _buildEntryCard(
             context,
