@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
+import 'apps/wear/wear_app.dart';
 import 'core/donation.dart';
 import 'core/theme.dart';
 
@@ -65,7 +66,7 @@ class HomeEntryPage extends StatelessWidget {
             title: '今天穿什么',
             subtitle: '按季节随机搭配，轻松出门',
             color: const Color(0xFF42A5F5),
-            onTap: () => _showComingSoon(context, '今天穿什么'),
+            onTap: () => _openApp(context, const WearAppPage()),
           ),
           _buildEntryCard(
             context,
