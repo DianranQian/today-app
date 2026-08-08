@@ -1,16 +1,53 @@
-# today_app
+# 今天做什么 🎲
 
-A new Flutter project.
+> 选择困难终结者。一个 App 装下四个「今天」：吃什么、去哪、穿什么、联系谁。
 
-## Getting Started
+## 功能
 
-This project is a starting point for a Flutter application.
+| 子应用 | 说明 |
+|---|---|
+| 🍜 **今天吃什么** | 随机推荐菜谱（老虎机滚动动画），400+ 家常菜 + 75 种饮品，按季节优先、避免近期重复，支持自定义/文件导入菜谱 |
+| 📍 **今天去哪** | 随机推荐去处（65 个内置：吃饭/逛街/公园/文化/运动/夜生活），可按类型筛选 |
+| 👕 **今天穿什么** | 按当前季节 + 温度区间随机搭配穿搭（34 套内置） |
+| 📞 **今天联系谁** | 记录亲友联系频率，逾期优先提醒，「已联系打卡」自动更新下次提醒 |
 
-A few resources to get you started if this is your first Flutter project:
+## 特色
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- 🎰 **老虎机动画**：随机结果以滚轮滚动 + 减速定格呈现，点击结果可换一换
+- 🍃 **应季优先**：自动读取当前季节，当季内容优先推荐
+- 📁 **数据自由**：所有数据本地存储（SharedPreferences），支持增删改查与 JSON 文件导入（UTF-8/GBK 兼容）
+- 🔒 **隐私友好**：不收集任何数据，不读系统通讯录，联系人手动录入且仅存本机
+- 💰 **开源免费**：全靠自愿打赏（App 内「赛博乞讨」）
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 构建
+
+```bash
+flutter pub get
+flutter run          # 调试运行
+flutter build apk --release   # 打包
+```
+
+- Flutter 3.24+ / Dart 3.5+
+- Android 6.0+（minSdk 23），compileSdk 35
+- 注意：项目路径请使用纯英文（中文路径会导致 impellerc 构建失败）
+
+## 技术架构
+
+```
+lib/
+├── main.dart          # 主框架：子应用入口页
+├── core/              # 共享层：主题、季节、打赏弹窗
+└── apps/
+    ├── eat/           # 今天吃什么（含 400+ 菜谱数据）
+    ├── go/            # 今天去哪
+    ├── wear/          # 今天穿什么
+    └── contact/       # 今天联系谁
+```
+
+四个子应用相互独立（各自的数据模型与存储键），可随时拆分为独立 App。
+
+## 开源
+
+- 协议：**GPL-3.0**（见 [LICENSE](LICENSE)）
+- 菜谱数据来源：内置菜谱含开源项目 [HowToCook](https://github.com/Anduin2017/HowToCook)（程序员做饭指南）解析数据，以及下厨房公开页面抓取的菜名与原料
+- 若喜欢这个项目，欢迎在 App 内扫码打赏 ☕
