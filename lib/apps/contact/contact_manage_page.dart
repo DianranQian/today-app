@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/image_helper.dart';
 import 'contact_models.dart';
 import 'contact_data_store.dart';
 
@@ -15,6 +16,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
   final _relationCtrl = TextEditingController();
   final _searchCtrl = TextEditingController();
   ContactFrequency _frequency = ContactFrequency.monthly;
+  String? _imagePath;
 
   @override
   void dispose() {
@@ -40,11 +42,13 @@ class _ContactManagePageState extends State<ContactManagePage> {
       emoji: _emojiCtrl.text.trim().isNotEmpty ? _emojiCtrl.text.trim() : '👤',
       relation: _relationCtrl.text.trim(),
       frequency: _frequency,
+      imagePath: _imagePath,
     ));
     ContactDataStore.save();
     _nameCtrl.clear();
     _emojiCtrl.clear();
     _relationCtrl.clear();
+    _imagePath = null;
     setState(() {});
     _showToast('已添加 $name');
   }
@@ -61,6 +65,33 @@ class _ContactManagePageState extends State<ContactManagePage> {
     ContactDataStore.checkIn(ContactDataStore.contacts[index]);
     setState(() {});
     _showToast('已打卡');
+  }
+
+
+  Future<void> _pickImage() async {
+    final p = await ImageHelper.pick(context);
+    if (p != null) setState(() => _imagePath = p);
+  }
+
+  Widget _buildImagePickerRow() {
+    return Row(
+      children: [
+        ItemImage(imagePath: _imagePath, emoji: '👤', size: 48),
+        const SizedBox(width: 8),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.add_photo_alternate, size: 18),
+            label: const Text('添加头像'),
+          ),
+        ),
+        if (_imagePath != null)
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.red),
+            onPressed: () => setState(() => _imagePath = null),
+          ),
+      ],
+    );
   }
 
   void _showToast(String msg) {
@@ -153,6 +184,8 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     ],
                   ),
                   const SizedBox(height: 12),
+                  _buildImagePickerRow(),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -200,7 +233,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                 ),
                 onDismissed: (_) => _delete(i),
                 child: ListTile(
-                  leading: Text(c.emoji, style: const TextStyle(fontSize: 28)),
+                  leading: ItemImage(imagePath: c.imagePath, emoji: c.emoji, size: 44),
                   title: Text(c.name),
                   subtitle: Text(
                     [

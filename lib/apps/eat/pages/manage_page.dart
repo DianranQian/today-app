@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../../../core/image_helper.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
 
@@ -20,17 +21,20 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
   MealTime _dishMeal = MealTime.all;
   CookMode _dishMode = CookMode.all;
   final _dishIngredientsCtrl = TextEditingController();
+  String? _dishImagePath;
 
   final _stapleNameCtrl = TextEditingController();
   final _stapleEmojiCtrl = TextEditingController();
   final _stapleSearchCtrl = TextEditingController();
   MealTime _stapleMeal = MealTime.all;
   final _stapleIngredientsCtrl = TextEditingController();
+  String? _stapleImagePath;
 
   final _drinkNameCtrl = TextEditingController();
   final _drinkEmojiCtrl = TextEditingController();
   final _drinkSearchCtrl = TextEditingController();
   MealTime _drinkMeal = MealTime.all;
+  String? _drinkImagePath;
 
   @override
   void initState() {
@@ -75,11 +79,13 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           .where((s) => s.trim().isNotEmpty)
           .map((s) => s.trim())
           .toList(),
+      imagePath: _dishImagePath,
     ));
     DataStore.save();
     _dishNameCtrl.clear();
     _dishEmojiCtrl.clear();
     _dishIngredientsCtrl.clear();
+    _dishImagePath = null;
     setState(() {});
     _showToast('已添加 ');
   }
@@ -105,11 +111,13 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           .where((s) => s.trim().isNotEmpty)
           .map((s) => s.trim())
           .toList(),
+      imagePath: _stapleImagePath,
     ));
     DataStore.save();
     _stapleNameCtrl.clear();
     _stapleEmojiCtrl.clear();
     _stapleIngredientsCtrl.clear();
+    _stapleImagePath = null;
     setState(() {});
     _showToast('已添加 ');
   }
@@ -135,6 +143,50 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
     );
+  }
+
+  /// 选图行：缩略图预览 + 选图/清除按钮
+  Widget _buildImagePickerRow(String? imagePath, Future<void> Function() onPick,
+      VoidCallback onClear) {
+    return Row(
+      children: [
+        ItemImage(imagePath: imagePath, emoji: '🖼️', size: 48),
+        const SizedBox(width: 8),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: onPick,
+            icon: const Icon(Icons.add_photo_alternate, size: 18),
+            label: const Text('添加图片'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.primary,
+              side: BorderSide(
+                  color: Theme.of(context).colorScheme.primary.withAlpha(70)),
+            ),
+          ),
+        ),
+        if (imagePath != null)
+          IconButton(
+            tooltip: '清除图片',
+            icon: const Icon(Icons.close, color: Colors.red),
+            onPressed: onClear,
+          ),
+      ],
+    );
+  }
+
+  Future<void> _pickDishImage() async {
+    final p = await ImageHelper.pick(context);
+    if (p != null) setState(() => _dishImagePath = p);
+  }
+
+  Future<void> _pickStapleImage() async {
+    final p = await ImageHelper.pick(context);
+    if (p != null) setState(() => _stapleImagePath = p);
+  }
+
+  Future<void> _pickDrinkImage() async {
+    final p = await ImageHelper.pick(context);
+    if (p != null) setState(() => _drinkImagePath = p);
   }
 
   Future<void> _importRecipes() async {
@@ -369,6 +421,9 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                   ),
                 ),
                 const SizedBox(height: 12),
+                _buildImagePickerRow(
+                    _dishImagePath, _pickDishImage, () => setState(() => _dishImagePath = null)),
+                const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -420,7 +475,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
               ),
               onDismissed: (_) => _deleteDish(i),
               child: ListTile(
-                leading: Text(dish.emoji, style: const TextStyle(fontSize: 28)),
+                leading: ItemImage(imagePath: dish.imagePath, emoji: dish.emoji, size: 44),
                 title: Text(dish.name),
                 subtitle: const Text(' · '),
                 trailing: IconButton(
@@ -503,6 +558,9 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                   ),
                 ),
                 const SizedBox(height: 12),
+                _buildImagePickerRow(
+                    _stapleImagePath, _pickStapleImage, () => setState(() => _stapleImagePath = null)),
+                const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -554,7 +612,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
               ),
               onDismissed: (_) => _deleteStaple(i),
               child: ListTile(
-                leading: Text(staple.emoji, style: const TextStyle(fontSize: 28)),
+                leading: ItemImage(imagePath: staple.imagePath, emoji: staple.emoji, size: 44),
                 title: Text(staple.name),
                 subtitle: Text(staple.mealTime.label),
                 trailing: IconButton(
@@ -584,10 +642,12 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
       emoji: _drinkEmojiCtrl.text.trim().isNotEmpty ? _drinkEmojiCtrl.text.trim() : '🥤',
       mealTime: _drinkMeal,
       isDrink: true,
+      imagePath: _drinkImagePath,
     ));
     DataStore.save();
     _drinkNameCtrl.clear();
     _drinkEmojiCtrl.clear();
+    _drinkImagePath = null;
     setState(() {});
     _showToast('已添加 $name');
   }
@@ -658,6 +718,9 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                   onChanged: (v) => setState(() => _drinkMeal = v!),
                 ),
                 const SizedBox(height: 12),
+                _buildImagePickerRow(
+                    _drinkImagePath, _pickDrinkImage, () => setState(() => _drinkImagePath = null)),
+                const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -707,7 +770,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
               ),
               onDismissed: (_) => _deleteDrink(i),
               child: ListTile(
-                leading: Text(drink.emoji, style: const TextStyle(fontSize: 28)),
+                leading: ItemImage(imagePath: drink.imagePath, emoji: drink.emoji, size: 44),
                 title: Text(drink.name),
                 subtitle: Text(drink.mealTime.label),
                 trailing: IconButton(

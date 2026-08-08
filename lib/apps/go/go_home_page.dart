@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/slot_machine.dart';
+import '../../core/image_helper.dart';
 import 'go_models.dart';
 import 'go_data_store.dart';
 
@@ -244,7 +245,7 @@ class _GoHomePageState extends State<GoHomePage> {
                 padding: const EdgeInsets.all(4),
                 child: Column(
                   children: [
-                    Text(_picked!.emoji, style: const TextStyle(fontSize: 56)),
+                    ItemImage(imagePath: _picked!.imagePath, emoji: _picked!.emoji, size: 120),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisSize: MainAxisSize.min,

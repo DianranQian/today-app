@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'contact_models.dart';
+import '../../core/image_helper.dart';
 import 'contact_data_store.dart';
 
 class ContactHomePage extends StatefulWidget {
@@ -173,7 +174,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Text(c.emoji, style: const TextStyle(fontSize: 56)),
+            ItemImage(imagePath: c.imagePath, emoji: c.emoji, size: 120),
             const SizedBox(height: 8),
             Text(c.name,
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),

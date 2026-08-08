@@ -34,12 +34,14 @@ class PlaceItem {
   PlaceType type;
   /// 消费档位：1 = 低（¥），2 = 中（¥¥），3 = 高（¥¥¥）
   int priceTier;
+  String? imagePath;
 
   PlaceItem({
     required this.name,
     this.emoji = '📍',
     this.type = PlaceType.all,
     this.priceTier = 1,
+    this.imagePath,
   });
 
   String get priceLabel => '¥' * priceTier;
@@ -49,6 +51,7 @@ class PlaceItem {
     'emoji': emoji,
     'type': type.name,
     'priceTier': priceTier,
+    'imagePath': imagePath,
   };
 
   factory PlaceItem.fromJson(Map<String, dynamic> json) => PlaceItem(
@@ -56,6 +59,7 @@ class PlaceItem {
     emoji: json['emoji'] as String? ?? '📍',
     type: PlaceTypeExt.fromString(json['type'] as String? ?? 'all'),
     priceTier: json['priceTier'] as int? ?? 1,
+    imagePath: json['imagePath'] as String?,
   );
 }
 

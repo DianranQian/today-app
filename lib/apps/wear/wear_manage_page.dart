@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/season.dart';
+import '../../core/image_helper.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
 
@@ -19,6 +20,7 @@ class _WearManagePageState extends State<WearManagePage> {
   WearGroup _group = WearGroup.all;
   int? _tempMin;
   int? _tempMax;
+  String? _imagePath;
 
   @override
   void dispose() {
@@ -46,10 +48,12 @@ class _WearManagePageState extends State<WearManagePage> {
       group: _group,
       tempMin: _tempMin,
       tempMax: _tempMax,
+      imagePath: _imagePath,
     ));
     WearDataStore.save();
     _nameCtrl.clear();
     _emojiCtrl.clear();
+    _imagePath = null;
     setState(() {});
     _showToast('已添加 $name');
   }
@@ -60,6 +64,33 @@ class _WearManagePageState extends State<WearManagePage> {
     WearDataStore.save();
     setState(() {});
     _showToast('已删除 $name');
+  }
+
+
+  Future<void> _pickImage() async {
+    final p = await ImageHelper.pick(context);
+    if (p != null) setState(() => _imagePath = p);
+  }
+
+  Widget _buildImagePickerRow() {
+    return Row(
+      children: [
+        ItemImage(imagePath: _imagePath, emoji: '👕', size: 48),
+        const SizedBox(width: 8),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.add_photo_alternate, size: 18),
+            label: const Text('添加图片'),
+          ),
+        ),
+        if (_imagePath != null)
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.red),
+            onPressed: () => setState(() => _imagePath = null),
+          ),
+      ],
+    );
   }
 
   void _showToast(String msg) {
@@ -215,6 +246,8 @@ class _WearManagePageState extends State<WearManagePage> {
                     ],
                   ),
                   const SizedBox(height: 12),
+                  _buildImagePickerRow(),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -265,7 +298,7 @@ class _WearManagePageState extends State<WearManagePage> {
                 ),
                 onDismissed: (_) => _delete(i),
                 child: ListTile(
-                  leading: Text(outfit.emoji, style: const TextStyle(fontSize: 28)),
+                  leading: ItemImage(imagePath: outfit.imagePath, emoji: outfit.emoji, size: 44),
                   title: Text(outfit.name),
                   subtitle: Text('${outfit.scene.label} · $seasonTag季'),
                   trailing: IconButton(

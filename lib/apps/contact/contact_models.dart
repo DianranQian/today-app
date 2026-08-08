@@ -34,6 +34,7 @@ class ContactItem {
   String relation;
   ContactFrequency frequency;
   DateTime? lastContact; // null = 从未联系过
+  String? imagePath;
 
   ContactItem({
     required this.name,
@@ -41,6 +42,7 @@ class ContactItem {
     this.relation = '',
     this.frequency = ContactFrequency.monthly,
     this.lastContact,
+    this.imagePath,
   });
 
   /// 距上次联系天数；从未联系返回很大的数（优先推荐）
@@ -61,6 +63,7 @@ class ContactItem {
     'relation': relation,
     'frequency': frequency.name,
     'lastContact': lastContact?.toIso8601String(),
+    'imagePath': imagePath,
   };
 
   factory ContactItem.fromJson(Map<String, dynamic> json) => ContactItem(
@@ -72,5 +75,6 @@ class ContactItem {
     lastContact: json['lastContact'] != null
         ? DateTime.parse(json['lastContact'] as String)
         : null,
+    imagePath: json['imagePath'] as String?,
   );
 }

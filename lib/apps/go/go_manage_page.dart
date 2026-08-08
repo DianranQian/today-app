@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/image_helper.dart';
 import 'go_models.dart';
 import 'go_data_store.dart';
 
@@ -15,6 +16,7 @@ class _GoManagePageState extends State<GoManagePage> {
   final _searchCtrl = TextEditingController();
   PlaceType _type = PlaceType.eat;
   int _priceTier = 1;
+  String? _imagePath;
 
   @override
   void dispose() {
@@ -39,10 +41,12 @@ class _GoManagePageState extends State<GoManagePage> {
       emoji: _emojiCtrl.text.trim().isNotEmpty ? _emojiCtrl.text.trim() : '📍',
       type: _type,
       priceTier: _priceTier,
+      imagePath: _imagePath,
     ));
     GoDataStore.save();
     _nameCtrl.clear();
     _emojiCtrl.clear();
+    _imagePath = null;
     setState(() {});
     _showToast('已添加 $name');
   }
@@ -53,6 +57,33 @@ class _GoManagePageState extends State<GoManagePage> {
     GoDataStore.save();
     setState(() {});
     _showToast('已删除 $name');
+  }
+
+
+  Future<void> _pickImage() async {
+    final p = await ImageHelper.pick(context);
+    if (p != null) setState(() => _imagePath = p);
+  }
+
+  Widget _buildImagePickerRow() {
+    return Row(
+      children: [
+        ItemImage(imagePath: _imagePath, emoji: '📍', size: 48),
+        const SizedBox(width: 8),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: _pickImage,
+            icon: const Icon(Icons.add_photo_alternate, size: 18),
+            label: const Text('添加图片'),
+          ),
+        ),
+        if (_imagePath != null)
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.red),
+            onPressed: () => setState(() => _imagePath = null),
+          ),
+      ],
+    );
   }
 
   void _showToast(String msg) {
@@ -152,6 +183,8 @@ class _GoManagePageState extends State<GoManagePage> {
                     ],
                   ),
                   const SizedBox(height: 12),
+                  _buildImagePickerRow(),
+                  const SizedBox(height: 8),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -199,7 +232,7 @@ class _GoManagePageState extends State<GoManagePage> {
                 ),
                 onDismissed: (_) => _delete(i),
                 child: ListTile(
-                  leading: Text(place.emoji, style: const TextStyle(fontSize: 28)),
+                  leading: ItemImage(imagePath: place.imagePath, emoji: place.emoji, size: 44),
                   title: Text(place.name),
                   subtitle: Text('${place.type.label} · ${place.priceLabel}'),
                   trailing: IconButton(

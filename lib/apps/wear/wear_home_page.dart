@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/season.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/slot_machine.dart';
+import '../../core/image_helper.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
 
@@ -418,7 +419,7 @@ class _WearHomePageState extends State<WearHomePage> {
                 padding: const EdgeInsets.all(4),
                 child: Column(
                   children: [
-                    Text(_picked!.emoji, style: const TextStyle(fontSize: 56)),
+                    ItemImage(imagePath: _picked!.imagePath, emoji: _picked!.emoji, size: 120),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisSize: MainAxisSize.min,

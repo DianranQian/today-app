@@ -82,6 +82,7 @@ class FoodItem {
   bool isDrink;
   List<String> ingredients;
   Set<Season> seasons;
+  String? imagePath;
 
   String get displayEmoji => emoji.trim().isEmpty ? '🍽️' : emoji;
 
@@ -94,6 +95,7 @@ class FoodItem {
     this.isDrink = false,
     List<String>? ingredients,
     Set<Season>? seasons,
+    this.imagePath,
   })  : ingredients = ingredients ?? [],
         seasons = seasons ?? {};
 
@@ -106,6 +108,7 @@ class FoodItem {
     'isDrink': isDrink,
     'ingredients': ingredients,
     'seasons': seasons.map((s) => s.name).toList(),
+    'imagePath': imagePath,
   };
 
   factory FoodItem.fromJson(Map<String, dynamic> json) => FoodItem(
@@ -119,6 +122,7 @@ class FoodItem {
     seasons: (json['seasons'] as List<dynamic>?)
         ?.map((e) => SeasonExt.fromString(e as String))
         .toSet() ?? {},
+    imagePath: json['imagePath'] as String?,
   );
 }
 

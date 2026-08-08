@@ -84,6 +84,7 @@ class OutfitItem {
   /// 适宜温度区间（摄氏度），null 表示不限
   int? tempMin;
   int? tempMax;
+  String? imagePath;
 
   OutfitItem({
     required this.name,
@@ -94,6 +95,7 @@ class OutfitItem {
     this.group = WearGroup.all,
     this.tempMin,
     this.tempMax,
+    this.imagePath,
   }) : seasons = seasons ?? {};
 
   Map<String, dynamic> toJson() => {
@@ -105,6 +107,7 @@ class OutfitItem {
     'group': group.name,
     'tempMin': tempMin,
     'tempMax': tempMax,
+    'imagePath': imagePath,
   };
 
   factory OutfitItem.fromJson(Map<String, dynamic> json) => OutfitItem(
@@ -118,6 +121,7 @@ class OutfitItem {
     group: WearGroupExt.fromString(json['group'] as String? ?? 'all'),
     tempMin: json['tempMin'] as int?,
     tempMax: json['tempMax'] as int?,
+    imagePath: json['imagePath'] as String?,
   );
 }
 

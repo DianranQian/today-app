@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/image_helper.dart';
 import '../../../core/theme.dart';
 import '../../../core/widgets/slot_machine.dart';
 import '../models/food_item.dart';
@@ -483,7 +484,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   padding: const EdgeInsets.all(4),
                   child: Column(
                     children: [
-                      Text(_pickedDish!.emoji, style: const TextStyle(fontSize: 56)),
+                      ItemImage(imagePath: _pickedDish!.imagePath, emoji: _pickedDish!.emoji, size: 120),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisSize: MainAxisSize.min,
