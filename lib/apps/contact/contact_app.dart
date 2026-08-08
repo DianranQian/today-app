@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/app_settings.dart';
 import '../../core/theme.dart';
 import 'contact_data_store.dart';
 import 'contact_home_page.dart';
@@ -32,7 +33,7 @@ class _ContactAppPageState extends State<ContactAppPage> {
       );
     }
     return Theme(
-      data: buildAppTheme(seed: AppSeeds.contact),
+      data: buildAppTheme(seed: AppSettings.seedFor(AppId.contact)),
       child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,

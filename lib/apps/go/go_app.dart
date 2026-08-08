@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/app_settings.dart';
 import '../../core/theme.dart';
 import 'go_data_store.dart';
 import 'go_home_page.dart';
@@ -32,7 +33,7 @@ class _GoAppPageState extends State<GoAppPage> {
       );
     }
     return Theme(
-      data: buildAppTheme(seed: AppSeeds.go),
+      data: buildAppTheme(seed: AppSettings.seedFor(AppId.go)),
       child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,

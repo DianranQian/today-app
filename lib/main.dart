@@ -3,11 +3,14 @@ import 'apps/contact/contact_app.dart';
 import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
 import 'apps/wear/wear_app.dart';
+import 'core/app_settings.dart';
 import 'core/donation.dart';
 import 'core/theme.dart';
+import 'pages/settings_page.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppSettings.load();
   runApp(const TodayApp());
 }
 
@@ -40,6 +43,16 @@ class HomeEntryPage extends StatelessWidget {
         title: const Text('今天做什么'),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          IconButton(
+            tooltip: '通用设置',
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () =>
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const SettingsPage(),
+                )),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

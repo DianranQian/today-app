@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/app_settings.dart';
 import '../../core/theme.dart';
 import 'data/data_store.dart';
 import 'pages/home_page.dart';
@@ -41,7 +42,7 @@ class _EatAppPageState extends State<EatAppPage> {
       );
     }
     return Theme(
-      data: buildAppTheme(seed: AppSeeds.eat),
+      data: buildAppTheme(seed: AppSettings.seedFor(AppId.eat)),
       child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,

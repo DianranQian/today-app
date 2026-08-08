@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/app_settings.dart';
 import '../../core/theme.dart';
 import 'wear_data_store.dart';
 import 'wear_home_page.dart';
@@ -32,7 +33,7 @@ class _WearAppPageState extends State<WearAppPage> {
       );
     }
     return Theme(
-      data: buildAppTheme(seed: AppSeeds.wear),
+      data: buildAppTheme(seed: AppSettings.seedFor(AppId.wear)),
       child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,
