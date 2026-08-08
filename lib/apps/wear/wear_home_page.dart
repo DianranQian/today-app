@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/image_helper.dart';
 import '../../core/season.dart';
 import '../../core/theme.dart';
+import '../../core/widgets/date_selector.dart';
 import '../../core/widgets/slot_machine.dart';
-import '../../core/image_helper.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
 
@@ -166,7 +167,12 @@ class _WearHomePageState extends State<WearHomePage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSectionTitle('穿什么', '选择场景 · 当前${currentSeason.label}季'),
+          // 目标日期
+          _buildSectionTitle('穿哪天的', '选择日期（影响季节搭配）'),
+          const SizedBox(height: 8),
+          TargetDateSelector(onChanged: () => setState(() {})),
+          const SizedBox(height: 12),
+          _buildSectionTitle('穿什么', '选择场景 · ${targetSeason.label}季'),
           const SizedBox(height: 8),
           _buildSceneSelector(),
           const SizedBox(height: 12),

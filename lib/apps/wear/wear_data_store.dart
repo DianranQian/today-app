@@ -56,7 +56,7 @@ class WearDataStore {
     WearGroup? group,
     int? temperature,
   }) {
-    final now = currentSeason;
+    final now = targetSeason;
     var result = List<OutfitItem>.from(outfits);
     if (scene != null && scene != WearScene.all) {
       result = result

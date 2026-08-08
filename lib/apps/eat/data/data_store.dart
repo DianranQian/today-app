@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:gbk_codec/gbk_codec.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/season.dart';
 import '../models/food_item.dart';
 import 'how_to_cook_dishes.dart';
 import 'xiachufang_dishes.dart';
@@ -224,13 +225,17 @@ class DataStore {
   static int _randomIndex(int length) =>
       DateTime.now().microsecondsSinceEpoch % length;
 
-  static FoodItem pickFrom(List<FoodItem> pool, {bool seasonPriority = false}) {
+  /// seasonPriority 时按 [season] 过滤当季（默认当前真实季节）
+  static FoodItem pickFrom(List<FoodItem> pool,
+      {bool seasonPriority = false, Season? season}) {
     if (pool.isEmpty) {
       throw StateError('pool is empty');
     }
     var candidates = pool;
     if (seasonPriority) {
-      final inSeason = pool.where((d) => d.seasons.contains(currentSeason)).toList();
+      final s = season ?? currentSeason;
+      final inSeason =
+          pool.where((d) => d.seasons.contains(s)).toList();
       if (inSeason.isNotEmpty && _randomIndex(100) < 80) {
         candidates = inSeason;
       }

@@ -5,11 +5,13 @@ import 'apps/go/go_app.dart';
 import 'apps/wear/wear_app.dart';
 import 'core/app_settings.dart';
 import 'core/theme.dart';
+import 'core/widgets/date_selector.dart';
 import 'pages/settings_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppSettings.load();
+  await TargetDateSelector.load();
   runApp(const TodayApp());
 }
 

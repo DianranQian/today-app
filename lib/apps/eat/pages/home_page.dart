@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
+import '../../../core/season.dart' as core_season;
 import '../../../core/theme.dart';
+import '../../../core/widgets/date_selector.dart';
 import '../../../core/widgets/slot_machine.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
@@ -68,7 +70,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     // 选定最终结果（保留原逻辑）
     final selectedDish = DataStore.pickFrom(dishPool,
-        seasonPriority: DataStore.settings.seasonRecommend);
+        seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
     FoodItem? selectedStaple;
     FoodItem? selectedDrink;
     var staplePool = <FoodItem>[];
@@ -81,14 +84,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           final filtered = staplePool.where((s) => !recent.contains(s.name)).toList();
           if (filtered.isNotEmpty) {
             selectedStaple = DataStore.pickFrom(filtered,
-                seasonPriority: DataStore.settings.seasonRecommend);
+                seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
           } else {
             selectedStaple = DataStore.pickFrom(staplePool,
-                seasonPriority: DataStore.settings.seasonRecommend);
+                seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
           }
         } else {
           selectedStaple = DataStore.pickFrom(staplePool,
-              seasonPriority: DataStore.settings.seasonRecommend);
+              seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
         }
       }
     }
@@ -220,11 +226,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return;
     }
     var next = DataStore.pickFrom(pool,
-        seasonPriority: DataStore.settings.seasonRecommend);
+        seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
     var tries = 0;
     while (next.name == _pickedDish?.name && pool.length > 1 && tries < 5) {
       next = DataStore.pickFrom(pool,
-          seasonPriority: DataStore.settings.seasonRecommend);
+          seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
       tries++;
     }
     // 兜底：重试后仍相同则确定性换到下一道，保证一定不同
@@ -245,11 +253,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       return;
     }
     var next = DataStore.pickFrom(pool,
-        seasonPriority: DataStore.settings.seasonRecommend);
+        seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
     var tries = 0;
     while (next.name == _pickedStaple?.name && pool.length > 1 && tries < 5) {
       next = DataStore.pickFrom(pool,
-          seasonPriority: DataStore.settings.seasonRecommend);
+          seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
       tries++;
     }
     if (next.name == _pickedStaple?.name && pool.length > 1) {
@@ -302,6 +312,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // 目标日期
+          _buildSectionTitle('吃哪天的', '选择日期（影响应季推荐）'),
+          const SizedBox(height: 8),
+          TargetDateSelector(onChanged: () => setState(() {})),
+          const SizedBox(height: 16),
+
           // Meal time selector
           _buildSectionTitle('吃什么', '选择餐段'),
           const SizedBox(height: 8),
@@ -503,7 +519,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (_pickedDish!.seasons.contains(currentSeason)) ...[
+                  if (_pickedDish!.seasons.contains(core_season.targetSeason)) ...[
                     Container(
                       margin: const EdgeInsets.only(right: 6),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
