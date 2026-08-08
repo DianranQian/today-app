@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import 'contact_data_store.dart';
 import 'contact_home_page.dart';
 import 'contact_manage_page.dart';
@@ -30,7 +31,9 @@ class _ContactAppPageState extends State<ContactAppPage> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    return Scaffold(
+    return Theme(
+      data: buildAppTheme(seed: AppSeeds.contact),
+      child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: const [
@@ -51,6 +54,7 @@ class _ContactAppPageState extends State<ContactAppPage> {
               selectedIcon: Icon(Icons.contacts),
               label: '管理'),
         ],
+      ),
       ),
     );
   }

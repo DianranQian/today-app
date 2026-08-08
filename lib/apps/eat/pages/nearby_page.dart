@@ -110,7 +110,7 @@ class _NearbyPageState extends State<NearbyPage> {
                         : const Icon(Icons.my_location),
                     label: Text(_loading ? '正在搜索...' : '定位并搜索附近美食'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B35),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
@@ -231,10 +231,10 @@ class _NearbyPageState extends State<NearbyPage> {
                           ),
                           trailing: rating > 0
                               ? Text(rating.toStringAsFixed(1),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFFFF6B35)))
+                                      color: Theme.of(context).colorScheme.primary))
                               : null,
                         ),
                       );

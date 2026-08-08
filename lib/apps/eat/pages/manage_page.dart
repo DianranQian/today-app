@@ -374,7 +374,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                   child: ElevatedButton(
                     onPressed: _addDish,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B35),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('添加'),
@@ -508,7 +508,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                   child: ElevatedButton(
                     onPressed: _addStaple,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B35),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('添加'),
@@ -663,7 +663,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                   child: ElevatedButton(
                     onPressed: _addDrink,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF6B35),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('添加'),

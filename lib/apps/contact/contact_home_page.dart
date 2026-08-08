@@ -56,7 +56,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
           // 概览条
           Card(
             color: overdueCount > 0
-                ? const Color(0xFFFF6B35).withAlpha(12)
+                ? Theme.of(context).colorScheme.primary.withAlpha(12)
                 : null,
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -68,7 +68,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
                         : Icons.thumb_up_alt_outlined,
                     size: 20,
                     color: overdueCount > 0
-                        ? const Color(0xFFFF6B35)
+                        ? Theme.of(context).colorScheme.primary
                         : Colors.grey,
                   ),
                   const SizedBox(width: 10),
@@ -96,7 +96,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
               label: const Text('今天该联系谁？',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF6B35),
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(26),
@@ -130,8 +130,8 @@ class _ContactHomePageState extends State<ContactHomePage> {
                     icon: const Icon(Icons.refresh, size: 18),
                     label: const Text('换一个'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFFF6B35),
-                      side: const BorderSide(color: Color(0xFFFF6B35)),
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                      side: BorderSide(color: Theme.of(context).colorScheme.primary),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(22),
                       ),
@@ -192,12 +192,12 @@ class _ContactHomePageState extends State<ContactHomePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF6B35).withAlpha(25),
+                    color: Theme.of(context).colorScheme.primary.withAlpha(25),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text('约定 ${c.frequency.label}联系',
                       style:
-                          const TextStyle(fontSize: 13, color: Color(0xFFFF6B35))),
+                          TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary)),
                 ),
                 Container(
                   padding:

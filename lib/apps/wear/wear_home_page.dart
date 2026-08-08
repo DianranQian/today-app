@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import '../../core/season.dart';
 import '../../core/widgets/slot_machine.dart';
 import 'wear_models.dart';
@@ -154,8 +155,8 @@ class _WearHomePageState extends State<WearHomePage> {
               label: Text(_isPicking ? '正在选...' : '随机搭配一套！',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF6B35),
-                disabledBackgroundColor: const Color(0xFFFF9A72),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                disabledBackgroundColor: Theme.of(context).colorScheme.primaryLight,
                 foregroundColor: Colors.white,
                 disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -203,7 +204,7 @@ class _WearHomePageState extends State<WearHomePage> {
                         _selectedScene = s;
                         _picked = null;
                       }),
-              selectedColor: const Color(0xFFFF6B35),
+              selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : null,
                 fontWeight: isSelected ? FontWeight.w600 : null,
@@ -222,7 +223,7 @@ class _WearHomePageState extends State<WearHomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
-            const Icon(Icons.thermostat, size: 18, color: Color(0xFFFF6B35)),
+            Icon(Icons.thermostat, size: 18, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 8),
             const Text('今天温度', style: TextStyle(fontSize: 14)),
             const Spacer(),
@@ -322,7 +323,7 @@ class _WearHomePageState extends State<WearHomePage> {
                             style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 8),
-                        const Icon(Icons.refresh, size: 18, color: Color(0xFFFF6B35)),
+                        Icon(Icons.refresh, size: 18, color: Theme.of(context).colorScheme.primary),
                       ],
                     ),
                   ],
@@ -333,12 +334,12 @@ class _WearHomePageState extends State<WearHomePage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35).withAlpha(25),
+                color: Theme.of(context).colorScheme.primary.withAlpha(25),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '${_picked!.scene.label} · ${tags.join(' · ')}',
-                style: const TextStyle(fontSize: 13, color: Color(0xFFFF6B35)),
+                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
               ),
             ),
           ],

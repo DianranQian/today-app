@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import '../../core/widgets/slot_machine.dart';
 import 'go_models.dart';
 import 'go_data_store.dart';
@@ -149,8 +150,8 @@ class _GoHomePageState extends State<GoHomePage> {
               label: Text(_isPicking ? '正在选...' : '随机选一个！',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF6B35),
-                disabledBackgroundColor: const Color(0xFFFF9A72),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                disabledBackgroundColor: Theme.of(context).colorScheme.primaryLight,
                 foregroundColor: Colors.white,
                 disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -198,7 +199,7 @@ class _GoHomePageState extends State<GoHomePage> {
                         _selectedType = t;
                         _picked = null;
                       }),
-              selectedColor: const Color(0xFFFF6B35),
+              selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : null,
                 fontWeight: isSelected ? FontWeight.w600 : null,
@@ -252,7 +253,7 @@ class _GoHomePageState extends State<GoHomePage> {
                             style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 8),
-                        const Icon(Icons.refresh, size: 18, color: Color(0xFFFF6B35)),
+                        Icon(Icons.refresh, size: 18, color: Theme.of(context).colorScheme.primary),
                       ],
                     ),
                   ],
@@ -263,12 +264,12 @@ class _GoHomePageState extends State<GoHomePage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35).withAlpha(25),
+                color: Theme.of(context).colorScheme.primary.withAlpha(25),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '${_picked!.type.label} · ${_picked!.priceLabel}',
-                style: const TextStyle(fontSize: 13, color: Color(0xFFFF6B35)),
+                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
               ),
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme.dart';
 import '../../../core/widgets/slot_machine.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
@@ -315,7 +316,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           // Drink toggle
           Card(
             child: SwitchListTile(
-              secondary: const Icon(Icons.local_drink, color: Color(0xFFFF6B35)),
+              secondary: Icon(Icons.local_drink, color: Theme.of(context).colorScheme.primary),
               title: const Text('想喝饮品'),
               subtitle: const Text('开启后随机推荐一杯饮品'),
               value: _wantDrink,
@@ -345,8 +346,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               label: Text(_isPicking ? '正在选...' : '随机选一个！',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF6B35),
-                disabledBackgroundColor: const Color(0xFFFF9A72),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                disabledBackgroundColor: Theme.of(context).colorScheme.primaryLight,
                 foregroundColor: Colors.white,
                 disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -391,7 +392,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         _pickedStaple = null;
                         _pickedDrink = null;
                       }),
-              selectedColor: const Color(0xFFFF6B35),
+              selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : null,
                 fontWeight: isSelected ? FontWeight.w600 : null,
@@ -434,7 +435,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         _pickedStaple = null;
                         _pickedDrink = null;
                       }),
-              selectedColor: const Color(0xFFFF6B35),
+              selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : null,
               ),
@@ -490,7 +491,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           Text(_pickedDish!.name,
                             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                           const SizedBox(width: 8),
-                          const Icon(Icons.refresh, size: 18, color: Color(0xFFFF6B35)),
+                          Icon(Icons.refresh, size: 18, color: Theme.of(context).colorScheme.primary),
                         ],
                       ),
                     ],
@@ -506,19 +507,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       margin: const EdgeInsets.only(right: 6),
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF6B35).withAlpha(18),
+                        color: Theme.of(context).colorScheme.primary.withAlpha(18),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFFF6B35).withAlpha(80)),
+                        border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(80)),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('🍃', style: TextStyle(fontSize: 15)),
-                          SizedBox(width: 6),
+                          const Text('🍃', style: TextStyle(fontSize: 15)),
+                          const SizedBox(width: 6),
                           Text('应季',
                               style: TextStyle(
                                   fontSize: 13,
-                                  color: Color(0xFFB24A1C),
+                                  color: Theme.of(context).colorScheme.primaryDark,
                                   fontWeight: FontWeight.w500)),
                         ],
                       ),
@@ -527,11 +528,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFF6B35).withAlpha(25),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(25),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text('${_selectedMeal == MealTime.all ? '通用' : _selectedMeal.label} · ${_selectedMode == CookMode.all ? '不限方式' : _selectedMode.label}',
-                      style: const TextStyle(fontSize: 13, color: Color(0xFFFF6B35))),
+                      style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary)),
                   ),
                 ],
               ),
@@ -552,10 +553,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF6B35).withAlpha(18),
+                        color: Theme.of(context).colorScheme.primary.withAlpha(18),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                            color: const Color(0xFFFF6B35).withAlpha(80)),
+                            color: Theme.of(context).colorScheme.primary.withAlpha(80)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -567,7 +568,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                           const SizedBox(width: 8),
-                          const Icon(Icons.refresh, size: 18, color: Color(0xFFFF6B35)),
+                          Icon(Icons.refresh, size: 18, color: Theme.of(context).colorScheme.primary),
                         ],
                       ),
                     ),
@@ -677,9 +678,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             children: ingredients.map((ing) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35).withAlpha(20),
+                color: Theme.of(context).colorScheme.primary.withAlpha(20),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFFF6B35).withAlpha(60)),
+                border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(60)),
               ),
               child: Text(ing, style: const TextStyle(fontSize: 13)),
             )).toList(),

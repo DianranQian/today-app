@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import 'wear_data_store.dart';
 import 'wear_home_page.dart';
 import 'wear_manage_page.dart';
@@ -30,7 +31,9 @@ class _WearAppPageState extends State<WearAppPage> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    return Scaffold(
+    return Theme(
+      data: buildAppTheme(seed: AppSeeds.wear),
+      child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: const [
@@ -51,6 +54,7 @@ class _WearAppPageState extends State<WearAppPage> {
               selectedIcon: Icon(Icons.checkroom),
               label: '管理'),
         ],
+      ),
       ),
     );
   }

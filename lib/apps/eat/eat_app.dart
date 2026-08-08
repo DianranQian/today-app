@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import 'data/data_store.dart';
 import 'pages/home_page.dart';
 import 'pages/manage_page.dart';
@@ -39,7 +40,9 @@ class _EatAppPageState extends State<EatAppPage> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    return Scaffold(
+    return Theme(
+      data: buildAppTheme(seed: AppSeeds.eat),
+      child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: _pages,
@@ -65,6 +68,7 @@ class _EatAppPageState extends State<EatAppPage> {
               selectedIcon: Icon(Icons.settings),
               label: '设置'),
         ],
+      ),
       ),
     );
   }

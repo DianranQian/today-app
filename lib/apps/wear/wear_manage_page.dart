@@ -177,7 +177,7 @@ class _WearManagePageState extends State<WearManagePage> {
                     child: ElevatedButton(
                       onPressed: _add,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF6B35),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
                       child: const Text('添加'),

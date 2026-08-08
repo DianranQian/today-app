@@ -19,7 +19,7 @@ class TodayApp extends StatelessWidget {
     return MaterialApp(
       title: '今天做什么',
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
+      theme: buildAppTheme(seed: AppSeeds.eat),
       home: const HomeEntryPage(),
     );
   }

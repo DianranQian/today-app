@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme.dart';
 import 'go_data_store.dart';
 import 'go_home_page.dart';
 import 'go_manage_page.dart';
@@ -30,7 +31,9 @@ class _GoAppPageState extends State<GoAppPage> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    return Scaffold(
+    return Theme(
+      data: buildAppTheme(seed: AppSeeds.go),
+      child: Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: const [
@@ -51,6 +54,7 @@ class _GoAppPageState extends State<GoAppPage> {
               selectedIcon: Icon(Icons.place),
               label: '管理'),
         ],
+      ),
       ),
     );
   }
