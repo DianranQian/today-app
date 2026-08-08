@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../../core/widgets/candidates_bar.dart';
 import '../../core/widgets/slot_machine.dart';
 import '../../core/image_helper.dart';
 import 'go_models.dart';
@@ -17,6 +18,9 @@ class _GoHomePageState extends State<GoHomePage> {
   int? _maxPriceTier; // 预算上限（1-3），null=不限
 
   PlaceItem? _picked;
+
+  // 备选列表（最近5 次 roll）
+  final List<PlaceItem> _candidates = [];
   bool _isPicking = false;
 
   // 老虎机状态
@@ -86,6 +90,7 @@ class _GoHomePageState extends State<GoHomePage> {
           _picked = selected;
           _isPicking = false;
         });
+        _pushCandidate();
       });
     });
   }
@@ -101,6 +106,20 @@ class _GoHomePageState extends State<GoHomePage> {
     return (items, spinBase + targetIndex);
   }
 
+  /// 加入备选（名称去重，最多 5 条）
+  void _pushCandidate() {
+    final p = _picked;
+    if (p == null) return;
+    _candidates.removeWhere((x) => x.name == p.name);
+    _candidates.insert(0, p);
+    if (_candidates.length > 5) {
+      _candidates.removeRange(5, _candidates.length);
+    }
+  }
+
+  void _selectCandidate(PlaceItem item) {
+    setState(() => _picked = item);
+  }
   void _swap() {
     if (_isPicking || _picked == null) return;
     var pool = GoDataStore.getFilteredPlaces(type: _selectedType);
@@ -122,7 +141,10 @@ class _GoHomePageState extends State<GoHomePage> {
       final idx = pool.indexOf(next);
       next = pool[(idx + 1) % pool.length];
     }
-    setState(() => _picked = next);
+    setState(() {
+      _picked = next;
+      if (_candidates.isNotEmpty) _candidates[0] = next;
+    });
   }
 
   void _showToast(String msg) {
@@ -150,7 +172,21 @@ class _GoHomePageState extends State<GoHomePage> {
           _buildBudgetSelector(),
           const SizedBox(height: 24),
           _buildResultCard(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // 备选列表（最近几次 roll）
+          if (!_rolling && _candidates.isNotEmpty) ...[
+            CandidatesBar<PlaceItem>(
+              items: _candidates,
+              selected: _candidates.isNotEmpty ? _candidates.first : null,
+              emojiOf: (p) => p.emoji,
+              nameOf: (p) => p.name,
+              onSelect: _selectCandidate,
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
             height: 52,

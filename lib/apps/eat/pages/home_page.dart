@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
 import '../../../core/season.dart' as core_season;
 import '../../../core/theme.dart';
+import '../../../core/widgets/candidates_bar.dart';
 import '../../../core/widgets/date_selector.dart';
 import '../../../core/widgets/slot_machine.dart';
 import '../models/food_item.dart';
@@ -24,6 +25,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   FoodItem? _pickedDrink;
   bool _isPicking = false;
 
+  // 备选组合（最近 5 次 roll）
+  final List<_PickCombo> _candidates = [];
+
   // 老虎机滚动状态
   bool _rolling = false;
   List<FoodItem> _dishRollItems = [];
@@ -44,6 +48,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _stapleWheelController?.dispose();
     _drinkWheelController?.dispose();
     super.dispose();
+  }
+
+  /// 把当前选中组合加入备选列表（菜名去重，最多 5 条）
+  void _pushCandidate() {
+    final dish = _pickedDish;
+    if (dish == null) return;
+    _candidates.removeWhere((c) => c.dish.name == dish.name);
+    _candidates.insert(0,
+        _PickCombo(dish: dish, staple: _pickedStaple, drink: _pickedDrink));
+    if (_candidates.length > 5) {
+      _candidates.removeRange(5, _candidates.length);
+    }
+  }
+
+  void _selectCandidate(_PickCombo combo) {
+    setState(() {
+      _pickedDish = combo.dish;
+      _pickedStaple = combo.staple;
+      _pickedDrink = combo.drink;
+    });
   }
 
   void _pick() {
@@ -136,6 +160,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _pickedDrink = selectedDrink;
         _isPicking = false;
       });
+      _pushCandidate();
       return;
     }
 
@@ -205,6 +230,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           _pickedDrink = selectedDrink;
           _isPicking = false;
         });
+        _pushCandidate();
       });
     });
   }
@@ -240,7 +266,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       final idx = pool.indexOf(next);
       next = pool[(idx + 1) % pool.length];
     }
-    setState(() => _pickedDish = next);
+    setState(() {
+      _pickedDish = next;
+      if (_candidates.isNotEmpty) {
+        _candidates[0] = _PickCombo(
+            dish: next, staple: _pickedStaple, drink: _pickedDrink);
+      }
+    });
   }
 
   /// 点击主食按钮：换一个主食（不写历史，仅刷新展示）
@@ -266,7 +298,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       final idx = pool.indexOf(next);
       next = pool[(idx + 1) % pool.length];
     }
-    setState(() => _pickedStaple = next);
+    setState(() {
+      _pickedStaple = next;
+      if (_candidates.isNotEmpty && _pickedDish != null) {
+        _candidates[0] = _PickCombo(
+            dish: _pickedDish!, staple: next, drink: _pickedDrink);
+      }
+    });
   }
 
   /// 点击饮品按钮：换一杯饮品（不写历史，仅刷新展示）
@@ -275,7 +313,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final pool = DataStore.getFilteredDrinks(mealTime: _selectedMeal);
     if (pool.isEmpty) return;
     final next = pool[DateTime.now().microsecondsSinceEpoch % pool.length];
-    setState(() => _pickedDrink = next);
+    setState(() {
+      _pickedDrink = next;
+      if (_candidates.isNotEmpty && _pickedDish != null) {
+        _candidates[0] = _PickCombo(
+            dish: _pickedDish!, staple: _pickedStaple, drink: next);
+      }
+    });
   }
 
   /// 构建一列滚轮数据：把候选池复制多份，返回（滚轮内容, 目标项下标）。
@@ -351,7 +395,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
           // Result card
           _buildResultCard(theme),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // 备选列表（最近几次 roll）
+          if (!_rolling && _candidates.isNotEmpty) ...[
+            CandidatesBar<_PickCombo>(
+              items: _candidates,
+              selected: _candidates.isNotEmpty ? _candidates.first : null,
+              emojiOf: (c) => c.dish.displayEmoji,
+              nameOf: (c) => c.dish.name,
+              onSelect: _selectCandidate,
+            ),
+            const SizedBox(height: 16),
+          ],
 
           // Pick button
           SizedBox(
@@ -706,4 +762,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+/// 一次滚轮的完整结果组合（菜 + 可选主食 + 可选饮品）
+class _PickCombo {
+  final FoodItem dish;
+  final FoodItem? staple;
+  final FoodItem? drink;
+
+  _PickCombo({required this.dish, this.staple, this.drink});
 }

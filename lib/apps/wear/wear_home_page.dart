@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/image_helper.dart';
 import '../../core/season.dart';
 import '../../core/theme.dart';
+import '../../core/widgets/candidates_bar.dart';
 import '../../core/widgets/date_selector.dart';
 import '../../core/widgets/slot_machine.dart';
 import 'wear_models.dart';
@@ -22,6 +23,9 @@ class _WearHomePageState extends State<WearHomePage> {
   int? _temperature; // null = 不限温度
 
   OutfitItem? _picked;
+
+  // 备选列表（最近5 次 roll）
+  final List<OutfitItem> _candidates = [];
   bool _isPicking = false;
 
   // 老虎机状态
@@ -112,6 +116,7 @@ class _WearHomePageState extends State<WearHomePage> {
           _picked = selected;
           _isPicking = false;
         });
+        _pushCandidate();
       });
     });
   }
@@ -127,6 +132,20 @@ class _WearHomePageState extends State<WearHomePage> {
     return (items, spinBase + targetIndex);
   }
 
+  /// 加入备选（名称去重，最多 5 条）
+  void _pushCandidate() {
+    final p = _picked;
+    if (p == null) return;
+    _candidates.removeWhere((x) => x.name == p.name);
+    _candidates.insert(0, p);
+    if (_candidates.length > 5) {
+      _candidates.removeRange(5, _candidates.length);
+    }
+  }
+
+  void _selectCandidate(OutfitItem item) {
+    setState(() => _picked = item);
+  }
   void _swap() {
     if (_isPicking || _picked == null) return;
     final pool = WearDataStore.getFilteredOutfits(
@@ -146,7 +165,10 @@ class _WearHomePageState extends State<WearHomePage> {
       final idx = pool.indexOf(next);
       next = pool[(idx + 1) % pool.length];
     }
-    setState(() => _picked = next);
+    setState(() {
+      _picked = next;
+      if (_candidates.isNotEmpty) _candidates[0] = next;
+    });
   }
 
   void _showToast(String msg) {
@@ -183,7 +205,21 @@ class _WearHomePageState extends State<WearHomePage> {
           _buildTempSelector(),
           const SizedBox(height: 24),
           _buildResultCard(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // 备选列表（最近几次 roll）
+          if (!_rolling && _candidates.isNotEmpty) ...[
+            CandidatesBar<OutfitItem>(
+              items: _candidates,
+              selected: _candidates.isNotEmpty ? _candidates.first : null,
+              emojiOf: (p) => p.emoji,
+              nameOf: (p) => p.name,
+              onSelect: _selectCandidate,
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
             height: 52,
