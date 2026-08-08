@@ -10,24 +10,16 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  late final TextEditingController _amapKeyCtrl;
-  late final TextEditingController _deepseekKeyCtrl;
   late final TextEditingController _avoidCustomCtrl;
-  bool _amapKeyVisible = false;
-  bool _deepseekKeyVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _amapKeyCtrl = TextEditingController(text: DataStore.settings.amapKey);
-    _deepseekKeyCtrl = TextEditingController(text: DataStore.settings.deepseekKey);
     _avoidCustomCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
-    _amapKeyCtrl.dispose();
-    _deepseekKeyCtrl.dispose();
     _avoidCustomCtrl.dispose();
     super.dispose();
   }
@@ -165,76 +157,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     setState(() => DataStore.settings.seasonRecommend = v);
                     DataStore.save();
                   },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Text('API 配置（可留空）', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
-                  child: Text('附近美食、AI 分析需要填写对应 Key，到对应官网免费申请', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: TextField(
-                    controller: _amapKeyCtrl,
-                    obscureText: !_amapKeyVisible,
-                    decoration: InputDecoration(
-                      labelText: '高德地图 Key',
-                      hintText: 'console.amap.com 申请（Web服务 Key）',
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _amapKeyVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: 20,
-                        ),
-                        onPressed: () => setState(
-                            () => _amapKeyVisible = !_amapKeyVisible),
-                      ),
-                    ),
-                    onChanged: (_) {
-                      DataStore.settings.amapKey = _amapKeyCtrl.text.trim();
-                      DataStore.save();
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-                  child: TextField(
-                    controller: _deepseekKeyCtrl,
-                    obscureText: !_deepseekKeyVisible,
-                    decoration: InputDecoration(
-                      labelText: 'DeepSeek Key',
-                      hintText: 'platform.deepseek.com 申请',
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _deepseekKeyVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: 20,
-                        ),
-                        onPressed: () => setState(
-                            () => _deepseekKeyVisible = !_deepseekKeyVisible),
-                      ),
-                    ),
-                    onChanged: (_) {
-                      DataStore.settings.deepseekKey = _deepseekKeyCtrl.text.trim();
-                      DataStore.save();
-                    },
-                  ),
                 ),
               ],
             ),

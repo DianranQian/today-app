@@ -18,6 +18,24 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _busy = false;
+  bool _amapKeyVisible = false;
+  bool _deepseekKeyVisible = false;
+  late final TextEditingController _amapKeyCtrl;
+  late final TextEditingController _deepseekKeyCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _amapKeyCtrl = TextEditingController(text: AppSettings.amapKey);
+    _deepseekKeyCtrl = TextEditingController(text: AppSettings.deepseekKey);
+  }
+
+  @override
+  void dispose() {
+    _amapKeyCtrl.dispose();
+    _deepseekKeyCtrl.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickColor(AppId app) async {
     final selected = await showDialog<String>(
@@ -197,6 +215,78 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     onTap: () => _pickColor(app),
                   ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Text('API 配置（可留空）',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
+                  child: Text('附近美食、AI 分析需要对应 Key，到官网免费申请',
+                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: TextField(
+                    controller: _amapKeyCtrl,
+                    obscureText: !_amapKeyVisible,
+                    decoration: InputDecoration(
+                      labelText: '高德地图 Key',
+                      hintText: 'console.amap.com 申请（Web服务 Key）',
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _amapKeyVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 20,
+                        ),
+                        onPressed: () => setState(
+                            () => _amapKeyVisible = !_amapKeyVisible),
+                      ),
+                    ),
+                    onChanged: (_) {
+                      AppSettings.amapKey = _amapKeyCtrl.text.trim();
+                      AppSettings.save();
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                  child: TextField(
+                    controller: _deepseekKeyCtrl,
+                    obscureText: !_deepseekKeyVisible,
+                    decoration: InputDecoration(
+                      labelText: 'DeepSeek Key',
+                      hintText: 'platform.deepseek.com 申请',
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _deepseekKeyVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 20,
+                        ),
+                        onPressed: () => setState(
+                            () => _deepseekKeyVisible = !_deepseekKeyVisible),
+                      ),
+                    ),
+                    onChanged: (_) {
+                      AppSettings.deepseekKey = _deepseekKeyCtrl.text.trim();
+                      AppSettings.save();
+                    },
+                  ),
+                ),
               ],
             ),
           ),

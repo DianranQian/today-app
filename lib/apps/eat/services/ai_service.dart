@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../data/data_store.dart';
+import '../../../core/app_settings.dart';
 import 'amap_api.dart';
 
 class AiService {
   static const _endpoint = 'https://api.deepseek.com/chat/completions';
 
-  static String get _apiKey => DataStore.settings.deepseekKey.trim();
+  static String get _apiKey => AppSettings.deepseekKey.trim();
 
   static bool get hasKey => _apiKey.isNotEmpty;
 

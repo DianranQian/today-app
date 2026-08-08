@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme.dart';
 
-/// 全局设置：四子应用主题色（存 prefs 键 app_settings）
+/// 全局设置：四子应用主题色 + API Key（存 prefs）
 class AppSettings {
   static String eatColor = '橙';
   static String goColor = '蓝';
   static String wearColor = '粉';
   static String contactColor = '红';
+  static String amapKey = '';
+  static String deepseekKey = '';
 
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -16,6 +18,8 @@ class AppSettings {
     goColor = prefs.getString('app_color_go') ?? '蓝';
     wearColor = prefs.getString('app_color_wear') ?? '粉';
     contactColor = prefs.getString('app_color_contact') ?? '红';
+    amapKey = prefs.getString('app_amap_key') ?? '';
+    deepseekKey = prefs.getString('app_deepseek_key') ?? '';
   }
 
   static Future<void> save() async {
@@ -24,6 +28,8 @@ class AppSettings {
     prefs.setString('app_color_go', goColor);
     prefs.setString('app_color_wear', wearColor);
     prefs.setString('app_color_contact', contactColor);
+    prefs.setString('app_amap_key', amapKey);
+    prefs.setString('app_deepseek_key', deepseekKey);
   }
 
   /// 取子应用主题种子色

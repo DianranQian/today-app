@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../data/data_store.dart';
+import '../../../core/app_settings.dart';
 
 class NearbyPoi {
   final String name;
@@ -40,7 +40,7 @@ class NearbyPoi {
 class AmapApi {
   static const _base = 'https://restapi.amap.com/v3/place/around';
 
-  static String get _key => DataStore.settings.amapKey.trim();
+  static String get _key => AppSettings.amapKey.trim();
 
   static bool get hasKey => _key.isNotEmpty;
 
