@@ -5,7 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Today App</string>
+	<string>今天做什么</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>用于「附近」功能定位并推荐周边的餐厅与去处</string>
+	<key>NSCameraUsageDescription</key>
+	<string>用于拍摄照片添加到菜谱/去处/穿搭/联系人</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>用于从相册选择照片添加到菜谱/去处/穿搭/联系人</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
