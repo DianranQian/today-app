@@ -55,6 +55,22 @@ class BackupService {
     return file;
   }
 
+  /// 导出纯 JSON（数据，不含照片）
+  static Future<File> exportJson() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = <String, dynamic>{};
+    for (final key in _prefKeys) {
+      final v = prefs.getString(key);
+      if (v != null) data[key] = v;
+    }
+    final docs = await getApplicationDocumentsDirectory();
+    final ts = DateTime.now().toIso8601String().split('.').first
+        .replaceAll(':', '').replaceAll('-', '').replaceAll('T', '_');
+    final file = File('${docs.path}${Platform.pathSeparator}today_data_$ts.json');
+    file.writeAsStringSync(jsonEncode(data));
+    return file;
+  }
+
   /// 导入：解析 ZIP 或纯 JSON 备份，恢复数据与图片。
   /// 返回恢复的键数量；数据写入后需重启应用生效。
   static Future<int> importBackup(String path) async {

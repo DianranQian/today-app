@@ -98,17 +98,22 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> _export() async {
+  /// 通用导出（JSON 纯数据 / ZIP 含照片）
+  Future<void> _exportAs(bool withImages) async {
     setState(() => _busy = true);
     try {
-      final file = await BackupService.exportBackup();
+      final file = withImages
+          ? await BackupService.exportBackup()
+          : await BackupService.exportJson();
       if (!mounted) return;
       setState(() => _busy = false);
       final action = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('导出完成'),
-          content: const Text('备份已生成，包含全部数据与照片。可以分享保存，或存入下载目录。'),
+          content: Text(withImages
+              ? '备份已生成（数据 + 照片）。可以分享保存，或存入下载目录。'
+              : 'JSON 数据已生成（不含照片）。可以分享保存，或存入下载目录。'),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'share'),
@@ -296,9 +301,16 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.upload_file, color: Colors.orange),
-                  title: const Text('导出数据备份'),
+                  title: const Text('导出 ZIP 备份'),
                   subtitle: const Text('全部数据 + 照片，打包为 ZIP'),
-                  onTap: _busy ? null : _export,
+                  onTap: _busy ? null : () => _exportAs(true),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.code, color: Colors.orange),
+                  title: const Text('导出 JSON 数据'),
+                  subtitle: const Text('纯数据（不含照片），轻量易分享'),
+                  onTap: _busy ? null : () => _exportAs(false),
                 ),
                 const Divider(height: 1),
                 ListTile(
