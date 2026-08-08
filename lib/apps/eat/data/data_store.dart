@@ -27,6 +27,9 @@ class DataStore {
   static List<HistoryRecord> history = [];
   static AppSettings settings = AppSettings();
 
+  /// 忌口/偏好排除词（命中食材则跳过推荐）
+  static List<String> avoidIngredients = [];
+
   static const int dataVersion = 2;
 
   static String _sanitize(String s) {
@@ -35,6 +38,12 @@ class DataStore {
         .replaceAll(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'), '')
         .trim();
   }
+
+  /// 常用忌口词表（设置页多选用）
+  static const avoidPresets = [
+    '辣', '香菜', '葱', '蒜', '内脏', '海鲜', '鱼', '虾', '猪肉', '牛肉',
+    '羊肉', '鸡蛋', '豆制品', '菌菇', '花生', '芝麻',
+  ];
 
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -122,6 +131,17 @@ class DataStore {
         settings = AppSettings();
       }
     }
+
+    // 忌口词表
+    final avoidJson = prefs.getString('eat_avoid');
+    if (avoidJson != null && avoidJson.isNotEmpty) {
+      try {
+        avoidIngredients =
+            (jsonDecode(avoidJson) as List).cast<String>();
+      } catch (_) {
+        avoidIngredients = [];
+      }
+    }
   }
 
   static Future<void> saveNow([SharedPreferences? prefsInstance]) async {
@@ -131,6 +151,7 @@ class DataStore {
     prefs.setString('drinks', jsonEncode(drinks.map((e) => e.toJson()).toList()));
     prefs.setString('history', jsonEncode(history.map((e) => e.toJson()).toList()));
     prefs.setString('settings', jsonEncode(settings.toJson()));
+    prefs.setString('eat_avoid', jsonEncode(avoidIngredients));
   }
 
   static Future<void> save() => saveNow();
@@ -145,6 +166,13 @@ class DataStore {
     }
     if (cookMode != null && cookMode != CookMode.all) {
       result = result.where((d) => d.cookMode == cookMode || d.cookMode == CookMode.all).toList();
+    }
+    // 忌口过滤：原料命中忌口词的菜不推荐
+    if (avoidIngredients.isNotEmpty) {
+      result = result
+          .where((d) => !d.ingredients
+              .any((i) => avoidIngredients.any((a) => i.contains(a))))
+          .toList();
     }
     return result;
   }

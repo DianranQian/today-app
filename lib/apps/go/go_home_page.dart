@@ -14,6 +14,7 @@ class GoHomePage extends StatefulWidget {
 
 class _GoHomePageState extends State<GoHomePage> {
   PlaceType _selectedType = PlaceType.all;
+  int? _maxPriceTier; // 预算上限（1-3），null=不限
 
   PlaceItem? _picked;
   bool _isPicking = false;
@@ -35,6 +36,9 @@ class _GoHomePageState extends State<GoHomePage> {
     setState(() => _isPicking = true);
 
     var pool = GoDataStore.getFilteredPlaces(type: _selectedType);
+    if (_maxPriceTier != null) {
+      pool = pool.where((p) => p.priceTier <= _maxPriceTier!).toList();
+    }
     final recent = GoDataStore.getRecentPlaceNames();
     if (pool.any((p) => !recent.contains(p.name))) {
       pool = pool.where((p) => !recent.contains(p.name)).toList();
@@ -99,7 +103,10 @@ class _GoHomePageState extends State<GoHomePage> {
 
   void _swap() {
     if (_isPicking || _picked == null) return;
-    final pool = GoDataStore.getFilteredPlaces(type: _selectedType);
+    var pool = GoDataStore.getFilteredPlaces(type: _selectedType);
+    if (_maxPriceTier != null) {
+      pool = pool.where((p) => p.priceTier <= _maxPriceTier!).toList();
+    }
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _picked?.name) {
       _showToast('当前条件下就这一个去处啦');
@@ -139,6 +146,8 @@ class _GoHomePageState extends State<GoHomePage> {
           _buildSectionTitle('去哪', '选择类型'),
           const SizedBox(height: 8),
           _buildTypeSelector(),
+          const SizedBox(height: 12),
+          _buildBudgetSelector(),
           const SizedBox(height: 24),
           _buildResultCard(),
           const SizedBox(height: 20),
@@ -176,6 +185,43 @@ class _GoHomePageState extends State<GoHomePage> {
         Text(subtitle,
             style: TextStyle(fontSize: 13, color: Colors.grey[500])),
       ],
+    );
+  }
+
+
+  /// 预算上限选择
+  Widget _buildBudgetSelector() {
+    const options = <int?, String>{
+      null: '不限',
+      1: '¥ 低',
+      2: '¥¥ 中',
+      3: '¥¥¥ 高',
+    };
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: options.entries.map((e) {
+          final isSelected = _maxPriceTier == e.key;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(e.value),
+              selected: isSelected,
+              onSelected: _isPicking
+                  ? null
+                  : (_) => setState(() {
+                        _maxPriceTier = e.key;
+                        _picked = null;
+                      }),
+              selectedColor: Theme.of(context).colorScheme.primary,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : null,
+                fontWeight: isSelected ? FontWeight.w600 : null,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 

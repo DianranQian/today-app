@@ -12,6 +12,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late final TextEditingController _amapKeyCtrl;
   late final TextEditingController _deepseekKeyCtrl;
+  late final TextEditingController _avoidCustomCtrl;
   bool _amapKeyVisible = false;
   bool _deepseekKeyVisible = false;
 
@@ -20,13 +21,108 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
     _amapKeyCtrl = TextEditingController(text: DataStore.settings.amapKey);
     _deepseekKeyCtrl = TextEditingController(text: DataStore.settings.deepseekKey);
+    _avoidCustomCtrl = TextEditingController();
   }
 
   @override
   void dispose() {
     _amapKeyCtrl.dispose();
     _deepseekKeyCtrl.dispose();
+    _avoidCustomCtrl.dispose();
     super.dispose();
+  }
+
+  void _toggleAvoid(String word) {
+    setState(() {
+      if (DataStore.avoidIngredients.contains(word)) {
+        DataStore.avoidIngredients.remove(word);
+      } else {
+        DataStore.avoidIngredients.add(word);
+      }
+    });
+    DataStore.save();
+  }
+
+  void _addCustomAvoid() {
+    final w = _avoidCustomCtrl.text.trim();
+    if (w.isEmpty) return;
+    if (!DataStore.avoidIngredients.contains(w)) {
+      setState(() => DataStore.avoidIngredients.add(w));
+      DataStore.save();
+    }
+    _avoidCustomCtrl.clear();
+  }
+
+  /// 忌口设置卡
+  Widget _buildAvoidCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('忌口/不吃',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 4),
+            Text('选中的食材不会出现在推荐里',
+                style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: DataStore.avoidPresets.map((w) {
+                final selected = DataStore.avoidIngredients.contains(w);
+                return FilterChip(
+                  label: Text(w),
+                  selected: selected,
+                  onSelected: (_) => _toggleAvoid(w),
+                  selectedColor: Theme.of(context).colorScheme.primary,
+                  labelStyle: TextStyle(
+                    color: selected ? Colors.white : null,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _avoidCustomCtrl,
+                    decoration: const InputDecoration(
+                      labelText: '自定义忌口',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    onSubmitted: (_) => _addCustomAvoid(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _addCustomAvoid,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('添加'),
+                ),
+              ],
+            ),
+            if (DataStore.avoidIngredients.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: DataStore.avoidIngredients.map((w) => Chip(
+                  label: Text(w, style: const TextStyle(fontSize: 12)),
+                  onDeleted: () => _toggleAvoid(w),
+                )).toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -143,6 +239,8 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
           ),
+          const SizedBox(height: 12),
+          _buildAvoidCard(),
           const SizedBox(height: 12),
           Card(
             child: Column(
