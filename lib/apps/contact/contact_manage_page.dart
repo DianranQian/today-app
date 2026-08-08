@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/profile_dialog.dart';
 import '../../core/image_helper.dart';
 import 'contact_models.dart';
 import 'contact_data_store.dart';
@@ -94,6 +95,21 @@ class _ContactManagePageState extends State<ContactManagePage> {
     );
   }
 
+  /// 配置集：另存为 / 应用 / 导出
+  Future<void> _openProfiles() async {
+    await showProfileDialog(
+      context,
+      appId: 'contact',
+      currentItems: ContactDataStore.contacts.map((c) => c.toJson()).toList(),
+      applyItems: (items) {
+        setState(() {
+          ContactDataStore.contacts = items.map((e) => ContactItem.fromJson(e)).toList();
+          ContactDataStore.save();
+        });
+      },
+      exportBaseName: 'contact_contacts',
+    );
+  }
   void _showToast(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -109,6 +125,13 @@ class _ContactManagePageState extends State<ContactManagePage> {
         title: const Text('管理联系人'),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          IconButton(
+            tooltip: '配置集',
+            icon: const Icon(Icons.folder_copy_outlined),
+            onPressed: _openProfiles,
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

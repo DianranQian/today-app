@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../core/season.dart';
 import '../../core/image_helper.dart';
+import 'dart:convert';
+import '../../core/profile_store.dart';
+import '../../core/services/ai_service.dart';
+import '../../core/widgets/profile_dialog.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
 
@@ -93,6 +97,42 @@ class _WearManagePageState extends State<WearManagePage> {
     );
   }
 
+  /// 配置集：另存为 / 应用 / 导出 / AI 汇总
+  Future<void> _openProfiles() async {
+    await showProfileDialog(
+      context,
+      appId: 'wear',
+      currentItems: WearDataStore.outfits.map((o) => o.toJson()).toList(),
+      applyItems: (items) {
+        setState(() {
+          WearDataStore.outfits = items.map((e) => OutfitItem.fromJson(e)).toList();
+          WearDataStore.save();
+        });
+      },
+      aiCurate: _aiCurateWear,
+      exportBaseName: 'wear_outfits',
+    );
+  }
+
+  /// AI 汇总：挑选一组适合日常的穿搭，存为「AI精选」配置
+  Future<String> _aiCurateWear() async {
+    final names = WearDataStore.outfits.map((o) => o.name).toList();
+    final raw = await AiService.chat(
+      '你是穿搭顾问。从给定的穿搭列表中挑选 10 套适合日常出门的搭配，'
+          '只输出 JSON 字符串数组，不要输出任何其他内容。',
+      names.join('、'),
+    );
+    final picked = (jsonDecode(raw.trim()) as List).cast<String>();
+    final items = WearDataStore.outfits
+        .where((o) => picked.contains(o.name))
+        .map((o) => o.toJson())
+        .toList();
+    if (items.isEmpty) {
+      throw Exception('AI 返回内容无法匹配穿搭，请重试');
+    }
+    await ProfileStore.save('wear', 'AI精选', items);
+    return 'AI精选';
+  }
   void _showToast(String msg) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +148,13 @@ class _WearManagePageState extends State<WearManagePage> {
         title: const Text('管理穿搭'),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          IconButton(
+            tooltip: '配置集',
+            icon: const Icon(Icons.folder_copy_outlined),
+            onPressed: _openProfiles,
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
+import '../../../core/profile_store.dart';
+import '../../../core/services/ai_service.dart';
+import '../../../core/widgets/profile_dialog.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
 
@@ -143,6 +147,45 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
     );
+  }
+
+  /// 配置集：另存为 / 应用 / 导出 / AI 汇总
+  Future<void> _openProfiles() async {
+    await showProfileDialog(
+      context,
+      appId: 'eat',
+      currentItems:
+          DataStore.dishes.map((d) => d.toJson()).toList(),
+      applyItems: (items) {
+        setState(() {
+          DataStore.dishes =
+              items.map((e) => FoodItem.fromJson(e)).toList();
+          DataStore.save();
+        });
+      },
+      aiCurate: _aiCurateEat,
+      exportBaseName: 'eat_dishes',
+    );
+  }
+
+  /// AI 汇总：从当前菜库挑选一组适合周末的菜，存为「AI精选」配置
+  Future<String> _aiCurateEat() async {
+    final names = DataStore.dishes.map((d) => d.name).toList();
+    final raw = await AiService.chat(
+      '你是家常菜谱策划。从给定的菜名列表中挑选 10 道适合周末在家做的菜，'
+          '只输出 JSON 字符串数组，不要输出任何其他内容。',
+      names.join('、'),
+    );
+    final picked = (jsonDecode(raw.trim()) as List).cast<String>();
+    final items = DataStore.dishes
+        .where((d) => picked.contains(d.name))
+        .map((d) => d.toJson())
+        .toList();
+    if (items.isEmpty) {
+      throw Exception('AI 返回内容无法匹配菜谱，请重试');
+    }
+    await ProfileStore.save('eat', 'AI精选', items);
+    return 'AI精选';
   }
 
   /// 选图行：缩略图预览 + 选图/清除按钮
@@ -297,6 +340,11 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
       appBar: AppBar(
         title: const Text('管理菜单'),
         actions: [
+          IconButton(
+            tooltip: '配置集',
+            icon: const Icon(Icons.folder_copy_outlined),
+            onPressed: _openProfiles,
+          ),
           IconButton(
             tooltip: '导入菜谱',
             icon: const Icon(Icons.file_upload_outlined),

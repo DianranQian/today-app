@@ -10,6 +10,34 @@ class AiService {
 
   static bool get hasKey => _apiKey.isNotEmpty;
 
+  /// 通用对话（配置 AI 汇总等场景）
+  static Future<String> chat(String systemPrompt, String userContent) async {
+    if (!hasKey) {
+      throw Exception('尚未配置 DeepSeek Key，请到「通用设置」中填写');
+    }
+    final resp = await http.post(
+      Uri.parse(_endpoint),
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'Bearer $_apiKey',
+      },
+      body: jsonEncode({
+        'model': 'deepseek-chat',
+        'temperature': 0.8,
+        'messages': [
+          {'role': 'system', 'content': systemPrompt},
+          {'role': 'user', 'content': userContent},
+        ],
+      }),
+    ).timeout(const Duration(seconds: 30));
+    if (resp.statusCode != 200) {
+      throw Exception('AI 请求失败（HTTP ${resp.statusCode}）：'
+          '${utf8.decode(resp.bodyBytes, allowMalformed: true)}');
+    }
+    final json = jsonDecode(utf8.decode(resp.bodyBytes));
+    return json['choices'][0]['message']['content'] as String;
+  }
+
   static String buildPoiPrompt(List<NearbyPoi> pois, {String label = '餐饮'}) {
     final top = pois.take(15).toList();
     final lines = List.generate(top.length, (i) {
