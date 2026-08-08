@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../../core/app_settings.dart';
+import '../app_settings.dart';
 import 'amap_api.dart';
 
 class AiService {
@@ -10,25 +10,34 @@ class AiService {
 
   static bool get hasKey => _apiKey.isNotEmpty;
 
-  static String buildPoiPrompt(List<NearbyPoi> pois) {
+  static String buildPoiPrompt(List<NearbyPoi> pois, {String label = '餐饮'}) {
     final top = pois.take(15).toList();
     final lines = List.generate(top.length, (i) {
       final p = top[i];
       final rating = p.rating.isNotEmpty ? p.rating : '未知';
       final cost = p.cost.isNotEmpty ? '¥${p.cost}' : '未知';
-      return '${i + 1}. ${p.name}（${p.type.isNotEmpty ? p.type : '餐饮'}）'
+      return '${i + 1}. ${p.name}（${p.type.isNotEmpty ? p.type : label}）'
           ' 评分 $rating，人均 $cost，距离 ${p.distance}m'
           '${p.address.isNotEmpty ? '，地址：${p.address}' : ''}';
     }).join('\n');
     return lines;
   }
 
-  static Future<String> analyzeNearby(List<NearbyPoi> pois) async {
+  /// 分析附近 POI。
+  /// [systemPrompt] 控制 AI 角色（吃什么：推荐餐厅；去哪：推荐去处）。
+  /// [poiLabel] 展示用类型名。
+  static Future<String> analyzeNearby(
+    List<NearbyPoi> pois, {
+    String systemPrompt =
+        '你是美食推荐助手。根据用户附近的餐厅 POI 数据，推荐 3 家最值得吃的，'
+            '每家给出推荐理由和适合的场景。用中文回答，语言简洁。',
+    String poiLabel = '餐饮',
+  }) async {
     if (!hasKey) {
       throw Exception('尚未配置 DeepSeek Key，请到「设置」中填写');
     }
     if (pois.isEmpty) {
-      throw Exception('附近暂无餐厅数据，请先搜索');
+      throw Exception('附近暂无数据，请先搜索');
     }
     final resp = await http.post(
       Uri.parse(_endpoint),
@@ -40,15 +49,10 @@ class AiService {
         'model': 'deepseek-chat',
         'temperature': 1.2,
         'messages': [
-          {
-            'role': 'system',
-            'content': '你是美食推荐助手。根据用户附近的餐厅 POI 数据，'
-                '推荐 3 家最值得吃的，每家给出推荐理由和适合的场景。'
-                '用中文回答，语言简洁，不要使用 Markdown 列表外的格式。',
-          },
+          {'role': 'system', 'content': systemPrompt},
           {
             'role': 'user',
-            'content': '附近餐厅数据如下：\n${buildPoiPrompt(pois)}',
+            'content': '附近 POI 数据如下：\n${buildPoiPrompt(pois, label: poiLabel)}',
           },
         ],
       }),

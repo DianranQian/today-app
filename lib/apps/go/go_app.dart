@@ -4,6 +4,7 @@ import '../../core/theme.dart';
 import 'go_data_store.dart';
 import 'go_home_page.dart';
 import 'go_manage_page.dart';
+import 'go_nearby_page.dart';
 
 /// 「今天去哪」子应用：首页 + 管理 两个 Tab
 class GoAppPage extends StatefulWidget {
@@ -39,6 +40,7 @@ class _GoAppPageState extends State<GoAppPage> {
         index: _currentIndex,
         children: const [
           GoHomePage(),
+          GoNearbyPage(),
           GoManagePage(),
         ],
       ),
@@ -50,6 +52,10 @@ class _GoAppPageState extends State<GoAppPage> {
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
               label: '首页'),
+          NavigationDestination(
+              icon: Icon(Icons.near_me_outlined),
+              selectedIcon: Icon(Icons.near_me),
+              label: '附近'),
           NavigationDestination(
               icon: Icon(Icons.place_outlined),
               selectedIcon: Icon(Icons.place),

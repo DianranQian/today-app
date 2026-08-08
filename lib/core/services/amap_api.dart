@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../../../core/app_settings.dart';
+import '../app_settings.dart';
 
 class NearbyPoi {
   final String name;

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import '../../../core/services/amap_api.dart';
-import '../../../core/services/ai_service.dart';
+import '../../core/services/amap_api.dart';
+import '../../core/services/ai_service.dart';
 
-class NearbyPage extends StatefulWidget {
-  const NearbyPage({super.key});
+/// 「今天去哪」附近：定位 + 周边去处 + AI 分析（提示词针对去处）
+class GoNearbyPage extends StatefulWidget {
+  const GoNearbyPage({super.key});
 
   @override
-  State<NearbyPage> createState() => _NearbyPageState();
+  State<GoNearbyPage> createState() => _GoNearbyPageState();
 }
 
-class _NearbyPageState extends State<NearbyPage> {
+class _GoNearbyPageState extends State<GoNearbyPage> {
   List<NearbyPoi> _pois = [];
   bool _loading = false;
   String? _error;
@@ -30,7 +31,7 @@ class _NearbyPageState extends State<NearbyPage> {
     }
     if (permission == PermissionStatus.denied ||
         permission == PermissionStatus.deniedForever) {
-      throw Exception('需要定位权限才能搜索附近美食，请到系统设置中授权');
+      throw Exception('需要定位权限才能搜索附近去处，请到系统设置中授权');
     }
     final pos = await location.getLocation();
     if (pos.latitude == null || pos.longitude == null) {
@@ -52,8 +53,9 @@ class _NearbyPageState extends State<NearbyPage> {
       setState(() {
         _pois = pois;
         _loading = false;
-        _locationText = '当前位置：${pos.latitude!.toStringAsFixed(4)}, ${pos.longitude!.toStringAsFixed(4)}';
-        if (pois.isEmpty) _error = '附近 3 公里内没有找到餐厅';
+        _locationText =
+            '当前位置：${pos.latitude!.toStringAsFixed(4)}, ${pos.longitude!.toStringAsFixed(4)}';
+        if (pois.isEmpty) _error = '附近 3 公里内没有找到去处';
       });
     } catch (e) {
       if (!mounted) return;
@@ -67,7 +69,13 @@ class _NearbyPageState extends State<NearbyPage> {
   Future<void> _analyze() async {
     setState(() => _aiLoading = true);
     try {
-      final result = await AiService.analyzeNearby(_pois);
+      final result = await AiService.analyzeNearby(
+        _pois,
+        systemPrompt: '你是出行推荐助手。根据用户附近的 POI 数据（餐饮/商场/公园等），'
+            '推荐 3 个最值得去的去处，说明类型、推荐理由和适合的场景（约会/遛娃/朋友聚会等）。'
+            '用中文回答，语言简洁。',
+        poiLabel: '去处',
+      );
       if (!mounted) return;
       setState(() {
         _aiResult = result;
@@ -87,8 +95,13 @@ class _NearbyPageState extends State<NearbyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
-      appBar: AppBar(title: const Text('附近美食')),
+      appBar: AppBar(
+        title: const Text('附近去处'),
+        centerTitle: true,
+        toolbarHeight: 44,
+      ),
       body: Column(
         children: [
           Padding(
@@ -108,9 +121,9 @@ class _NearbyPageState extends State<NearbyPage> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.my_location),
-                    label: Text(_loading ? '正在搜索...' : '定位并搜索附近美食'),
+                    label: Text(_loading ? '正在搜索...' : '定位并搜索附近去处'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
@@ -137,10 +150,10 @@ class _NearbyPageState extends State<NearbyPage> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.auto_awesome, size: 18),
-                      label: Text(_aiLoading ? 'AI 思考中...' : 'AI 智能分析：附近值得吃哪家？'),
+                      label: Text(_aiLoading ? 'AI 思考中...' : 'AI 推荐：附近值得去哪？'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF6C4FBF),
-                        side: const BorderSide(color: Color(0xFF6C4FBF)),
+                        foregroundColor: primary,
+                        side: BorderSide(color: primary),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(22),
                         ),
@@ -151,25 +164,27 @@ class _NearbyPageState extends State<NearbyPage> {
                 if (_aiResult != null) ...[
                   const SizedBox(height: 8),
                   Card(
-                    color: const Color(0xFFF5F1FF),
+                    color: primary.withAlpha(12),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.auto_awesome, size: 16, color: Color(0xFF6C4FBF)),
-                              SizedBox(width: 6),
-                              Text('AI 推荐',
+                              Icon(Icons.auto_awesome,
+                                  size: 16, color: primary),
+                              const SizedBox(width: 6),
+                              const Text('AI 推荐',
                                   style: TextStyle(
                                       fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF6C4FBF))),
+                                      fontWeight: FontWeight.w600)),
                             ],
                           ),
                           const SizedBox(height: 6),
-                          SelectableText(_aiResult!, style: const TextStyle(fontSize: 13, height: 1.6)),
+                          SelectableText(_aiResult!,
+                              style: const TextStyle(
+                                  fontSize: 13, height: 1.6)),
                         ],
                       ),
                     ),
@@ -190,13 +205,15 @@ class _NearbyPageState extends State<NearbyPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('🍽️', style: TextStyle(fontSize: 48)),
+                        const Text('📍', style: TextStyle(fontSize: 48)),
                         const SizedBox(height: 8),
-                        Text('搜索后展示附近餐厅',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+                        Text('搜索后展示附近去处',
+                            style:
+                                TextStyle(color: Colors.grey[500], fontSize: 14)),
                         const SizedBox(height: 4),
-                        Text('支持按评分排序，并可用 AI 帮你分析',
-                            style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                        Text('支持 AI 分析帮你决定去哪',
+                            style:
+                                TextStyle(color: Colors.grey[400], fontSize: 12)),
                       ],
                     ),
                   )
@@ -208,7 +225,7 @@ class _NearbyPageState extends State<NearbyPage> {
                       final rating = double.tryParse(p.rating) ?? 0;
                       return Card(
                         child: ListTile(
-                          leading: const Text('🍽️', style: TextStyle(fontSize: 24)),
+                          leading: const Text('📍', style: TextStyle(fontSize: 24)),
                           title: Text(p.name,
                               style: const TextStyle(fontWeight: FontWeight.w600)),
                           subtitle: Column(
@@ -226,7 +243,8 @@ class _NearbyPageState extends State<NearbyPage> {
                                 Text(p.address,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.grey)),
                             ],
                           ),
                           trailing: rating > 0
@@ -234,7 +252,7 @@ class _NearbyPageState extends State<NearbyPage> {
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.primary))
+                                      color: primary))
                               : null,
                         ),
                       );
