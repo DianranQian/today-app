@@ -1,0 +1,723 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import '../models/food_item.dart';
+import '../data/data_store.dart';
+
+class ManagePage extends StatefulWidget {
+  const ManagePage({super.key});
+
+  @override
+  State<ManagePage> createState() => _ManagePageState();
+}
+
+class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  final _dishNameCtrl = TextEditingController();
+  final _dishEmojiCtrl = TextEditingController();
+  final _dishSearchCtrl = TextEditingController();
+  MealTime _dishMeal = MealTime.all;
+  CookMode _dishMode = CookMode.all;
+  final _dishIngredientsCtrl = TextEditingController();
+
+  final _stapleNameCtrl = TextEditingController();
+  final _stapleEmojiCtrl = TextEditingController();
+  final _stapleSearchCtrl = TextEditingController();
+  MealTime _stapleMeal = MealTime.all;
+  final _stapleIngredientsCtrl = TextEditingController();
+
+  final _drinkNameCtrl = TextEditingController();
+  final _drinkEmojiCtrl = TextEditingController();
+  final _drinkSearchCtrl = TextEditingController();
+  MealTime _drinkMeal = MealTime.all;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _dishNameCtrl.dispose();
+    _dishEmojiCtrl.dispose();
+    _dishSearchCtrl.dispose();
+    _dishIngredientsCtrl.dispose();
+    _stapleNameCtrl.dispose();
+    _stapleEmojiCtrl.dispose();
+    _stapleSearchCtrl.dispose();
+    _stapleIngredientsCtrl.dispose();
+    _drinkNameCtrl.dispose();
+    _drinkEmojiCtrl.dispose();
+    _drinkSearchCtrl.dispose();
+    super.dispose();
+  }
+
+  void _addDish() {
+    final name = _dishNameCtrl.text.trim();
+    if (name.isEmpty) {
+      _showToast('请输入菜名');
+      return;
+    }
+    if (DataStore.dishes.any((d) => d.name == name)) {
+      _showToast('这道菜已经存在了');
+      return;
+    }
+    DataStore.dishes.add(FoodItem(
+      name: name,
+      emoji: _dishEmojiCtrl.text.trim().isNotEmpty ? _dishEmojiCtrl.text.trim() : '🍽️',
+      mealTime: _dishMeal,
+      cookMode: _dishMode,
+      ingredients: _dishIngredientsCtrl.text
+          .split(RegExp(r"[,，、\\s]+"))
+          .where((s) => s.trim().isNotEmpty)
+          .map((s) => s.trim())
+          .toList(),
+    ));
+    DataStore.save();
+    _dishNameCtrl.clear();
+    _dishEmojiCtrl.clear();
+    _dishIngredientsCtrl.clear();
+    setState(() {});
+    _showToast('已添加 ');
+  }
+
+  void _addStaple() {
+    final name = _stapleNameCtrl.text.trim();
+    if (name.isEmpty) {
+      _showToast('请输入主食名称');
+      return;
+    }
+    if (DataStore.staples.any((s) => s.name == name)) {
+      _showToast('这个主食已经存在了');
+      return;
+    }
+    DataStore.staples.add(FoodItem(
+      name: name,
+      emoji: _stapleEmojiCtrl.text.trim().isNotEmpty ? _stapleEmojiCtrl.text.trim() : '🍚',
+      mealTime: _stapleMeal,
+      cookMode: CookMode.all,
+      isStaple: true,
+      ingredients: _stapleIngredientsCtrl.text
+          .split(RegExp(r"[,，、\\s]+"))
+          .where((s) => s.trim().isNotEmpty)
+          .map((s) => s.trim())
+          .toList(),
+    ));
+    DataStore.save();
+    _stapleNameCtrl.clear();
+    _stapleEmojiCtrl.clear();
+    _stapleIngredientsCtrl.clear();
+    setState(() {});
+    _showToast('已添加 ');
+  }
+
+  void _deleteDish(int index) {
+    final name = DataStore.dishes[index].name;
+    DataStore.dishes.removeAt(index);
+    DataStore.save();
+    setState(() {});
+    _showToast('已删除 $name');
+  }
+
+  void _deleteStaple(int index) {
+    final name = DataStore.staples[index].name;
+    DataStore.staples.removeAt(index);
+    DataStore.save();
+    setState(() {});
+    _showToast('已删除 $name');
+  }
+
+  void _showToast(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
+    );
+  }
+
+  Future<void> _importRecipes() async {
+    final picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json', 'txt'],
+    );
+    if (picked == null || picked.files.isEmpty) return;
+    final file = picked.files.single;
+    try {
+      List<int> bytes;
+      if (file.bytes != null) {
+        bytes = file.bytes!;
+      } else if (file.path != null) {
+        bytes = await File(file.path!).readAsBytes();
+      } else {
+        _showToast('无法读取文件内容');
+        return;
+      }
+      final text = DataStore.decodeFileBytes(bytes);
+      final result = DataStore.importRecipes(text);
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('导入结果'),
+          content: Text(
+            result.errors.isEmpty
+                ? result.toString()
+                : '${result.toString()}\n\n以下条目有问题：\n${result.errors.take(5).join('\n')}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('好的'),
+            ),
+          ],
+        ),
+      );
+      setState(() {});
+    } catch (e) {
+      _showToast('导入失败：$e');
+    }
+  }
+
+  void _showFormatHelp() {
+    const sample = '''
+[
+  {
+    "name": "番茄炒蛋",
+    "emoji": "🍅",
+    "mealTime": "lunch",
+    "cookMode": "cook",
+    "ingredients": ["番茄", "鸡蛋", "葱"],
+    "seasons": []
+  }
+]''';
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('菜谱文件格式说明'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('文件为 JSON 数组，每道菜一个对象：'),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withAlpha(30),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const SelectableText(sample, style: TextStyle(fontSize: 12)),
+              ),
+              const SizedBox(height: 12),
+              const Text('字段说明：\n'
+                  'name - 菜名（必填）\n'
+                  'emoji - 图标，可省略\n'
+                  'mealTime - breakfast/lunch/dinner/all\n'
+                  'cookMode - takeout外卖/cook自己做/eatOut出去吃/all\n'
+                  'ingredients - 原料列表\n'
+                  'seasons - 季节 spring/summer/autumn/winter，空=四季通用\n'
+                  'isStaple - true 则该条归入主食库\n'
+                  'isDrink - true 则该条归入饮品库',
+                style: TextStyle(fontSize: 13, height: 1.6)),
+              const SizedBox(height: 12),
+              const Text('小技巧：可以把上面示例发给 AI 助手，让它帮你按这个格式批量生成菜谱，'
+                  '保存为 .json 文件后导入即可。重名的菜会自动跳过。文件支持 UTF-8 和 GBK 编码。',
+                style: TextStyle(fontSize: 13, color: Colors.grey)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('知道了'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('管理菜单'),
+        actions: [
+          IconButton(
+            tooltip: '导入菜谱',
+            icon: const Icon(Icons.file_upload_outlined),
+            onPressed: _importRecipes,
+          ),
+          IconButton(
+            tooltip: '菜谱格式说明',
+            icon: const Icon(Icons.help_outline),
+            onPressed: _showFormatHelp,
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: '菜肴', icon: Icon(Icons.restaurant_menu)),
+            Tab(text: '主食', icon: Icon(Icons.rice_bowl)),
+            Tab(text: '饮品', icon: Icon(Icons.local_drink)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildDishTab(),
+          _buildStapleTab(),
+          _buildDrinkTab(),
+        ],
+      ),
+    );
+  }
+
+  // -------- Dish Tab --------
+  Widget _buildDishTab() {
+    final dishes = DataStore.search(_dishSearchCtrl.text);
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Add form
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('添加菜肴', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _dishNameCtrl,
+                        decoration: const InputDecoration(
+                          labelText: '菜名',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        onSubmitted: (_) => _addDish(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 60,
+                      child: TextField(
+                        controller: _dishEmojiCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Emoji',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        maxLength: 4,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<MealTime>(
+                        value: _dishMeal,
+                        decoration: const InputDecoration(
+                          labelText: '适合餐段',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        items: [
+                          DropdownMenuItem(value: MealTime.all, child: Text(MealTime.all.label)),
+                          DropdownMenuItem(value: MealTime.breakfast, child: Text(MealTime.breakfast.label)),
+                          DropdownMenuItem(value: MealTime.lunch, child: Text(MealTime.lunch.label)),
+                          DropdownMenuItem(value: MealTime.dinner, child: Text(MealTime.dinner.label)),
+                        ],
+                        onChanged: (v) => setState(() => _dishMeal = v!),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: DropdownButtonFormField<CookMode>(
+                        value: _dishMode,
+                        decoration: const InputDecoration(
+                          labelText: '适合方式',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        items: [
+                          DropdownMenuItem(value: CookMode.all, child: Text(CookMode.all.label)),
+                          DropdownMenuItem(value: CookMode.takeout, child: Text(CookMode.takeout.label)),
+                          DropdownMenuItem(value: CookMode.cook, child: Text(CookMode.cook.label)),
+                          DropdownMenuItem(value: CookMode.eatOut, child: Text(CookMode.eatOut.label)),
+                        ],
+                        onChanged: (v) => setState(() => _dishMode = v!),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _dishIngredientsCtrl,
+                  decoration: const InputDecoration(
+                    labelText: '原料（用逗号分隔）',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _addDish,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6B35),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('添加'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Search box
+        TextField(
+          controller: _dishSearchCtrl,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.search),
+            hintText: '按菜名或食材搜索',
+            border: OutlineInputBorder(),
+            isDense: true,
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 8),
+
+        // Dish list
+        if (dishes.isEmpty)
+          const Center(child: Padding(
+            padding: EdgeInsets.all(32),
+            child: Text('没有找到匹配的菜肴', style: TextStyle(color: Colors.grey)),
+          ))
+        else
+          ...dishes.asMap().entries.map((entry) {
+            final i = DataStore.dishes.indexOf(entry.value);
+            final dish = entry.value;
+            return Dismissible(
+              key: ValueKey('dish__${dish.name}'),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red,
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              onDismissed: (_) => _deleteDish(i),
+              child: ListTile(
+                leading: Text(dish.emoji, style: const TextStyle(fontSize: 28)),
+                title: Text(dish.name),
+                subtitle: const Text(' · '),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () => _deleteDish(i),
+                ),
+              ),
+            );
+          }),
+      ],
+    );
+  }
+
+  // -------- Staple Tab --------
+  Widget _buildStapleTab() {
+    final staples = DataStore.searchStaples(_stapleSearchCtrl.text);
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Add form
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('添加主食', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _stapleNameCtrl,
+                        decoration: const InputDecoration(
+                          labelText: '主食名称',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        onSubmitted: (_) => _addStaple(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 60,
+                      child: TextField(
+                        controller: _stapleEmojiCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Emoji',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        maxLength: 4,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<MealTime>(
+                  value: _stapleMeal,
+                  decoration: const InputDecoration(
+                    labelText: '适合餐段',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                  items: [
+                    DropdownMenuItem(value: MealTime.all, child: Text(MealTime.all.label)),
+                    DropdownMenuItem(value: MealTime.breakfast, child: Text(MealTime.breakfast.label)),
+                    DropdownMenuItem(value: MealTime.lunch, child: Text(MealTime.lunch.label)),
+                    DropdownMenuItem(value: MealTime.dinner, child: Text(MealTime.dinner.label)),
+                  ],
+                  onChanged: (v) => setState(() => _stapleMeal = v!),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _stapleIngredientsCtrl,
+                  decoration: const InputDecoration(
+                    labelText: '原料（用逗号分隔）',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _addStaple,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6B35),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('添加'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // Search box
+        TextField(
+          controller: _stapleSearchCtrl,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.search),
+            hintText: '按名称或食材搜索',
+            border: OutlineInputBorder(),
+            isDense: true,
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 8),
+
+        // Staple list
+        if (staples.isEmpty)
+          const Center(child: Padding(
+            padding: EdgeInsets.all(32),
+            child: Text('没有找到匹配的主食', style: TextStyle(color: Colors.grey)),
+          ))
+        else
+          ...staples.asMap().entries.map((entry) {
+            final i = DataStore.staples.indexOf(entry.value);
+            final staple = entry.value;
+            return Dismissible(
+              key: ValueKey('staple__${staple.name}'),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red,
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              onDismissed: (_) => _deleteStaple(i),
+              child: ListTile(
+                leading: Text(staple.emoji, style: const TextStyle(fontSize: 28)),
+                title: Text(staple.name),
+                subtitle: Text(staple.mealTime.label),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () => _deleteStaple(i),
+                ),
+              ),
+            );
+          }),
+      ],
+    );
+  }
+
+  // -------- Drink Tab --------
+  void _addDrink() {
+    final name = _drinkNameCtrl.text.trim();
+    if (name.isEmpty) {
+      _showToast('请输入饮品名称');
+      return;
+    }
+    if (DataStore.drinks.any((d) => d.name == name)) {
+      _showToast('这个饮品已经存在了');
+      return;
+    }
+    DataStore.drinks.add(FoodItem(
+      name: name,
+      emoji: _drinkEmojiCtrl.text.trim().isNotEmpty ? _drinkEmojiCtrl.text.trim() : '🥤',
+      mealTime: _drinkMeal,
+      isDrink: true,
+    ));
+    DataStore.save();
+    _drinkNameCtrl.clear();
+    _drinkEmojiCtrl.clear();
+    setState(() {});
+    _showToast('已添加 $name');
+  }
+
+  void _deleteDrink(int index) {
+    final name = DataStore.drinks[index].name;
+    DataStore.drinks.removeAt(index);
+    DataStore.save();
+    setState(() {});
+    _showToast('已删除 $name');
+  }
+
+  Widget _buildDrinkTab() {
+    final drinks = DataStore.searchDrinks(_drinkSearchCtrl.text);
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('添加饮品', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _drinkNameCtrl,
+                        decoration: const InputDecoration(
+                          labelText: '饮品名称',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        onSubmitted: (_) => _addDrink(),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 60,
+                      child: TextField(
+                        controller: _drinkEmojiCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Emoji',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        maxLength: 4,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<MealTime>(
+                  value: _drinkMeal,
+                  decoration: const InputDecoration(
+                    labelText: '适合餐段',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                  items: [
+                    DropdownMenuItem(value: MealTime.all, child: Text(MealTime.all.label)),
+                    DropdownMenuItem(value: MealTime.breakfast, child: Text(MealTime.breakfast.label)),
+                    DropdownMenuItem(value: MealTime.lunch, child: Text(MealTime.lunch.label)),
+                    DropdownMenuItem(value: MealTime.dinner, child: Text(MealTime.dinner.label)),
+                  ],
+                  onChanged: (v) => setState(() => _drinkMeal = v!),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _addDrink,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6B35),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('添加'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        TextField(
+          controller: _drinkSearchCtrl,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.search),
+            hintText: '按名称搜索',
+            border: OutlineInputBorder(),
+            isDense: true,
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 8),
+
+        if (drinks.isEmpty)
+          const Center(child: Padding(
+            padding: EdgeInsets.all(32),
+            child: Text('没有找到匹配的饮品', style: TextStyle(color: Colors.grey)),
+          ))
+        else
+          ...drinks.asMap().entries.map((entry) {
+            final i = DataStore.drinks.indexOf(entry.value);
+            final drink = entry.value;
+            return Dismissible(
+              key: ValueKey('drink__${drink.name}'),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                color: Colors.red,
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              onDismissed: (_) => _deleteDrink(i),
+              child: ListTile(
+                leading: Text(drink.emoji, style: const TextStyle(fontSize: 28)),
+                title: Text(drink.name),
+                subtitle: Text(drink.mealTime.label),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.red),
+                  onPressed: () => _deleteDrink(i),
+                ),
+              ),
+            );
+          }),
+      ],
+    );
+  }
+}
