@@ -22,6 +22,7 @@ class _WearHomePageState extends State<WearHomePage> {
   WearScene _selectedScene = WearScene.all;
   WearGender _selectedGender = WearGender.unisex;
   WearGroup _selectedGroup = WearGroup.all;
+  WearStyle _selectedStyle = WearStyle.all;
   int? _temperature; // null = 不限温度
 
   OutfitItem? _picked;
@@ -203,6 +204,8 @@ class _WearHomePageState extends State<WearHomePage> {
           _buildGenderSelector(),
           const SizedBox(height: 8),
           _buildGroupSelector(),
+          const SizedBox(height: 8),
+          _buildStyleSelector(),
           const SizedBox(height: 12),
           _buildTempSelector(),
           const SizedBox(height: 24),
@@ -352,6 +355,36 @@ class _WearHomePageState extends State<WearHomePage> {
                         _selectedGroup = g;
                         _picked = null;
                         _savePrefs();
+                      }),
+              selectedColor: Theme.of(context).colorScheme.primary,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : null,
+                fontWeight: isSelected ? FontWeight.w600 : null,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  /// 风格选择
+  Widget _buildStyleSelector() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: WearStyle.values.map((s) {
+          final isSelected = _selectedStyle == s;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              label: Text(s.label),
+              selected: isSelected,
+              onSelected: _isPicking
+                  ? null
+                  : (_) => setState(() {
+                        _selectedStyle = s;
+                        _picked = null;
                       }),
               selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(
@@ -534,6 +567,11 @@ class _WearHomePageState extends State<WearHomePage> {
                 controller: _wheelController,
                 emojiOf: (o) => o.emoji,
                 nameOf: (o) => o.name,
+                badgeOf: (o) => switch (o.gender) {
+                  WearGender.male => '♂',
+                  WearGender.female => '♀',
+                  WearGender.unisex => '通用',
+                },
               ),
             ),
           ),

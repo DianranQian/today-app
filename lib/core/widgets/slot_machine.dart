@@ -48,6 +48,7 @@ class SlotReel<T> extends StatelessWidget {
     required this.controller,
     required this.emojiOf,
     required this.nameOf,
+    this.badgeOf,
     this.flex = 1,
     this.enabled = true,
     this.itemExtent = 56.0,
@@ -59,6 +60,9 @@ class SlotReel<T> extends StatelessWidget {
   final FixedExtentScrollController? controller;
   final String Function(T) emojiOf;
   final String Function(T) nameOf;
+
+  /// 可选小角标（如性别标记）
+  final String Function(T)? badgeOf;
   final int flex;
   final bool enabled;
   final double itemExtent;
@@ -122,6 +126,13 @@ class SlotReel<T> extends StatelessWidget {
                                             style:
                                                 const TextStyle(fontSize: 22)),
                                         const SizedBox(width: 6),
+                                        if (badgeOf != null) ...[
+                                          Text(badgeOf!(items[i]),
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.grey[600])),
+                                          const SizedBox(width: 4),
+                                        ],
                                         Flexible(
                                           child: Text(nameOf(items[i]),
                                               maxLines: 1,

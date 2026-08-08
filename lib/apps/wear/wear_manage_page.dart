@@ -22,6 +22,7 @@ class _WearManagePageState extends State<WearManagePage> {
   WearScene _scene = WearScene.daily;
   WearGender _gender = WearGender.unisex;
   WearGroup _group = WearGroup.all;
+  WearStyle _style = WearStyle.all;
   int? _tempMin;
   int? _tempMax;
   String? _imagePath;
@@ -50,6 +51,7 @@ class _WearManagePageState extends State<WearManagePage> {
       scene: _scene,
       gender: _gender,
       group: _group,
+      style: _style,
       tempMin: _tempMin,
       tempMax: _tempMax,
       imagePath: _imagePath,
@@ -258,6 +260,24 @@ class _WearManagePageState extends State<WearManagePage> {
                   Row(
                     children: [
                       Expanded(
+                        child: DropdownButtonFormField<WearStyle>(
+                          value: _style,
+                          decoration: const InputDecoration(
+                            labelText: '风格',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          items: [
+                            for (final s in WearStyle.values)
+                              if (s != WearStyle.all)
+                                DropdownMenuItem(
+                                    value: s, child: Text(s.label)),
+                          ],
+                          onChanged: (v) => setState(() => _style = v!),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
                         child: DropdownButtonFormField<int?>(
                           value: _tempMin,
                           decoration: const InputDecoration(
@@ -347,7 +367,7 @@ class _WearManagePageState extends State<WearManagePage> {
                 child: ListTile(
                   leading: ItemImage(imagePath: outfit.imagePath, emoji: outfit.emoji, size: 44),
                   title: Text(outfit.name),
-                  subtitle: Text('${outfit.scene.label} · $seasonTag季'),
+                  subtitle: Text('${outfit.scene.label} · ${outfit.gender.label} · ${outfit.group.label} · ${outfit.style.label} · $seasonTag季'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red),
                     onPressed: () => _delete(i),

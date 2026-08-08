@@ -46,6 +46,33 @@ extension WearGroupExt on WearGroup {
   }
 }
 
+/// 风格
+enum WearStyle { casual, business, sweet, retro, trendy, all }
+
+extension WearStyleExt on WearStyle {
+  String get label {
+    switch (this) {
+      case WearStyle.casual: return '休闲';
+      case WearStyle.business: return '商务';
+      case WearStyle.sweet: return '甜美';
+      case WearStyle.retro: return '复古';
+      case WearStyle.trendy: return '潮流';
+      case WearStyle.all: return '通用';
+    }
+  }
+
+  static WearStyle fromString(String s) {
+    switch (s) {
+      case 'casual': return WearStyle.casual;
+      case 'business': return WearStyle.business;
+      case 'sweet': return WearStyle.sweet;
+      case 'retro': return WearStyle.retro;
+      case 'trendy': return WearStyle.trendy;
+      default: return WearStyle.all;
+    }
+  }
+}
+
 /// 穿搭场景
 enum WearScene { daily, sport, formal, date, commute, all }
 
@@ -81,6 +108,7 @@ class OutfitItem {
   Set<Season> seasons;
   WearGender gender;
   WearGroup group;
+  WearStyle style;
   /// 适宜温度区间（摄氏度），null 表示不限
   int? tempMin;
   int? tempMax;
@@ -93,6 +121,7 @@ class OutfitItem {
     Set<Season>? seasons,
     this.gender = WearGender.unisex,
     this.group = WearGroup.all,
+    this.style = WearStyle.all,
     this.tempMin,
     this.tempMax,
     this.imagePath,
@@ -105,6 +134,7 @@ class OutfitItem {
     'seasons': seasons.map((s) => s.name).toList(),
     'gender': gender.name,
     'group': group.name,
+    'style': style.name,
     'tempMin': tempMin,
     'tempMax': tempMax,
     'imagePath': imagePath,
@@ -119,6 +149,7 @@ class OutfitItem {
         .toSet() ?? {},
     gender: WearGenderExt.fromString(json['gender'] as String? ?? 'unisex'),
     group: WearGroupExt.fromString(json['group'] as String? ?? 'all'),
+    style: WearStyleExt.fromString(json['style'] as String? ?? 'all'),
     tempMin: json['tempMin'] as int?,
     tempMax: json['tempMax'] as int?,
     imagePath: json['imagePath'] as String?,
