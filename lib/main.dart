@@ -4,14 +4,17 @@ import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
 import 'apps/wear/wear_app.dart';
 import 'core/app_settings.dart';
+import 'core/plan_store.dart';
 import 'core/theme.dart';
 import 'core/widgets/date_selector.dart';
+import 'pages/plan_page.dart';
 import 'pages/settings_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppSettings.load();
   await TargetDateSelector.load();
+  await PlanStore.load();
   runApp(const TodayApp());
 }
 
@@ -24,7 +27,46 @@ class TodayApp extends StatelessWidget {
       title: '今天做什么',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(seed: AppSeeds.eat),
-      home: const HomeEntryPage(),
+      home: const MainShell(),
+    );
+  }
+}
+
+/// 主框架：底部 Tab（工具 / 计划）
+class MainShell extends StatefulWidget {
+  const MainShell({super.key});
+
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _index,
+        children: const [
+          HomeEntryPage(),
+          PlanPage(),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(
+              icon: Icon(Icons.grid_view_outlined),
+              selectedIcon: Icon(Icons.grid_view),
+              label: '工具'),
+          NavigationDestination(
+              icon: Icon(Icons.event_note_outlined),
+              selectedIcon: Icon(Icons.event_note),
+              label: '计划'),
+        ],
+      ),
     );
   }
 }

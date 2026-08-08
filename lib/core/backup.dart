@@ -14,6 +14,7 @@ class BackupService {
     'contact_contacts',
     'app_color_eat', 'app_color_go', 'app_color_wear', 'app_color_contact',
     'app_amap_key', 'app_deepseek_key',
+    'plan_items',
   ];
 
   static const _imageExts = {'.jpg', '.jpeg', '.png', '.webp', '.heic'};

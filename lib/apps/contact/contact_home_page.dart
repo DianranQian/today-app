@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'contact_models.dart';
 import '../../core/image_helper.dart';
+import '../../core/plan_store.dart';
+import '../../core/widgets/add_to_plan_dialog.dart';
 import 'contact_data_store.dart';
 
 class ContactHomePage extends StatefulWidget {
@@ -140,6 +142,24 @@ class _ContactHomePageState extends State<ContactHomePage> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: () => showAddToPlanDialog(
+                context,
+                type: PlanType.contact,
+                title: '联系 ${_picked!.name}',
+                emoji: _picked!.emoji,
+              ),
+              icon: const Icon(Icons.event_note, size: 18),
+              label: const Text('加入计划'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                side: BorderSide(
+                    color: Theme.of(context).colorScheme.primary.withAlpha(80)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22)),
+              ),
             ),
           ],
         ],

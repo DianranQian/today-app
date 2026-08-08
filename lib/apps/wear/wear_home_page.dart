@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/image_helper.dart';
 import '../../core/season.dart';
 import '../../core/theme.dart';
+import '../../core/plan_store.dart';
+import '../../core/widgets/add_to_plan_dialog.dart';
 import '../../core/widgets/candidates_bar.dart';
 import '../../core/widgets/date_selector.dart';
 import '../../core/widgets/slot_machine.dart';
@@ -412,6 +414,25 @@ class _WearHomePageState extends State<WearHomePage> {
                         _picked = null;
                       }),
               child: const Text('清除'),
+            ),
+
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: () => showAddToPlanDialog(
+                context,
+                type: PlanType.wear,
+                title: _picked!.name,
+                emoji: _picked!.emoji,
+              ),
+              icon: const Icon(Icons.event_note, size: 18),
+              label: const Text('加入计划'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                side: BorderSide(
+                    color: Theme.of(context).colorScheme.primary.withAlpha(80)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22)),
+              ),
             ),
           ],
         ),

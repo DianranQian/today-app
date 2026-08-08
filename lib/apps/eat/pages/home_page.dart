@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
+import '../../../core/plan_store.dart';
 import '../../../core/season.dart' as core_season;
 import '../../../core/theme.dart';
+import '../../../core/widgets/add_to_plan_dialog.dart';
 import '../../../core/widgets/candidates_bar.dart';
 import '../../../core/widgets/date_selector.dart';
 import '../../../core/widgets/slot_machine.dart';
@@ -683,6 +685,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
               ],
+
+              // 加入计划
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
+                onPressed: () => showAddToPlanDialog(
+                  context,
+                  type: PlanType.eat,
+                  title: [
+                    _pickedDish!.name,
+                    if (_pickedStaple != null) _pickedStaple!.name,
+                    if (_pickedDrink != null) _pickedDrink!.name,
+                  ].join(' + '),
+                  emoji: _pickedDish!.emoji,
+                ),
+                icon: const Icon(Icons.event_note, size: 18),
+                label: const Text('加入计划'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary.withAlpha(80)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22)),
+                ),
+              ),
             ],
           ),
         ),

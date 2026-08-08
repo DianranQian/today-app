@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../../core/plan_store.dart';
+import '../../core/widgets/add_to_plan_dialog.dart';
 import '../../core/widgets/candidates_bar.dart';
 import '../../core/widgets/slot_machine.dart';
 import '../../core/image_helper.dart';
@@ -353,6 +355,25 @@ class _GoHomePageState extends State<GoHomePage> {
               child: Text(
                 '${_picked!.type.label} · ${_picked!.priceLabel}',
                 style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: () => showAddToPlanDialog(
+                context,
+                type: PlanType.go,
+                title: _picked!.name,
+                emoji: _picked!.emoji,
+              ),
+              icon: const Icon(Icons.event_note, size: 18),
+              label: const Text('加入计划'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                side: BorderSide(
+                    color: Theme.of(context).colorScheme.primary.withAlpha(80)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22)),
               ),
             ),
           ],
