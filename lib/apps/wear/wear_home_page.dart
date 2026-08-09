@@ -570,8 +570,9 @@ class _WearHomePageState extends State<WearHomePage> {
                 emojiOf: (o) => o.emoji,
                 nameOf: (o) => o.name,
                 badgeOf: (o) => switch (o.gender) {
-                  WearGender.male => '♂',
-                  WearGender.female => '♀',
+                  // 用汉字避免 emoji 渲染覆盖颜色（♂/♀ 在 Android 上按 emoji 着色）
+                  WearGender.male => '男',
+                  WearGender.female => '女',
                   WearGender.unisex => '通用',
                 },
                 badgeColorOf: (o) => switch (o.gender) {

@@ -27,6 +27,56 @@ extension ContactFrequencyExt on ContactFrequency {
   }
 }
 
+/// 联系方式类型
+enum ContactType { phone, wechat, email, qq, other }
+
+extension ContactTypeExt on ContactType {
+  String get label {
+    switch (this) {
+      case ContactType.phone: return '手机';
+      case ContactType.wechat: return '微信';
+      case ContactType.email: return '邮箱';
+      case ContactType.qq: return 'QQ';
+      case ContactType.other: return '其他';
+    }
+  }
+
+  String get icon {
+    switch (this) {
+      case ContactType.phone: return '📱';
+      case ContactType.wechat: return '💬';
+      case ContactType.email: return '✉️';
+      case ContactType.qq: return '🐧';
+      case ContactType.other: return '🔗';
+    }
+  }
+
+  static ContactType fromString(String s) {
+    switch (s) {
+      case 'phone': return ContactType.phone;
+      case 'wechat': return ContactType.wechat;
+      case 'email': return ContactType.email;
+      case 'qq': return ContactType.qq;
+      default: return ContactType.other;
+    }
+  }
+}
+
+/// 一条联系方式
+class ContactMethod {
+  final ContactType type;
+  final String value;
+
+  const ContactMethod({required this.type, required this.value});
+
+  Map<String, dynamic> toJson() => {'type': type.name, 'value': value};
+
+  factory ContactMethod.fromJson(Map<String, dynamic> json) => ContactMethod(
+    type: ContactTypeExt.fromString(json['type'] as String? ?? 'other'),
+    value: json['value'] as String? ?? '',
+  );
+}
+
 /// 联系人（手动录入，不读系统通讯录）
 class ContactItem {
   String name;
@@ -35,6 +85,7 @@ class ContactItem {
   ContactFrequency frequency;
   DateTime? lastContact; // null = 从未联系过
   String? imagePath;
+  List<ContactMethod> contacts;
 
   ContactItem({
     required this.name,
@@ -43,7 +94,8 @@ class ContactItem {
     this.frequency = ContactFrequency.monthly,
     this.lastContact,
     this.imagePath,
-  });
+    List<ContactMethod>? contacts,
+  }) : contacts = contacts ?? [];
 
   /// 距上次联系天数；从未联系返回很大的数（优先推荐）
   int get daysSinceContact {
@@ -64,6 +116,7 @@ class ContactItem {
     'frequency': frequency.name,
     'lastContact': lastContact?.toIso8601String(),
     'imagePath': imagePath,
+    'contacts': contacts.map((c) => c.toJson()).toList(),
   };
 
   factory ContactItem.fromJson(Map<String, dynamic> json) => ContactItem(
@@ -76,5 +129,10 @@ class ContactItem {
         ? DateTime.parse(json['lastContact'] as String)
         : null,
     imagePath: json['imagePath'] as String?,
+    contacts: (json['contacts'] as List<dynamic>?)
+        ?.map((e) => ContactMethod.fromJson(e as Map<String, dynamic>))
+        .where((m) => m.value.isNotEmpty)
+        .toList() ??
+        [],
   );
 }

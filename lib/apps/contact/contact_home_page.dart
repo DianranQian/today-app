@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'contact_actions.dart';
 import 'contact_models.dart';
 import '../../core/image_helper.dart';
 import '../../core/plan_store.dart';
@@ -204,6 +205,31 @@ class _ContactHomePageState extends State<ContactHomePage> {
                   style: TextStyle(fontSize: 14, color: Colors.grey[600])),
             ],
             const SizedBox(height: 12),
+            // 联系方式（可点击：拨号/邮件/复制）
+            if (c.contacts.isNotEmpty) ...[
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
+                children: c.contacts.map((m) {
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => ContactActions.perform(context, m),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withAlpha(8),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text('${m.type.icon} ${m.value}',
+                          style: const TextStyle(fontSize: 12)),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 12),
+            ],
             Wrap(
               spacing: 8,
               runSpacing: 8,

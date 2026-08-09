@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/widgets/profile_dialog.dart';
 import '../../core/image_helper.dart';
+import 'contact_actions.dart';
 import 'contact_models.dart';
 import 'contact_data_store.dart';
 
@@ -20,6 +21,11 @@ class _ContactManagePageState extends State<ContactManagePage> {
   ContactFrequency _frequency = ContactFrequency.monthly;
   String? _imagePath;
 
+  // 联系方式编辑
+  final List<ContactMethod> _newContacts = [];
+  ContactType _contactType = ContactType.phone;
+  final _contactValueCtrl = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +43,20 @@ class _ContactManagePageState extends State<ContactManagePage> {
     _emojiCtrl.dispose();
     _relationCtrl.dispose();
     _searchCtrl.dispose();
+    _contactValueCtrl.dispose();
     super.dispose();
+  }
+
+  void _addContactMethod() {
+    final v = _contactValueCtrl.text.trim();
+    if (v.isEmpty) {
+      _showToast('请输入联系方式');
+      return;
+    }
+    setState(() {
+      _newContacts.add(ContactMethod(type: _contactType, value: v));
+      _contactValueCtrl.clear();
+    });
   }
 
   void _add() {
@@ -56,12 +75,14 @@ class _ContactManagePageState extends State<ContactManagePage> {
       relation: _relationCtrl.text.trim(),
       frequency: _frequency,
       imagePath: _imagePath,
+      contacts: List.of(_newContacts),
     ));
     ContactDataStore.save();
     _nameCtrl.clear();
     _emojiCtrl.clear();
     _relationCtrl.clear();
     _imagePath = null;
+    _newContacts.clear();
     setState(() {});
     _showToast('已添加 $name');
   }
@@ -219,6 +240,66 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     ],
                   ),
                   const SizedBox(height: 12),
+                  // 联系方式编辑
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<ContactType>(
+                          value: _contactType,
+                          decoration: const InputDecoration(
+                            labelText: '类型',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          items: [
+                            for (final t in ContactType.values)
+                              DropdownMenuItem(
+                                  value: t, child: Text(t.label)),
+                          ],
+                          onChanged: (v) => setState(() => _contactType = v!),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: _contactValueCtrl,
+                          decoration: const InputDecoration(
+                            labelText: '手机号/账号',
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          onSubmitted: (_) => _addContactMethod(),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: _addContactMethod,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('添加'),
+                      ),
+                    ],
+                  ),
+                  if (_newContacts.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: _newContacts.asMap().entries.map((e) {
+                        final m = e.value;
+                        return Chip(
+                          avatar: Text(m.type.icon),
+                          label: Text('${m.type.label}: ${m.value}',
+                              style: const TextStyle(fontSize: 12)),
+                          onDeleted: () =>
+                              setState(() => _newContacts.removeAt(e.key)),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                  const SizedBox(height: 12),
                   _buildImagePickerRow(),
                   const SizedBox(height: 8),
                   SizedBox(
@@ -274,12 +355,24 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     [
                       if (c.relation.isNotEmpty) c.relation,
                       c.frequency.label,
+                      if (c.contacts.isNotEmpty)
+                        c.contacts
+                            .map((m) => '${m.type.icon}${m.value}')
+                            .join('  '),
                       c.isOverdue ? '⚠️ 逾期 ${c.overdueDays} 天' : '上次 ${c.daysSinceContact} 天前',
                     ].join(' · '),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (c.contacts.isNotEmpty)
+                        IconButton(
+                          tooltip: '拨打/复制',
+                          icon: const Icon(Icons.phone_in_talk,
+                              color: Colors.blue),
+                          onPressed: () =>
+                              ContactActions.perform(context, c.contacts.first),
+                        ),
                       IconButton(
                         tooltip: '打卡已联系',
                         icon: const Icon(Icons.check_circle_outline,
