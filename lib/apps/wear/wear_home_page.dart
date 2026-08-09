@@ -314,9 +314,14 @@ class _WearHomePageState extends State<WearHomePage> {
                   WearGender.unisex => Icons.accessibility_new,
                 },
                 size: 16,
+                // 未选中按性别配色（男蓝/女粉/通用灰），不再用主题色
                 color: isSelected
                     ? Colors.white
-                    : Theme.of(context).colorScheme.primary,
+                    : switch (g) {
+                        WearGender.male => Colors.blue,
+                        WearGender.female => Colors.pink,
+                        WearGender.unisex => Colors.grey,
+                      },
               ),
               label: Text(g.label),
               selected: isSelected,
