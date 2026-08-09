@@ -8,11 +8,18 @@ class WearSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SubAppSettingsPanel(
-      appId: 'wear',
-      appName: '今天穿什么',
-      reload: WearDataStore.load,
-      onClearHistory: WearDataStore.clearHistory,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('设置'),
+        centerTitle: true,
+        toolbarHeight: 44,
+      ),
+      body: const SubAppSettingsPanel(
+        appId: 'wear',
+        appName: '今天穿什么',
+        reload: WearDataStore.load,
+        onClearHistory: WearDataStore.clearHistory,
+      ),
     );
   }
 }

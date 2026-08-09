@@ -21,8 +21,8 @@ class _WearManagePageState extends State<WearManagePage> {
   final _searchCtrl = TextEditingController();
   WearScene _scene = WearScene.daily;
   WearGender _gender = WearGender.unisex;
-  WearGroup _group = WearGroup.all;
-  WearStyle _style = WearStyle.all;
+  WearGroup _group = WearGroup.student;
+  WearStyle _style = WearStyle.casual;
   int? _tempMin;
   int? _tempMax;
   String? _imagePath;

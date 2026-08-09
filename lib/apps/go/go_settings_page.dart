@@ -8,11 +8,18 @@ class GoSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SubAppSettingsPanel(
-      appId: 'go',
-      appName: '今天去哪',
-      reload: GoDataStore.load,
-      onClearHistory: GoDataStore.clearHistory,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('设置'),
+        centerTitle: true,
+        toolbarHeight: 44,
+      ),
+      body: const SubAppSettingsPanel(
+        appId: 'go',
+        appName: '今天去哪',
+        reload: GoDataStore.load,
+        onClearHistory: GoDataStore.clearHistory,
+      ),
     );
   }
 }

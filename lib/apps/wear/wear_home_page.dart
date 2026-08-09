@@ -574,6 +574,11 @@ class _WearHomePageState extends State<WearHomePage> {
                   WearGender.female => '♀',
                   WearGender.unisex => '通用',
                 },
+                badgeColorOf: (o) => switch (o.gender) {
+                  WearGender.male => Colors.blue,
+                  WearGender.female => Colors.pink,
+                  WearGender.unisex => Colors.grey,
+                },
               ),
             ),
           ),

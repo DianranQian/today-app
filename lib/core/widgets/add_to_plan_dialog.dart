@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../plan_store.dart';
+import '../season.dart';
 
 /// 加入计划弹窗：选日期（今天/明天/自定义）+ 备注
 Future<void> showAddToPlanDialog(
@@ -58,7 +59,8 @@ class _AddToPlanDialog extends StatefulWidget {
 }
 
 class _AddToPlanDialogState extends State<_AddToPlanDialog> {
-  int _offset = 0;
+  // 默认选中用户当前在首页选择的目标日期（今天/明天/后天）
+  late int _offset = targetDateOffset;
   final _noteCtrl = TextEditingController();
 
   @override

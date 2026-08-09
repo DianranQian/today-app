@@ -49,6 +49,7 @@ class SlotReel<T> extends StatelessWidget {
     required this.emojiOf,
     required this.nameOf,
     this.badgeOf,
+    this.badgeColorOf,
     this.flex = 1,
     this.enabled = true,
     this.itemExtent = 56.0,
@@ -63,6 +64,9 @@ class SlotReel<T> extends StatelessWidget {
 
   /// 可选小角标（如性别标记）
   final String Function(T)? badgeOf;
+
+  /// 角标颜色（可选，默认灰色）
+  final Color? Function(T)? badgeColorOf;
   final int flex;
   final bool enabled;
   final double itemExtent;
@@ -130,7 +134,10 @@ class SlotReel<T> extends StatelessWidget {
                                           Text(badgeOf!(items[i]),
                                               style: TextStyle(
                                                   fontSize: 10,
-                                                  color: Colors.grey[600])),
+                                                  fontWeight: FontWeight.w600,
+                                                  color: badgeColorOf
+                                                          ?.call(items[i]) ??
+                                                      Colors.grey[600])),
                                           const SizedBox(width: 4),
                                         ],
                                         Flexible(
