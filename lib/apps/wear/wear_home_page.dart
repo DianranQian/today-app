@@ -569,16 +569,16 @@ class _WearHomePageState extends State<WearHomePage> {
                 controller: _wheelController,
                 emojiOf: (o) => o.emoji,
                 nameOf: (o) => o.name,
-                badgeOf: (o) => switch (o.gender) {
-                  // 用汉字避免 emoji 渲染覆盖颜色（♂/♀ 在 Android 上按 emoji 着色）
-                  WearGender.male => '男',
-                  WearGender.female => '女',
-                  WearGender.unisex => '通用',
-                },
-                badgeColorOf: (o) => switch (o.gender) {
-                  WearGender.male => Colors.blue,
-                  WearGender.female => Colors.pink,
-                  WearGender.unisex => Colors.grey,
+                // Icon 组件颜色绝对可控，规避字体/emoji 渲染覆盖
+                badgeBuilder: (o) => switch (o.gender) {
+                  WearGender.male =>
+                    const Icon(Icons.male, size: 12, color: Colors.blue),
+                  WearGender.female =>
+                    const Icon(Icons.female, size: 12, color: Colors.pink),
+                  WearGender.unisex =>
+                    Text('通用',
+                        style: TextStyle(
+                            fontSize: 9, color: Colors.grey[600])),
                 },
               ),
             ),

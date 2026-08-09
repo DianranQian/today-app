@@ -21,10 +21,11 @@ class _ContactManagePageState extends State<ContactManagePage> {
   ContactFrequency _frequency = ContactFrequency.monthly;
   String? _imagePath;
 
-  // 联系方式编辑
-  final List<ContactMethod> _newContacts = [];
-  ContactType _contactType = ContactType.phone;
-  final _contactValueCtrl = TextEditingController();
+  // 联系方式（展开式：手机/微信/邮箱/QQ 独立输入框）
+  final _phoneCtrl = TextEditingController();
+  final _wechatCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _qqCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -43,20 +44,26 @@ class _ContactManagePageState extends State<ContactManagePage> {
     _emojiCtrl.dispose();
     _relationCtrl.dispose();
     _searchCtrl.dispose();
-    _contactValueCtrl.dispose();
+    _phoneCtrl.dispose();
+    _wechatCtrl.dispose();
+    _emailCtrl.dispose();
+    _qqCtrl.dispose();
     super.dispose();
   }
 
-  void _addContactMethod() {
-    final v = _contactValueCtrl.text.trim();
-    if (v.isEmpty) {
-      _showToast('请输入联系方式');
-      return;
+  /// 从四个输入框收集已填写的联系方式
+  List<ContactMethod> _collectContacts() {
+    final list = <ContactMethod>[];
+    void add(ContactType type, String v) {
+      final value = v.trim();
+      if (value.isNotEmpty) list.add(ContactMethod(type: type, value: value));
     }
-    setState(() {
-      _newContacts.add(ContactMethod(type: _contactType, value: v));
-      _contactValueCtrl.clear();
-    });
+
+    add(ContactType.phone, _phoneCtrl.text);
+    add(ContactType.wechat, _wechatCtrl.text);
+    add(ContactType.email, _emailCtrl.text);
+    add(ContactType.qq, _qqCtrl.text);
+    return list;
   }
 
   void _add() {
@@ -75,14 +82,17 @@ class _ContactManagePageState extends State<ContactManagePage> {
       relation: _relationCtrl.text.trim(),
       frequency: _frequency,
       imagePath: _imagePath,
-      contacts: List.of(_newContacts),
+      contacts: _collectContacts(),
     ));
     ContactDataStore.save();
     _nameCtrl.clear();
     _emojiCtrl.clear();
     _relationCtrl.clear();
     _imagePath = null;
-    _newContacts.clear();
+    _phoneCtrl.clear();
+    _wechatCtrl.clear();
+    _emailCtrl.clear();
+    _qqCtrl.clear();
     setState(() {});
     _showToast('已添加 $name');
   }
@@ -240,65 +250,52 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  // 联系方式编辑
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<ContactType>(
-                          value: _contactType,
-                          decoration: const InputDecoration(
-                            labelText: '类型',
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                          ),
-                          items: [
-                            for (final t in ContactType.values)
-                              DropdownMenuItem(
-                                  value: t, child: Text(t.label)),
-                          ],
-                          onChanged: (v) => setState(() => _contactType = v!),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: _contactValueCtrl,
-                          decoration: const InputDecoration(
-                            labelText: '手机号/账号',
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                          ),
-                          onSubmitted: (_) => _addContactMethod(),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: _addContactMethod,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text('添加'),
-                      ),
-                    ],
-                  ),
-                  if (_newContacts.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: _newContacts.asMap().entries.map((e) {
-                        final m = e.value;
-                        return Chip(
-                          avatar: Text(m.type.icon),
-                          label: Text('${m.type.label}: ${m.value}',
-                              style: const TextStyle(fontSize: 12)),
-                          onDeleted: () =>
-                              setState(() => _newContacts.removeAt(e.key)),
-                        );
-                      }).toList(),
+                  // 联系方式（展开式：填了哪个存哪个）
+                  const Text('联系方式',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _phoneCtrl,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.phone, color: Colors.blue),
+                      labelText: '手机号',
+                      border: OutlineInputBorder(),
+                      isDense: true,
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _wechatCtrl,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.chat, color: Colors.green),
+                      labelText: '微信号',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.mail, color: Colors.orange),
+                      labelText: '邮箱',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _qqCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.chat_bubble, color: Colors.blueGrey),
+                      labelText: 'QQ',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   _buildImagePickerRow(),
                   const SizedBox(height: 8),
