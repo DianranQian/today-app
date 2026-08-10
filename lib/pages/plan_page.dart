@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/plan_store.dart';
+import '../core/season.dart';
 
 /// 计划清单页（主框架「计划」Tab）
 class PlanPage extends StatefulWidget {
@@ -10,20 +11,15 @@ class PlanPage extends StatefulWidget {
 }
 
 class _PlanPageState extends State<PlanPage> {
+  String dayLabel(DateTime d) {
+    final name = quickDayName(d);
+    if (name != null) return '$name · ${formatMdCn(d)}';
+    return '${formatMdCn(d)} · 周${weekdayCn(d.weekday)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final groups = PlanStore.groupByDate();
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
-    String dayLabel(DateTime d) {
-      final diff = d.difference(today).inDays;
-      if (diff == 0) return '今天';
-      if (diff == 1) return '明天';
-      if (diff == 2) return '后天';
-      if (diff > 2 && diff < 7) return '本周 · 周${_weekdayCn(d.weekday)}';
-      return '${d.month}月${d.day}日';
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -80,10 +76,5 @@ class _PlanPageState extends State<PlanPage> {
               ],
             ),
     );
-  }
-
-  String _weekdayCn(int w) {
-    const names = ['一', '二', '三', '四', '五', '六', '日'];
-    return names[w - 1];
   }
 }

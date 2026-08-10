@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import '../plan_store.dart';
 import '../season.dart';
+import 'month_calendar.dart';
 
-/// 加入计划弹窗：选日期（今天/明天/自定义）+ 备注
+/// 加入计划弹窗：选日期（今天/明天/后天/任意日期）+ 备注
 Future<void> showAddToPlanDialog(
   BuildContext context, {
   required PlanType type,
@@ -18,10 +19,8 @@ Future<void> showAddToPlanDialog(
     ),
   );
   if (result == null) return;
-  final now = DateTime.now();
-  final base = DateTime(now.year, now.month, now.day);
   PlanStore.add(PlanItem(
-    date: base.add(Duration(days: result.offset)),
+    date: result.date,
     type: type,
     title: title,
     emoji: emoji,
@@ -30,7 +29,7 @@ Future<void> showAddToPlanDialog(
   if (context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('已加入 ${result.offset == 0 ? '今天' : result.offset == 1 ? '明天' : '后天'}的计划'),
+        content: Text('已加入 ${formatMdCn(result.date)}的计划'),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -38,9 +37,9 @@ Future<void> showAddToPlanDialog(
 }
 
 class _PlanDraft {
-  final int offset;
+  final DateTime date;
   final String note;
-  _PlanDraft(this.offset, this.note);
+  _PlanDraft(this.date, this.note);
 }
 
 class _AddToPlanDialog extends StatefulWidget {
@@ -59,8 +58,8 @@ class _AddToPlanDialog extends StatefulWidget {
 }
 
 class _AddToPlanDialogState extends State<_AddToPlanDialog> {
-  // 默认选中用户当前在首页选择的目标日期（今天/明天/后天）
-  late int _offset = targetDateOffset;
+  // 默认选中用户当前在首页选择的目标日期（今天/明天/后天或自定义）
+  late DateTime _date = targetDate;
   final _noteCtrl = TextEditingController();
 
   @override
@@ -69,10 +68,39 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
     super.dispose();
   }
 
+  static bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
-    final labels = ['今天', '明天', '后天'];
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final quickDays = [
+      today,
+      today.add(const Duration(days: 1)),
+      today.add(const Duration(days: 2)),
+    ];
+    const quickNames = ['今天', '明天', '后天'];
+    final isCustom = !quickDays.any((d) => _sameDay(d, _date));
+
+    ChoiceChip buildChip({
+      required String label,
+      required bool selected,
+      required VoidCallback onTap,
+    }) {
+      return ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => onTap(),
+        selectedColor: primary,
+        labelStyle: TextStyle(
+          color: selected ? Colors.white : null,
+          fontWeight: selected ? FontWeight.w600 : null,
+        ),
+      );
+    }
+
     return AlertDialog(
       title: Text('加入计划 · ${widget.emoji} ${widget.title}'),
       content: Column(
@@ -81,21 +109,26 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
         children: [
           const Text('计划日期', style: TextStyle(fontSize: 13)),
           const SizedBox(height: 8),
-          Row(
-            children: List.generate(3, (i) {
-              final isSelected = _offset == i;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  label: Text(labels[i]),
-                  selected: isSelected,
-                  onSelected: (_) => setState(() => _offset = i),
-                  selectedColor: primary,
-                  labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : null),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (var i = 0; i < 3; i++)
+                buildChip(
+                  label: '${quickNames[i]} ${formatMd(quickDays[i])}',
+                  selected: !isCustom && _sameDay(_date, quickDays[i]),
+                  onTap: () => setState(() => _date = quickDays[i]),
                 ),
-              );
-            }),
+              buildChip(
+                label: isCustom ? '📅 ${formatMdCn(_date)}' : '📅 选日期',
+                selected: isCustom,
+                onTap: () async {
+                  final picked =
+                      await showMonthCalendar(context, initial: _date);
+                  if (picked != null) setState(() => _date = picked);
+                },
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           TextField(
@@ -113,7 +146,7 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
             onPressed: () => Navigator.pop(context), child: const Text('取消')),
         FilledButton(
           onPressed: () => Navigator.pop(
-              context, _PlanDraft(_offset, _noteCtrl.text.trim())),
+              context, _PlanDraft(_date, _noteCtrl.text.trim())),
           child: const Text('确认加入'),
         ),
       ],

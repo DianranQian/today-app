@@ -29,12 +29,10 @@ class _TodoHomePageState extends State<TodoHomePage> {
       _toast('请输入待办内容');
       return;
     }
-    final now = DateTime.now();
-    final base = DateTime(now.year, now.month, now.day);
     TodoDataStore.add(TodoItem(
       title: title,
       note: _noteCtrl.text.trim(),
-      date: base.add(Duration(days: targetDateOffset)),
+      date: targetDate,
     ));
     _titleCtrl.clear();
     _noteCtrl.clear();
@@ -48,19 +46,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
   }
 
   String _dayLabel(DateTime d) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final diff = d.difference(today).inDays;
-    if (diff == 0) return '今天';
-    if (diff == 1) return '明天';
-    if (diff == 2) return '后天';
-    if (diff > 0 && diff < 7) return '本周 · 周${_weekdayCn(d.weekday)}';
-    return '${d.month}月${d.day}日';
-  }
-
-  String _weekdayCn(int w) {
-    const names = ['一', '二', '三', '四', '五', '六', '日'];
-    return names[w - 1];
+    final name = quickDayName(d);
+    if (name != null) return '$name · ${formatMdCn(d)}';
+    return '${formatMdCn(d)} · 周${weekdayCn(d.weekday)}';
   }
 
   @override
