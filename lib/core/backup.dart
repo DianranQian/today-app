@@ -12,7 +12,9 @@ class BackupService {
     'go_places', 'go_history',
     'wear_outfits', 'wear_history',
     'contact_contacts',
+    'todo_items',
     'app_color_eat', 'app_color_go', 'app_color_wear', 'app_color_contact',
+    'app_color_todo',
     'app_amap_key', 'app_deepseek_key',
     'plan_items',
   ];
@@ -23,6 +25,7 @@ class BackupService {
     'go': ['go_places', 'go_history'],
     'wear': ['wear_outfits', 'wear_history', 'wear_gender', 'wear_group'],
     'contact': ['contact_contacts'],
+    'todo': ['todo_items'],
   };
 
   static const _imageExts = {'.jpg', '.jpeg', '.png', '.webp', '.heic'};

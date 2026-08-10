@@ -16,9 +16,11 @@ class SubAppSettingsPanel extends StatefulWidget {
     required this.reload,
     required this.onClearHistory,
     this.extra,
+    this.showAvoidRecent = true,
+    this.clearLabel = '清空历史',
   });
 
-  /// 子应用标识（eat/go/wear/contact）
+  /// 子应用标识（eat/go/wear/contact/todo）
   final String appId;
   final String appName;
 
@@ -30,6 +32,12 @@ class SubAppSettingsPanel extends StatefulWidget {
 
   /// 额外设置项（如联系谁的默认频率）
   final Widget? extra;
+
+  /// 是否显示「避免近期重复」开关（待办等无此概念的应用传 false）
+  final bool showAvoidRecent;
+
+  /// 清空按钮文案
+  final String clearLabel;
 
   @override
   State<SubAppSettingsPanel> createState() => _SubAppSettingsPanelState();
@@ -137,21 +145,22 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Card(
-          child: Column(
-            children: [
-              SwitchListTile(
-                title: const Text('避免近期重复'),
-                subtitle: const Text('7 天内用过的不会再次推荐'),
-                value: _avoidRecent,
-                onChanged: (v) {
-                  setState(() => _avoidRecent = v);
-                  _saveAvoidRecent(v);
-                },
-              ),
-            ],
+        if (widget.showAvoidRecent)
+          Card(
+            child: Column(
+              children: [
+                SwitchListTile(
+                  title: const Text('避免近期重复'),
+                  subtitle: const Text('7 天内用过的不会再次推荐'),
+                  value: _avoidRecent,
+                  onChanged: (v) {
+                    setState(() => _avoidRecent = v);
+                    _saveAvoidRecent(v);
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
         if (widget.extra != null) ...[
           const SizedBox(height: 12),
           widget.extra!,
@@ -183,10 +192,10 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.delete_sweep, color: Colors.red),
-                title: const Text('清空历史'),
+                title: Text(widget.clearLabel),
                 onTap: () {
                   widget.onClearHistory();
-                  _toast('历史已清空');
+                  _toast('已清空');
                 },
               ),
             ],

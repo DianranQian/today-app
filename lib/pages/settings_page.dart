@@ -84,6 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
         case AppId.go: AppSettings.goColor = selected;
         case AppId.wear: AppSettings.wearColor = selected;
         case AppId.contact: AppSettings.contactColor = selected;
+        case AppId.todo: AppSettings.todoColor = selected;
       }
     });
     await AppSettings.save();
@@ -95,6 +96,7 @@ class _SettingsPageState extends State<SettingsPage> {
       case AppId.go: return AppSettings.goColor;
       case AppId.wear: return AppSettings.wearColor;
       case AppId.contact: return AppSettings.contactColor;
+      case AppId.todo: return AppSettings.todoColor;
     }
   }
 

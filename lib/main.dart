@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'apps/contact/contact_app.dart';
 import 'apps/eat/eat_app.dart';
 import 'apps/go/go_app.dart';
+import 'apps/todo/todo_app.dart';
 import 'apps/wear/wear_app.dart';
 import 'core/app_settings.dart';
 import 'core/donation.dart';
@@ -130,6 +131,14 @@ class HomeEntryPage extends StatelessWidget {
             subtitle: '提醒联系久未问候的亲友',
             color: const Color(0xFF7E57C2),
             onTap: () => _openApp(context, const ContactAppPage()),
+          ),
+          _buildEntryCard(
+            context,
+            emoji: '📋',
+            title: '今天待办',
+            subtitle: '每日待办清单，按日期管理',
+            color: const Color(0xFF8D6E63),
+            onTap: () => _openApp(context, const TodoAppPage()),
           ),
           const SizedBox(height: 24),
           // 打赏入口（iOS 审核风险，构建时隐藏）

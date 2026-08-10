@@ -22,6 +22,7 @@ void main() {
     expect(find.text('今天去哪'), findsOneWidget);
     expect(find.text('今天穿什么'), findsOneWidget);
     expect(find.text('今天联系谁'), findsOneWidget);
+    expect(find.text('今天待办'), findsOneWidget);
   });
 
   testWidgets('点击进入吃什么子应用', (WidgetTester tester) async {

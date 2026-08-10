@@ -8,6 +8,7 @@ class AppSettings {
   static String goColor = '蓝';
   static String wearColor = '粉';
   static String contactColor = '红';
+  static String todoColor = '棕';
   static String amapKey = '';
   static String deepseekKey = '';
 
@@ -18,6 +19,7 @@ class AppSettings {
     goColor = prefs.getString('app_color_go') ?? '蓝';
     wearColor = prefs.getString('app_color_wear') ?? '粉';
     contactColor = prefs.getString('app_color_contact') ?? '红';
+    todoColor = prefs.getString('app_color_todo') ?? '棕';
     amapKey = prefs.getString('app_amap_key') ?? '';
     deepseekKey = prefs.getString('app_deepseek_key') ?? '';
   }
@@ -28,6 +30,7 @@ class AppSettings {
     prefs.setString('app_color_go', goColor);
     prefs.setString('app_color_wear', wearColor);
     prefs.setString('app_color_contact', contactColor);
+    prefs.setString('app_color_todo', todoColor);
     prefs.setString('app_amap_key', amapKey);
     prefs.setString('app_deepseek_key', deepseekKey);
   }
@@ -39,12 +42,13 @@ class AppSettings {
       AppId.go => goColor,
       AppId.wear => wearColor,
       AppId.contact => contactColor,
+      AppId.todo => todoColor,
     };
     return AppSeeds.palette[name] ?? AppSeeds.palette['橙']!;
   }
 }
 
-enum AppId { eat, go, wear, contact }
+enum AppId { eat, go, wear, contact, todo }
 
 extension AppIdExt on AppId {
   String get label {
@@ -53,6 +57,7 @@ extension AppIdExt on AppId {
       case AppId.go: return '今天去哪';
       case AppId.wear: return '今天穿什么';
       case AppId.contact: return '今天联系谁';
+      case AppId.todo: return '今天待办';
     }
   }
 
@@ -62,6 +67,7 @@ extension AppIdExt on AppId {
       case AppId.go: return '📍';
       case AppId.wear: return '👕';
       case AppId.contact: return '📞';
+      case AppId.todo: return '📋';
     }
   }
 }

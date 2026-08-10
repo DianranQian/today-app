@@ -35,6 +35,7 @@ abstract class AppSeeds {
   static const go = Color(0xFF42A5F5); // 去哪：蓝
   static const wear = Color(0xFFEC407A); // 穿什么：粉
   static const contact = Color(0xFFEF5350); // 联系谁：红
+  static const todo = Color(0xFF8D6E63); // 今天待办：棕
 
   /// 8 色预设色板（通用设置中可选）
   static const palette = <String, Color>{
