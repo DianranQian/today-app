@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../core/backup.dart';
 import '../../../core/language.dart';
+import '../../../core/widgets/scheme_random_pool.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
 
@@ -169,6 +170,8 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 12),
           _buildAvoidCard(),
+          const SizedBox(height: 12),
+          SchemeRandomPoolPicker(appId: 'eat'),
           const SizedBox(height: 12),
           // 本应用数据导入导出
           Card(

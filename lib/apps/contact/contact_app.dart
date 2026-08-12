@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import '../../core/theme.dart';
 import 'contact_data_store.dart';
 import 'contact_home_page.dart';
@@ -22,9 +23,23 @@ class _ContactAppPageState extends State<ContactAppPage> {
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
     ContactDataStore.load().then((_) {
       if (mounted) setState(() => _ready = true);
     });
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'contact') return;
+    ContactDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
+    super.dispose();
   }
 
   @override

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:gbk_codec/gbk_codec.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/season.dart';
+import '../../../core/scheme_store.dart';
 import '../models/food_item.dart';
 import 'how_to_cook_dishes.dart';
 import 'xiachufang_dishes.dart';
@@ -47,9 +48,11 @@ class DataStore {
   ];
 
   static Future<void> load() async {
+    await SchemeStore.migrateLegacy('eat');
+    final scheme = await SchemeStore.current('eat');
     final prefs = await SharedPreferences.getInstance();
 
-    final dishesJson = prefs.getString('dishes');
+    final dishesJson = _readListJson(prefs, scheme, 'dishes');
     if (dishesJson != null && dishesJson.isNotEmpty) {
       final cleaned = _sanitize(dishesJson);
       if (cleaned.isEmpty) {
@@ -70,7 +73,7 @@ class DataStore {
       dishes = getDefaultDishes();
     }
 
-    final staplesJson = prefs.getString('staples');
+    final staplesJson = _readListJson(prefs, scheme, 'staples');
     if (staplesJson != null && staplesJson.isNotEmpty) {
       final cleaned = _sanitize(staplesJson);
       if (cleaned.isEmpty) {
@@ -103,7 +106,7 @@ class DataStore {
       }
     }
 
-    final drinksJson = prefs.getString('drinks');
+    final drinksJson = _readListJson(prefs, scheme, 'drinks');
     if (drinksJson != null && drinksJson.isNotEmpty) {
       final cleaned = _sanitize(drinksJson);
       if (cleaned.isEmpty) {
@@ -144,11 +147,28 @@ class DataStore {
     }
   }
 
+  /// 读取方案内列表 JSON：方案键 → （仅菜单一）旧键兜底 → null
+  static String? _readListJson(
+      SharedPreferences prefs, String scheme, String listKey) {
+    final schemeJson = prefs.getString(SchemeStore.dataKey('eat', scheme, listKey));
+    if (schemeJson != null && schemeJson.isNotEmpty) return schemeJson;
+    if (scheme == SchemeStore.defaultSchemeName) {
+      final legacy = SchemeStore.schemeListKeys['eat']![listKey]!;
+      final legacyJson = prefs.getString(legacy);
+      if (legacyJson != null && legacyJson.isNotEmpty) return legacyJson;
+    }
+    return null;
+  }
+
   static Future<void> saveNow([SharedPreferences? prefsInstance]) async {
     final prefs = prefsInstance ?? await SharedPreferences.getInstance();
-    prefs.setString('dishes', jsonEncode(dishes.map((e) => e.toJson()).toList()));
-    prefs.setString('staples', jsonEncode(staples.map((e) => e.toJson()).toList()));
-    prefs.setString('drinks', jsonEncode(drinks.map((e) => e.toJson()).toList()));
+    final scheme = SchemeStore.cachedCurrent('eat');
+    prefs.setString(SchemeStore.dataKey('eat', scheme, 'dishes'),
+        jsonEncode(dishes.map((e) => e.toJson()).toList()));
+    prefs.setString(SchemeStore.dataKey('eat', scheme, 'staples'),
+        jsonEncode(staples.map((e) => e.toJson()).toList()));
+    prefs.setString(SchemeStore.dataKey('eat', scheme, 'drinks'),
+        jsonEncode(drinks.map((e) => e.toJson()).toList()));
     prefs.setString('history', jsonEncode(history.map((e) => e.toJson()).toList()));
     prefs.setString('settings', jsonEncode(settings.toJson()));
     prefs.setString('eat_avoid', jsonEncode(avoidIngredients));
@@ -156,11 +176,20 @@ class DataStore {
 
   static Future<void> save() => saveNow();
 
+  /// 随机池主菜列表：仅当前方案时返回内存数据；多方案时合并（按 name 去重）
+  static Future<List<FoodItem>> loadRandomDishPool() async {
+    final raw = await SchemeStore.rawPoolItems('eat', 'dishes');
+    if (raw == null) return List<FoodItem>.from(dishes);
+    final items = raw.map((m) => FoodItem.fromJson(m)).toList();
+    return items.isEmpty ? List<FoodItem>.from(dishes) : items;
+  }
+
   static List<FoodItem> getFilteredDishes({
     MealTime? mealTime,
     CookMode? cookMode,
+    List<FoodItem>? pool,
   }) {
-    var result = List<FoodItem>.from(dishes);
+    var result = List<FoodItem>.from(pool ?? dishes);
     if (mealTime != null && mealTime != MealTime.all) {
       result = result.where((d) => d.mealTime == mealTime || d.mealTime == MealTime.all).toList();
     }
@@ -177,16 +206,16 @@ class DataStore {
     return result;
   }
 
-  static List<FoodItem> getFilteredStaples({MealTime? mealTime}) {
-    var result = List<FoodItem>.from(staples);
+  static List<FoodItem> getFilteredStaples({MealTime? mealTime, List<FoodItem>? pool}) {
+    var result = List<FoodItem>.from(pool ?? staples);
     if (mealTime != null && mealTime != MealTime.all) {
       result = result.where((s) => s.mealTime == mealTime || s.mealTime == MealTime.all).toList();
     }
     return result;
   }
 
-  static List<FoodItem> getFilteredDrinks({MealTime? mealTime}) {
-    var result = List<FoodItem>.from(drinks);
+  static List<FoodItem> getFilteredDrinks({MealTime? mealTime, List<FoodItem>? pool}) {
+    var result = List<FoodItem>.from(pool ?? drinks);
     if (mealTime != null && mealTime != MealTime.all) {
       result = result.where((d) => d.mealTime == mealTime || d.mealTime == MealTime.all).toList();
     }

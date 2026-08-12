@@ -6,8 +6,10 @@ import '../../core/season.dart';
 import '../../core/theme.dart';
 import '../../core/plan_store.dart';
 import '../../core/widgets/add_to_plan_dialog.dart';
+import '../../core/scheme_store.dart';
 import '../../core/widgets/candidates_bar.dart';
 import '../../core/widgets/date_selector.dart';
+import '../../core/widgets/scheme_switcher.dart';
 import '../../core/widgets/slot_machine.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
@@ -38,10 +40,24 @@ class _WearHomePageState extends State<WearHomePage> {
   int _finalRollIndex = 0;
   FixedExtentScrollController? _wheelController;
 
+  /// 随机池缓存（多方案合并），null = 用当前方案内存数据
+  List<OutfitItem>? _poolCache;
+
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+    _reloadPool();
     _loadPrefs();
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value == 'wear') _reloadPool();
+  }
+
+  Future<void> _reloadPool() async {
+    final pool = await WearDataStore.loadRandomPool();
+    if (mounted) setState(() => _poolCache = pool);
   }
 
   /// 记忆性别/人群偏好
@@ -64,6 +80,7 @@ class _WearHomePageState extends State<WearHomePage> {
 
   @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _wheelController?.dispose();
     super.dispose();
   }
@@ -77,7 +94,8 @@ class _WearHomePageState extends State<WearHomePage> {
         gender: _selectedGender,
         group: _selectedGroup,
         style: _selectedStyle,
-        temperature: _temperature);
+        temperature: _temperature,
+        pool: _poolCache);
     if (WearDataStore.avoidRecent) {
       final recent = WearDataStore.getRecentOutfitNames();
       if (pool.any((o) => !recent.contains(o.name))) {
@@ -163,7 +181,8 @@ class _WearHomePageState extends State<WearHomePage> {
         gender: _selectedGender,
         group: _selectedGroup,
         style: _selectedStyle,
-        temperature: _temperature);
+        temperature: _temperature,
+        pool: _poolCache);
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _picked?.name) {
       _showToast(t('当前条件下就这一套啦', 'Only one outfit matches these filters'));
@@ -199,6 +218,10 @@ class _WearHomePageState extends State<WearHomePage> {
         title: Text(t('今天穿什么', 'Outfits')),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          SchemeSwitcherButton(
+              appId: 'wear', onSwitched: () => WearDataStore.load()),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

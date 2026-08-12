@@ -1,13 +1,19 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/scheme_store.dart';
 import 'todo_models.dart';
 
 class TodoDataStore {
   static List<TodoItem> items = [];
 
   static Future<void> load() async {
+    await SchemeStore.migrateLegacy('todo');
+    final scheme = await SchemeStore.current('todo');
     final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getString('todo_items');
+    var raw = prefs.getString(SchemeStore.dataKey('todo', scheme, 'items'));
+    if ((raw == null || raw.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+      raw = prefs.getString('todo_items');
+    }
     if (raw != null && raw.isNotEmpty) {
       try {
         items = (jsonDecode(raw) as List)
@@ -22,7 +28,9 @@ class TodoDataStore {
 
   static Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('todo_items', jsonEncode(items.map((e) => e.toJson()).toList()));
+    final scheme = SchemeStore.cachedCurrent('todo');
+    prefs.setString(SchemeStore.dataKey('todo', scheme, 'items'),
+        jsonEncode(items.map((e) => e.toJson()).toList()));
   }
 
   static void add(TodoItem item) {

@@ -20,8 +20,9 @@ class TodoSettingsPage extends StatelessWidget {
         appName: t('今天待办', 'Tasks'),
         reload: TodoDataStore.load,
         onClearHistory: TodoDataStore.clearAll,
-        // 待办清单无「避免近期重复」概念，隐藏该开关
+        // 待办清单无「避免近期重复」「随机抽取」概念，隐藏
         showAvoidRecent: false,
+        showRandomPool: false,
       ),
     );
   }

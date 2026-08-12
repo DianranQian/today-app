@@ -4,9 +4,11 @@ import '../../../core/language.dart';
 import '../../../core/plan_store.dart';
 import '../../../core/season.dart' as core_season;
 import '../../../core/theme.dart';
+import '../../../core/scheme_store.dart';
 import '../../../core/widgets/add_to_plan_dialog.dart';
 import '../../../core/widgets/candidates_bar.dart';
 import '../../../core/widgets/date_selector.dart';
+import '../../../core/widgets/scheme_switcher.dart';
 import '../../../core/widgets/slot_machine.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
@@ -45,8 +47,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   FixedExtentScrollController? _stapleWheelController;
   FixedExtentScrollController? _drinkWheelController;
 
+  /// 随机池主菜缓存（多方案合并），null = 用当前方案内存数据
+  List<FoodItem>? _dishPoolCache;
+
+  @override
+  void initState() {
+    super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+    _reloadDishPool();
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value == 'eat') _reloadDishPool();
+  }
+
+  Future<void> _reloadDishPool() async {
+    final pool = await DataStore.loadRandomDishPool();
+    if (mounted) setState(() => _dishPoolCache = pool);
+  }
+
   @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _dishWheelController?.dispose();
     _stapleWheelController?.dispose();
     _drinkWheelController?.dispose();
@@ -77,8 +99,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (_isPicking) return;
     setState(() => _isPicking = true);
 
-    var dishPool = DataStore.getFilteredDishes(mealTime: _selectedMeal, cookMode: _selectedMode);
-    
+    var dishPool = DataStore.getFilteredDishes(
+        mealTime: _selectedMeal, cookMode: _selectedMode, pool: _dishPoolCache);
+
     if (DataStore.settings.avoidRecent) {
       final recent = DataStore.getRecentDishNames();
       if (dishPool.any((d) => !recent.contains(d.name))) {
@@ -87,7 +110,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     if (dishPool.isEmpty) {
-      dishPool = DataStore.getFilteredDishes(mealTime: _selectedMeal, cookMode: _selectedMode);
+      dishPool = DataStore.getFilteredDishes(
+          mealTime: _selectedMeal, cookMode: _selectedMode, pool: _dishPoolCache);
       if (dishPool.isEmpty) {
         _showToast(t('当前条件下没有菜品，去管理页添加吧！',
             'No dishes match these filters. Add some in the manage page!'));
@@ -356,6 +380,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         title: Text(t('今天吃什么', 'What to Eat Today')),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          SchemeSwitcherButton(
+              appId: 'eat', onSwitched: () => DataStore.load()),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

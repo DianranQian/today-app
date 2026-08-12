@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import '../../core/theme.dart';
 import 'data/data_store.dart';
 import 'pages/home_page.dart';
@@ -30,9 +31,23 @@ class _EatAppPageState extends State<EatAppPage> {
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
     DataStore.load().then((_) {
       if (mounted) setState(() => _ready = true);
     });
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'eat') return;
+    DataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
+    super.dispose();
   }
 
   @override

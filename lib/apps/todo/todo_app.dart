@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import '../../core/theme.dart';
 import 'todo_data_store.dart';
 import 'todo_home_page.dart';
@@ -21,9 +22,23 @@ class _TodoAppPageState extends State<TodoAppPage> {
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
     TodoDataStore.load().then((_) {
       if (mounted) setState(() => _ready = true);
     });
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'todo') return;
+    TodoDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
+    super.dispose();
   }
 
   @override

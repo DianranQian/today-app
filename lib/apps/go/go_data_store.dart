@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/scheme_store.dart';
 import 'go_models.dart';
 
 class GoDataStore {
@@ -9,12 +10,18 @@ class GoDataStore {
   static List<GoHistoryRecord> history = [];
 
   static Future<void> load() async {
+    await SchemeStore.migrateLegacy('go');
+    final scheme = await SchemeStore.current('go');
     final prefs = await SharedPreferences.getInstance();
 
-    final placesJson = prefs.getString('go_places');
-    if (placesJson != null && placesJson.isNotEmpty) {
+    final placesJson = prefs.getString(SchemeStore.dataKey('go', scheme, 'places'));
+    var json = placesJson;
+    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+      json = prefs.getString('go_places');
+    }
+    if (json != null && json.isNotEmpty) {
       try {
-        final parsed = (jsonDecode(placesJson) as List)
+        final parsed = (jsonDecode(json) as List)
             .map((e) => PlaceItem.fromJson(e as Map<String, dynamic>))
             .where((p) => p.name.isNotEmpty)
             .toList();
@@ -44,14 +51,24 @@ class GoDataStore {
 
   static Future<void> saveNow([SharedPreferences? prefsInstance]) async {
     final prefs = prefsInstance ?? await SharedPreferences.getInstance();
-    prefs.setString('go_places', jsonEncode(places.map((e) => e.toJson()).toList()));
+    final scheme = SchemeStore.cachedCurrent('go');
+    prefs.setString(SchemeStore.dataKey('go', scheme, 'places'),
+        jsonEncode(places.map((e) => e.toJson()).toList()));
     prefs.setString('go_history', jsonEncode(history.map((e) => e.toJson()).toList()));
   }
 
   static Future<void> save() => saveNow();
 
-  static List<PlaceItem> getFilteredPlaces({PlaceType? type}) {
-    var result = List<PlaceItem>.from(places);
+  /// 随机池去处列表：仅当前方案时返回内存数据；多方案时合并（按 name 去重）
+  static Future<List<PlaceItem>> loadRandomPool() async {
+    final raw = await SchemeStore.rawPoolItems('go', 'places');
+    if (raw == null) return List<PlaceItem>.from(places);
+    final items = raw.map((m) => PlaceItem.fromJson(m)).toList();
+    return items.isEmpty ? List<PlaceItem>.from(places) : items;
+  }
+
+  static List<PlaceItem> getFilteredPlaces({PlaceType? type, List<PlaceItem>? pool}) {
+    var result = List<PlaceItem>.from(pool ?? places);
     if (type != null && type != PlaceType.all) {
       result = result.where((p) => p.type == type || p.type == PlaceType.all).toList();
     }

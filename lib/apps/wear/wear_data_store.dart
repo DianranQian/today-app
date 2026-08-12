@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/season.dart';
+import '../../core/scheme_store.dart';
 import 'wear_models.dart';
 
 class WearDataStore {
@@ -10,12 +11,19 @@ class WearDataStore {
   static List<WearHistoryRecord> history = [];
 
   static Future<void> load() async {
+    await SchemeStore.migrateLegacy('wear');
+    final scheme = await SchemeStore.current('wear');
     final prefs = await SharedPreferences.getInstance();
 
-    final outfitsJson = prefs.getString('wear_outfits');
-    if (outfitsJson != null && outfitsJson.isNotEmpty) {
+    final outfitsJson =
+        prefs.getString(SchemeStore.dataKey('wear', scheme, 'outfits'));
+    var json = outfitsJson;
+    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+      json = prefs.getString('wear_outfits');
+    }
+    if (json != null && json.isNotEmpty) {
       try {
-        final parsed = (jsonDecode(outfitsJson) as List)
+        final parsed = (jsonDecode(json) as List)
             .map((e) => OutfitItem.fromJson(e as Map<String, dynamic>))
             .where((o) => o.name.isNotEmpty)
             .toList();
@@ -45,13 +53,22 @@ class WearDataStore {
 
   static Future<void> saveNow([SharedPreferences? prefsInstance]) async {
     final prefs = prefsInstance ?? await SharedPreferences.getInstance();
-    prefs.setString('wear_outfits',
+    final scheme = SchemeStore.cachedCurrent('wear');
+    prefs.setString(SchemeStore.dataKey('wear', scheme, 'outfits'),
         jsonEncode(outfits.map((e) => e.toJson()).toList()));
     prefs.setString('wear_history',
         jsonEncode(history.map((e) => e.toJson()).toList()));
   }
 
   static Future<void> save() => saveNow();
+
+  /// 随机池穿搭列表：仅当前方案时返回内存数据；多方案时合并（按 name 去重）
+  static Future<List<OutfitItem>> loadRandomPool() async {
+    final raw = await SchemeStore.rawPoolItems('wear', 'outfits');
+    if (raw == null) return List<OutfitItem>.from(outfits);
+    final items = raw.map((m) => OutfitItem.fromJson(m)).toList();
+    return items.isEmpty ? List<OutfitItem>.from(outfits) : items;
+  }
 
   /// 按场景 + 性别 + 人群 + 风格 + 当前季节 + 温度过滤
   static List<OutfitItem> getFilteredOutfits({
@@ -60,9 +77,10 @@ class WearDataStore {
     WearGroup? group,
     WearStyle? style,
     int? temperature,
+    List<OutfitItem>? pool,
   }) {
     final now = targetSeason;
-    var result = List<OutfitItem>.from(outfits);
+    var result = List<OutfitItem>.from(pool ?? outfits);
     if (scene != null && scene != WearScene.all) {
       result = result
           .where((o) => o.scene == scene || o.scene == WearScene.all)

@@ -3,30 +3,60 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'scheme_store.dart';
 
 /// 数据备份：全量/子应用级 导出导入（JSON + 图片打包为 ZIP）
 class BackupService {
-  /// 参与备份的 SharedPreferences 键（不含 flutter. 前缀）
-  static const _prefKeys = [
-    'dishes', 'staples', 'drinks', 'history', 'settings',
-    'go_places', 'go_history',
-    'wear_outfits', 'wear_history',
-    'contact_contacts',
-    'todo_items',
+  /// 全局共享键（历史/设置/偏好，方案化列表键由 [SchemeStore] 动态展开）
+  static const _globalKeys = [
+    'history', 'settings', 'eat_avoid', 'plan_items',
+    'go_history', 'go_avoid_recent',
+    'wear_history', 'wear_avoid_recent', 'wear_gender', 'wear_group',
+    'contact_avoid_recent', 'contact_default_frequency',
     'app_color_eat', 'app_color_go', 'app_color_wear', 'app_color_contact',
     'app_color_todo',
-    'app_amap_key', 'app_deepseek_key',
-    'plan_items',
+    'app_language',
   ];
 
-  /// 各子应用的数据键（子应用级导入导出）
-  static const appKeys = <String, List<String>>{
-    'eat': ['dishes', 'staples', 'drinks', 'history', 'settings', 'eat_avoid'],
-    'go': ['go_places', 'go_history'],
-    'wear': ['wear_outfits', 'wear_history', 'wear_gender', 'wear_group'],
-    'contact': ['contact_contacts'],
-    'todo': ['todo_items'],
-  };
+  /// 参与备份的全部键：全局键 + 所有方案的方案化数据键 + 方案元数据键
+  static Future<Set<String>> allKeys() async {
+    final keys = <String>{..._globalKeys};
+    for (final appId in SchemeStore.schemeListKeys.keys) {
+      keys.addAll(await _schemeKeysFor(appId));
+    }
+    return keys;
+  }
+
+  /// 某子应用的方案元数据键 + 所有方案的数据键
+  static Future<Set<String>> _schemeKeysFor(String appId) async {
+    final keys = <String>{
+      '${appId}_schemes',
+      '${appId}_scheme_current',
+      '${appId}_scheme_random',
+    };
+    final schemes = await SchemeStore.list(appId);
+    final listKeys = SchemeStore.schemeListKeys[appId] ?? const <String, String>{};
+    for (final scheme in schemes) {
+      for (final lk in listKeys.keys) {
+        keys.add(SchemeStore.dataKey(appId, scheme, lk));
+      }
+    }
+    return keys;
+  }
+
+  /// 各子应用的数据键（子应用级导入导出，动态含方案键）
+  static Future<Set<String>> appKeys(String appId) async {
+    final keys = <String>{
+      if (appId == 'eat') ...['history', 'settings', 'eat_avoid'],
+      if (appId == 'go') ...['go_history', 'go_avoid_recent'],
+      if (appId == 'wear')
+        ...['wear_history', 'wear_avoid_recent', 'wear_gender', 'wear_group'],
+      if (appId == 'contact')
+        ...['contact_avoid_recent', 'contact_default_frequency'],
+    };
+    keys.addAll(await _schemeKeysFor(appId));
+    return keys;
+  }
 
   static const _imageExts = {'.jpg', '.jpeg', '.png', '.webp', '.heic'};
 
@@ -71,7 +101,7 @@ class BackupService {
   static Future<File> exportBackup() async {
     final prefs = await SharedPreferences.getInstance();
     final data = <String, dynamic>{};
-    for (final key in _prefKeys) {
+    for (final key in await allKeys()) {
       final v = prefs.getString(key);
       if (v != null) data[key] = v;
     }
@@ -99,7 +129,7 @@ class BackupService {
   static Future<File> exportJson() async {
     final prefs = await SharedPreferences.getInstance();
     final data = <String, dynamic>{};
-    for (final key in _prefKeys) {
+    for (final key in await allKeys()) {
       final v = prefs.getString(key);
       if (v != null) data[key] = v;
     }
@@ -140,7 +170,9 @@ class BackupService {
       }
       if (data == null) throw Exception('备份包缺少 data.json');
       final prefs = await SharedPreferences.getInstance();
+      final allowed = await allKeys();
       for (final entry in data.entries) {
+        if (!allowed.contains(entry.key)) continue;
         await prefs.setString(entry.key, entry.value as String);
         restored++;
       }
@@ -149,7 +181,9 @@ class BackupService {
       final data = Map<String, dynamic>.from(
           jsonDecode(utf8.decode(bytes)));
       final prefs = await SharedPreferences.getInstance();
+      final allowed = await allKeys();
       for (final entry in data.entries) {
+        if (!allowed.contains(entry.key)) continue;
         await prefs.setString(entry.key, entry.value as String);
         restored++;
       }
@@ -163,9 +197,9 @@ class BackupService {
   /// [withImages] true → ZIP（数据 + 该子应用引用的图片）；false → 纯 JSON。
   static Future<File> exportApp(String appId,
       {bool withImages = true}) async {
-    final keys = appKeys[appId];
-    if (keys == null) throw Exception('未知子应用：$appId');
-    final data = await _collectKeys(keys);
+    final keys = await appKeys(appId);
+    if (keys.isEmpty) throw Exception('未知子应用：$appId');
+    final data = await _collectKeys(keys.toList());
     final docs = await getApplicationDocumentsDirectory();
     final ts = DateTime.now().toIso8601String().split('.').first
         .replaceAll(':', '').replaceAll('-', '').replaceAll('T', '_');
@@ -200,8 +234,8 @@ class BackupService {
   /// 导入单个子应用数据（ZIP 或 JSON）。
   /// 返回恢复的键数量；调用方需自行热更新对应 store（load()）。
   static Future<int> importApp(String appId, String path) async {
-    final keys = appKeys[appId];
-    if (keys == null) throw Exception('未知子应用：$appId');
+    final keys = await appKeys(appId);
+    if (keys.isEmpty) throw Exception('未知子应用：$appId');
     final bytes = File(path).readAsBytesSync();
     int restored = 0;
 

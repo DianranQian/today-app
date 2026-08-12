@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/scheme_store.dart';
 import 'contact_models.dart';
 
 class ContactDataStore {
@@ -7,13 +8,20 @@ class ContactDataStore {
   static bool avoidRecent = true;
 
   static Future<void> load() async {
+    await SchemeStore.migrateLegacy('contact');
+    final scheme = await SchemeStore.current('contact');
     final prefs = await SharedPreferences.getInstance();
     avoidRecent = prefs.getBool('contact_avoid_recent') ?? true;
 
-    final contactsJson = prefs.getString('contact_contacts');
-    if (contactsJson != null && contactsJson.isNotEmpty) {
+    final contactsJson =
+        prefs.getString(SchemeStore.dataKey('contact', scheme, 'contacts'));
+    var json = contactsJson;
+    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+      json = prefs.getString('contact_contacts');
+    }
+    if (json != null && json.isNotEmpty) {
       try {
-        final parsed = (jsonDecode(contactsJson) as List)
+        final parsed = (jsonDecode(json) as List)
             .map((e) => ContactItem.fromJson(e as Map<String, dynamic>))
             .where((c) => c.name.isNotEmpty)
             .toList();
@@ -24,16 +32,24 @@ class ContactDataStore {
     } else {
       contacts = [];
     }
-    saveNow(prefs);
   }
 
   static Future<void> saveNow([SharedPreferences? prefsInstance]) async {
     final prefs = prefsInstance ?? await SharedPreferences.getInstance();
-    prefs.setString('contact_contacts',
+    final scheme = SchemeStore.cachedCurrent('contact');
+    prefs.setString(SchemeStore.dataKey('contact', scheme, 'contacts'),
         jsonEncode(contacts.map((e) => e.toJson()).toList()));
   }
 
   static Future<void> save() => saveNow();
+
+  /// 随机池联系人列表：仅当前方案时返回内存数据；多方案时合并（按 name 去重）
+  static Future<List<ContactItem>> loadRandomPool() async {
+    final raw = await SchemeStore.rawPoolItems('contact', 'contacts');
+    if (raw == null) return List<ContactItem>.from(contacts);
+    final items = raw.map((m) => ContactItem.fromJson(m)).toList();
+    return items.isEmpty ? List<ContactItem>.from(contacts) : items;
+  }
 
   static List<ContactItem> search(String keyword) {
     final kw = keyword.trim().toLowerCase();

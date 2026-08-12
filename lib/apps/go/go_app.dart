@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import '../../core/theme.dart';
 import 'go_data_store.dart';
 import 'go_home_page.dart';
@@ -23,9 +24,23 @@ class _GoAppPageState extends State<GoAppPage> {
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
     GoDataStore.load().then((_) {
       if (mounted) setState(() => _ready = true);
     });
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'go') return;
+    GoDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
+    super.dispose();
   }
 
   @override

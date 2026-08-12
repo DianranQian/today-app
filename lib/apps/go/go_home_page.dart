@@ -3,7 +3,9 @@ import '../../core/language.dart';
 import '../../core/theme.dart';
 import '../../core/plan_store.dart';
 import '../../core/widgets/add_to_plan_dialog.dart';
+import '../../core/scheme_store.dart';
 import '../../core/widgets/candidates_bar.dart';
+import '../../core/widgets/scheme_switcher.dart';
 import '../../core/widgets/slot_machine.dart';
 import '../../core/image_helper.dart';
 import 'go_models.dart';
@@ -32,8 +34,28 @@ class _GoHomePageState extends State<GoHomePage> {
   int _finalRollIndex = 0;
   FixedExtentScrollController? _wheelController;
 
+  /// 随机池缓存（多方案合并），null = 用当前方案内存数据
+  List<PlaceItem>? _poolCache;
+
+  @override
+  void initState() {
+    super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+    _reloadPool();
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value == 'go') _reloadPool();
+  }
+
+  Future<void> _reloadPool() async {
+    final pool = await GoDataStore.loadRandomPool();
+    if (mounted) setState(() => _poolCache = pool);
+  }
+
   @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _wheelController?.dispose();
     super.dispose();
   }
@@ -42,7 +64,8 @@ class _GoHomePageState extends State<GoHomePage> {
     if (_isPicking) return;
     setState(() => _isPicking = true);
 
-    var pool = GoDataStore.getFilteredPlaces(type: _selectedType);
+    var pool = GoDataStore.getFilteredPlaces(
+        type: _selectedType, pool: _poolCache);
     if (_maxPriceTier != null) {
       pool = pool.where((p) => p.priceTier <= _maxPriceTier!).toList();
     }
@@ -127,7 +150,8 @@ class _GoHomePageState extends State<GoHomePage> {
   }
   void _swap() {
     if (_isPicking || _picked == null) return;
-    var pool = GoDataStore.getFilteredPlaces(type: _selectedType);
+    var pool = GoDataStore.getFilteredPlaces(
+        type: _selectedType, pool: _poolCache);
     if (_maxPriceTier != null) {
       pool = pool.where((p) => p.priceTier <= _maxPriceTier!).toList();
     }
@@ -166,6 +190,10 @@ class _GoHomePageState extends State<GoHomePage> {
         title: Text(t('今天去哪', 'Where To Go')),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          SchemeSwitcherButton(
+              appId: 'go', onSwitched: () => GoDataStore.load()),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),

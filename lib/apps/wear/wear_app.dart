@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import '../../core/theme.dart';
 import 'wear_data_store.dart';
 import 'wear_home_page.dart';
@@ -22,9 +23,23 @@ class _WearAppPageState extends State<WearAppPage> {
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
     WearDataStore.load().then((_) {
       if (mounted) setState(() => _ready = true);
     });
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'wear') return;
+    WearDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
+    super.dispose();
   }
 
   @override

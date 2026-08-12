@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../backup.dart';
 import '../language.dart';
+import 'scheme_random_pool.dart';
 
 /// 子应用设置面板（通用）：
 /// 避免近期重复开关、清空历史、导出/导入本应用数据
@@ -18,6 +19,7 @@ class SubAppSettingsPanel extends StatefulWidget {
     required this.onClearHistory,
     this.extra,
     this.showAvoidRecent = true,
+    this.showRandomPool = true,
     this.clearLabel,
   });
 
@@ -36,6 +38,9 @@ class SubAppSettingsPanel extends StatefulWidget {
 
   /// 是否显示「避免近期重复」开关（待办等无此概念的应用传 false）
   final bool showAvoidRecent;
+
+  /// 是否显示「参与随机的方案」多选（待办无随机功能传 false）
+  final bool showRandomPool;
 
   /// 清空按钮文案（null 时用默认「清空历史」）
   final String? clearLabel;
@@ -171,6 +176,10 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
         if (widget.extra != null) ...[
           const SizedBox(height: 12),
           widget.extra!,
+        ],
+        if (widget.showRandomPool) ...[
+          const SizedBox(height: 12),
+          SchemeRandomPoolPicker(appId: widget.appId),
         ],
         const SizedBox(height: 12),
         Card(

@@ -4,7 +4,9 @@ import 'contact_actions.dart';
 import 'contact_models.dart';
 import '../../core/image_helper.dart';
 import '../../core/plan_store.dart';
+import '../../core/scheme_store.dart';
 import '../../core/widgets/add_to_plan_dialog.dart';
+import '../../core/widgets/scheme_switcher.dart';
 import 'contact_data_store.dart';
 
 class ContactHomePage extends StatefulWidget {
@@ -17,15 +19,40 @@ class ContactHomePage extends StatefulWidget {
 class _ContactHomePageState extends State<ContactHomePage> {
   ContactItem? _picked;
 
+  /// 随机池缓存（多方案合并），null = 用当前方案内存数据
+  List<ContactItem>? _poolCache;
+
+  @override
+  void initState() {
+    super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+    _reloadPool();
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value == 'contact') _reloadPool();
+  }
+
+  Future<void> _reloadPool() async {
+    final pool = await ContactDataStore.loadRandomPool();
+    if (mounted) setState(() => _poolCache = pool);
+  }
+
+  @override
+  void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
+    super.dispose();
+  }
+
   void _pick() {
-    if (ContactDataStore.contacts.isEmpty) {
+    var contacts = _poolCache ?? ContactDataStore.contacts;
+    if (contacts.isEmpty) {
       _showToast(t('还没有联系人，去管理页添加吧！', 'No contacts yet. Add some in Manage!'));
       return;
     }
     // 逾期优先：有逾期的人时只从逾期者里随机
-    final overdue =
-        ContactDataStore.contacts.where((c) => c.isOverdue).toList();
-    var pool = overdue.isNotEmpty ? overdue : ContactDataStore.contacts;
+    final overdue = contacts.where((c) => c.isOverdue).toList();
+    var pool = overdue.isNotEmpty ? overdue : contacts;
     // 避免近期重复：排除最近联系过的人（只剩 1 人时不排除）
     if (ContactDataStore.avoidRecent && pool.length > 1) {
       final contacted = pool.where((c) => c.lastContact != null).toList();
@@ -67,6 +94,10 @@ class _ContactHomePageState extends State<ContactHomePage> {
         title: Text(t('今天联系谁', 'Who to call today?')),
         centerTitle: true,
         toolbarHeight: 44,
+        actions: [
+          SchemeSwitcherButton(
+              appId: 'contact', onSwitched: () => ContactDataStore.load()),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
