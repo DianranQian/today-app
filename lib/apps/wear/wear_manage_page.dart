@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/language.dart';
 import '../../core/season.dart';
 import '../../core/image_helper.dart';
 import 'dart:convert';
@@ -38,11 +39,11 @@ class _WearManagePageState extends State<WearManagePage> {
   void _add() {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast('请输入穿搭名称');
+      _showToast(t('请输入穿搭名称', 'Please enter an outfit name'));
       return;
     }
     if (WearDataStore.outfits.any((o) => o.name == name)) {
-      _showToast('这套穿搭已经存在了');
+      _showToast(t('这套穿搭已经存在了', 'This outfit already exists'));
       return;
     }
     WearDataStore.outfits.add(OutfitItem(
@@ -61,7 +62,7 @@ class _WearManagePageState extends State<WearManagePage> {
     _emojiCtrl.clear();
     _imagePath = null;
     setState(() {});
-    _showToast('已添加 $name');
+    _showToast(t('已添加 $name', 'Added $name'));
   }
 
   void _delete(int index) {
@@ -69,7 +70,7 @@ class _WearManagePageState extends State<WearManagePage> {
     WearDataStore.outfits.removeAt(index);
     WearDataStore.save();
     setState(() {});
-    _showToast('已删除 $name');
+    _showToast(t('已删除 $name', 'Deleted $name'));
   }
 
 
@@ -87,7 +88,7 @@ class _WearManagePageState extends State<WearManagePage> {
           child: OutlinedButton.icon(
             onPressed: _pickImage,
             icon: const Icon(Icons.add_photo_alternate, size: 18),
-            label: const Text('添加图片'),
+            label: Text(t('添加图片', 'Add Photo')),
           ),
         ),
         if (_imagePath != null)
@@ -130,7 +131,7 @@ class _WearManagePageState extends State<WearManagePage> {
         .map((o) => o.toJson())
         .toList();
     if (items.isEmpty) {
-      throw Exception('AI 返回内容无法匹配穿搭，请重试');
+      throw Exception(t('AI 返回内容无法匹配穿搭，请重试', 'AI response did not match any outfit. Please try again.'));
     }
     await ProfileStore.save('wear', 'AI精选', items);
     return 'AI精选';
@@ -147,12 +148,12 @@ class _WearManagePageState extends State<WearManagePage> {
     final outfits = WearDataStore.search(_searchCtrl.text);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('管理穿搭'),
+        title: Text(t('管理穿搭', 'Manage Outfits')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
           IconButton(
-            tooltip: '配置集',
+            tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),
             onPressed: _openProfiles,
           ),
@@ -167,7 +168,7 @@ class _WearManagePageState extends State<WearManagePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('添加穿搭',
+                  Text(t('添加穿搭', 'Add Outfit'),
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
@@ -176,8 +177,8 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: TextField(
                           controller: _nameCtrl,
-                          decoration: const InputDecoration(
-                            labelText: '穿搭名称',
+                          decoration: InputDecoration(
+                            labelText: t('穿搭名称', 'Outfit Name'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -206,8 +207,8 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<WearScene>(
                           value: _scene,
-                          decoration: const InputDecoration(
-                            labelText: '场景',
+                          decoration: InputDecoration(
+                            labelText: t('场景', 'Scene'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -224,8 +225,8 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<WearGender>(
                           value: _gender,
-                          decoration: const InputDecoration(
-                            labelText: '性别',
+                          decoration: InputDecoration(
+                            labelText: t('性别', 'Gender'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -241,8 +242,8 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<WearGroup>(
                           value: _group,
-                          decoration: const InputDecoration(
-                            labelText: '人群',
+                          decoration: InputDecoration(
+                            labelText: t('人群', 'Group'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -263,8 +264,8 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<WearStyle>(
                           value: _style,
-                          decoration: const InputDecoration(
-                            labelText: '风格',
+                          decoration: InputDecoration(
+                            labelText: t('风格', 'Style'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -281,13 +282,13 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<int?>(
                           value: _tempMin,
-                          decoration: const InputDecoration(
-                            labelText: '最低温',
+                          decoration: InputDecoration(
+                            labelText: t('最低温', 'Min Temp'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
                           items: [
-                            const DropdownMenuItem(value: null, child: Text('不限')),
+                            DropdownMenuItem(value: null, child: Text(t('不限', 'Any'))),
                             for (var t = -10; t <= 30; t += 5)
                               DropdownMenuItem(value: t, child: Text('$t°C')),
                           ],
@@ -298,13 +299,13 @@ class _WearManagePageState extends State<WearManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<int?>(
                           value: _tempMax,
-                          decoration: const InputDecoration(
-                            labelText: '最高温',
+                          decoration: InputDecoration(
+                            labelText: t('最高温', 'Max Temp'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
                           items: [
-                            const DropdownMenuItem(value: null, child: Text('不限')),
+                            DropdownMenuItem(value: null, child: Text(t('不限', 'Any'))),
                             for (var t = 5; t <= 45; t += 5)
                               DropdownMenuItem(value: t, child: Text('$t°C')),
                           ],
@@ -324,7 +325,7 @@ class _WearManagePageState extends State<WearManagePage> {
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('添加'),
+                      child: Text(t('添加', 'Add')),
                     ),
                   ),
                 ],
@@ -334,9 +335,9 @@ class _WearManagePageState extends State<WearManagePage> {
           const SizedBox(height: 12),
           TextField(
             controller: _searchCtrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
-              hintText: '按名称搜索',
+              hintText: t('按名称搜索', 'Search by name'),
               border: OutlineInputBorder(),
               isDense: true,
             ),
@@ -344,17 +345,18 @@ class _WearManagePageState extends State<WearManagePage> {
           ),
           const SizedBox(height: 8),
           if (outfits.isEmpty)
-            const Center(child: Padding(
+            Center(child: Padding(
               padding: EdgeInsets.all(32),
-              child: Text('没有找到匹配的穿搭', style: TextStyle(color: Colors.grey)),
+              child: Text(t('没有找到匹配的穿搭', 'No matching outfits found'), style: TextStyle(color: Colors.grey)),
             ))
           else
             ...outfits.asMap().entries.map((entry) {
               final i = WearDataStore.outfits.indexOf(entry.value);
               final outfit = entry.value;
               final seasonTag = outfit.seasons.isEmpty
-                  ? '四季通用'
-                  : outfit.seasons.map((s) => s.label).join('/');
+                  ? t('四季通用', 'All seasons')
+                  : t('${outfit.seasons.map((s) => s.label).join('/')}季',
+                      outfit.seasons.map((s) => s.label).join('/'));
               return Dismissible(
                 key: ValueKey('outfit__${outfit.name}'),
                 direction: DismissDirection.endToStart,
@@ -368,7 +370,7 @@ class _WearManagePageState extends State<WearManagePage> {
                 child: ListTile(
                   leading: ItemImage(imagePath: outfit.imagePath, emoji: outfit.emoji, size: 44),
                   title: Text(outfit.name),
-                  subtitle: Text('${outfit.scene.label} · ${outfit.gender.label} · ${outfit.group.label} · ${outfit.style.label} · $seasonTag季'),
+                  subtitle: Text('${outfit.scene.label} · ${outfit.gender.label} · ${outfit.group.label} · ${outfit.style.label} · $seasonTag'),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red),
                     onPressed: () => _delete(i),
@@ -378,7 +380,7 @@ class _WearManagePageState extends State<WearManagePage> {
             }),
           const SizedBox(height: 12),
           if (WearDataStore.history.isNotEmpty) ...[
-            const Text('最近推荐',
+            Text(t('最近推荐', 'Recent Picks'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             ...WearDataStore.history.take(20).map((h) {
@@ -395,9 +397,9 @@ class _WearManagePageState extends State<WearManagePage> {
               onPressed: () {
                 WearDataStore.clearHistory();
                 setState(() {});
-                _showToast('历史已清空');
+                _showToast(t('历史已清空', 'History cleared'));
               },
-              child: const Text('清空历史'),
+              child: Text(t('清空历史', 'Clear History')),
             ),
           ],
         ],

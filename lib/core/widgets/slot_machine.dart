@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../language.dart';
 
 /// 老虎机公共组件：eat/go/wear 三子应用共用。
 ///
@@ -9,14 +10,15 @@ import 'package:flutter/material.dart';
 
 /// 滚动提示胶囊
 class RollingHint extends StatelessWidget {
-  const RollingHint({super.key, this.text = '正在转动，稍等片刻...'});
+  const RollingHint({super.key, this.text});
 
-  final String text;
+  final String? text;
 
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     final darkText = Color.lerp(primary, Colors.black, 0.35)!;
+    final msg = text ?? t('正在转动，稍等片刻...', 'Rolling, please wait...');
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -29,7 +31,7 @@ class RollingHint extends StatelessWidget {
         children: [
           Icon(Icons.casino, size: 16, color: primary),
           const SizedBox(width: 6),
-          Text(text, style: TextStyle(fontSize: 13, color: darkText)),
+          Text(msg, style: TextStyle(fontSize: 13, color: darkText)),
         ],
       ),
     );
@@ -195,15 +197,16 @@ class SlotReel<T> extends StatelessWidget {
                         ),
                       ],
                     )
-                  : const Center(
+                  : Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.block, size: 20, color: Colors.grey),
-                          SizedBox(height: 4),
-                          Text('未开启',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.grey)),
+                          const Icon(Icons.block,
+                              size: 20, color: Colors.grey),
+                          const SizedBox(height: 4),
+                          Text(t('未开启', 'Off'),
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey)),
                         ],
                       ),
                     ),

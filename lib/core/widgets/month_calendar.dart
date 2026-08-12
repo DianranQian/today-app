@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../language.dart';
 
 /// 手写月历对话框：返回选中的日期（date-only），取消返回 null。
 ///
@@ -26,7 +27,20 @@ class _MonthCalendarDialog extends StatefulWidget {
 }
 
 class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
-  static const _weekdayHeaders = ['日', '一', '二', '三', '四', '五', '六'];
+  static const _enMonths = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+
+  List<String> get _weekdayHeaders => [
+        t('日', 'Su'),
+        t('一', 'Mo'),
+        t('二', 'Tu'),
+        t('三', 'We'),
+        t('四', 'Th'),
+        t('五', 'Fr'),
+        t('六', 'Sa'),
+      ];
 
   late int _year;
   late int _month;
@@ -76,15 +90,15 @@ class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
         children: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
-            tooltip: '上个月',
+            tooltip: t('上个月', 'Previous Month'),
             onPressed: () => _shiftMonth(-1),
           ),
-          Text('$_year年$_month月',
+          Text(t('$_year年$_month月', '${_enMonths[_month - 1]} $_year'),
               style: const TextStyle(
                   fontSize: 17, fontWeight: FontWeight.w600)),
           IconButton(
             icon: const Icon(Icons.chevron_right),
-            tooltip: '下个月',
+            tooltip: t('下个月', 'Next Month'),
             onPressed: () => _shiftMonth(1),
           ),
         ],
@@ -177,7 +191,7 @@ class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text(t('取消', 'Cancel')),
         ),
       ],
     );

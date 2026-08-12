@@ -1,4 +1,5 @@
 
+import '../../../core/language.dart';
 import '../../../core/season.dart';
 
 enum MealTime { breakfast, lunch, dinner, all }
@@ -8,10 +9,10 @@ enum CookMode { takeout, cook, eatOut, all }
 extension MealTimeExt on MealTime {
   String get label {
     switch (this) {
-      case MealTime.breakfast: return '早餐';
-      case MealTime.lunch: return '午餐';
-      case MealTime.dinner: return '晚餐';
-      case MealTime.all: return '通用';
+      case MealTime.breakfast: return t('早餐', 'Breakfast');
+      case MealTime.lunch: return t('午餐', 'Lunch');
+      case MealTime.dinner: return t('晚餐', 'Dinner');
+      case MealTime.all: return t('通用', 'Any');
     }
   }
   
@@ -28,10 +29,10 @@ extension MealTimeExt on MealTime {
 extension CookModeExt on CookMode {
   String get label {
     switch (this) {
-      case CookMode.takeout: return '外卖';
-      case CookMode.cook: return '自己做';
-      case CookMode.eatOut: return '出去吃';
-      case CookMode.all: return '不限方式';
+      case CookMode.takeout: return t('外卖', 'Takeout');
+      case CookMode.cook: return t('自己做', 'Cook at home');
+      case CookMode.eatOut: return t('出去吃', 'Dine out');
+      case CookMode.all: return t('不限方式', 'Any');
     }
   }
   

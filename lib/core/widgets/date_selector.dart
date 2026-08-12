@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../language.dart';
 import '../season.dart';
 import 'month_calendar.dart';
 
@@ -41,7 +42,11 @@ class TargetDateSelector extends StatelessWidget {
     final primary = Theme.of(context).colorScheme.primary;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    const quickNames = ['今天', '明天', '后天'];
+    final quickNames = [
+      t('今天', 'Today'),
+      t('明天', 'Tomorrow'),
+      t('后天', 'Day after'),
+    ];
     final custom = customTargetDate;
 
     Widget chip({
@@ -78,8 +83,9 @@ class TargetDateSelector extends StatelessWidget {
               },
             ),
           chip(
-            label:
-                custom == null ? '📅 选日期' : '📅 ${formatMdCn(custom)}',
+            label: custom == null
+                ? t('📅 选日期', '📅 Pick a date')
+                : '📅 ${formatMdCn(custom)}',
             selected: custom != null,
             onTap: () async {
               final picked =

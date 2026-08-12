@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
+import '../../core/language.dart';
 import '../../core/theme.dart';
 import 'go_data_store.dart';
 import 'go_home_page.dart';
@@ -47,23 +48,23 @@ class _GoAppPageState extends State<GoAppPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
-              label: '首页'),
+              label: t('首页', 'Home')),
           NavigationDestination(
               icon: Icon(Icons.near_me_outlined),
               selectedIcon: Icon(Icons.near_me),
-              label: '附近'),
+              label: t('附近', 'Nearby')),
           NavigationDestination(
               icon: Icon(Icons.place_outlined),
               selectedIcon: Icon(Icons.place),
-              label: '管理'),
+              label: t('管理', 'Manage')),
           NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
-              label: '设置'),
+              label: t('设置', 'Settings')),
         ],
       ),
       ),

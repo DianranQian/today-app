@@ -1,4 +1,5 @@
 import '../../core/season.dart';
+import '../../core/language.dart';
 
 /// 性别
 enum WearGender { male, female, unisex }
@@ -6,9 +7,9 @@ enum WearGender { male, female, unisex }
 extension WearGenderExt on WearGender {
   String get label {
     switch (this) {
-      case WearGender.male: return '男';
-      case WearGender.female: return '女';
-      case WearGender.unisex: return '通用';
+      case WearGender.male: return t('男', 'Male');
+      case WearGender.female: return t('女', 'Female');
+      case WearGender.unisex: return t('通用', 'Unisex');
     }
   }
 
@@ -27,11 +28,11 @@ enum WearGroup { student, office, elder, child, all }
 extension WearGroupExt on WearGroup {
   String get label {
     switch (this) {
-      case WearGroup.student: return '学生';
-      case WearGroup.office: return '上班族';
-      case WearGroup.elder: return '长辈';
-      case WearGroup.child: return '儿童';
-      case WearGroup.all: return '通用';
+      case WearGroup.student: return t('学生', 'Student');
+      case WearGroup.office: return t('上班族', 'Office');
+      case WearGroup.elder: return t('长辈', 'Senior');
+      case WearGroup.child: return t('儿童', 'Child');
+      case WearGroup.all: return t('通用', 'All');
     }
   }
 
@@ -52,12 +53,12 @@ enum WearStyle { casual, business, sweet, retro, trendy, all }
 extension WearStyleExt on WearStyle {
   String get label {
     switch (this) {
-      case WearStyle.casual: return '休闲';
-      case WearStyle.business: return '商务';
-      case WearStyle.sweet: return '甜美';
-      case WearStyle.retro: return '复古';
-      case WearStyle.trendy: return '潮流';
-      case WearStyle.all: return '通用';
+      case WearStyle.casual: return t('休闲', 'Casual');
+      case WearStyle.business: return t('商务', 'Business');
+      case WearStyle.sweet: return t('甜美', 'Sweet');
+      case WearStyle.retro: return t('复古', 'Retro');
+      case WearStyle.trendy: return t('潮流', 'Trendy');
+      case WearStyle.all: return t('通用', 'All');
     }
   }
 
@@ -79,12 +80,12 @@ enum WearScene { daily, sport, formal, date, commute, all }
 extension WearSceneExt on WearScene {
   String get label {
     switch (this) {
-      case WearScene.daily: return '日常';
-      case WearScene.sport: return '运动';
-      case WearScene.formal: return '正式';
-      case WearScene.date: return '约会';
-      case WearScene.commute: return '通勤';
-      case WearScene.all: return '全部';
+      case WearScene.daily: return t('日常', 'Daily');
+      case WearScene.sport: return t('运动', 'Sports');
+      case WearScene.formal: return t('正式', 'Formal');
+      case WearScene.date: return t('约会', 'Date');
+      case WearScene.commute: return t('通勤', 'Commute');
+      case WearScene.all: return t('全部', 'All');
     }
   }
 

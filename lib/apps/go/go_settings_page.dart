@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/language.dart';
 import '../../core/widgets/sub_app_settings_panel.dart';
 import 'go_data_store.dart';
 
@@ -10,7 +11,7 @@ class GoSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('设置'),
+        title: Text(t('设置', 'Settings')),
         centerTitle: true,
         toolbarHeight: 44,
       ),

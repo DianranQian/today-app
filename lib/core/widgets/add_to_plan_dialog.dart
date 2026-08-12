@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../language.dart';
 import '../plan_store.dart';
 import '../season.dart';
 import 'month_calendar.dart';
@@ -29,7 +30,8 @@ Future<void> showAddToPlanDialog(
   if (context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('已加入 ${formatMdCn(result.date)}的计划'),
+        content: Text(t('已加入 ${formatMdCn(result.date)}的计划',
+            'Added to plan for ${formatMdCn(result.date)}')),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -81,7 +83,11 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
       today.add(const Duration(days: 1)),
       today.add(const Duration(days: 2)),
     ];
-    const quickNames = ['今天', '明天', '后天'];
+    final quickNames = [
+      t('今天', 'Today'),
+      t('明天', 'Tomorrow'),
+      t('后天', 'Day after'),
+    ];
     final isCustom = !quickDays.any((d) => _sameDay(d, _date));
 
     ChoiceChip buildChip({
@@ -102,12 +108,13 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
     }
 
     return AlertDialog(
-      title: Text('加入计划 · ${widget.emoji} ${widget.title}'),
+      title: Text(t('加入计划 · ${widget.emoji} ${widget.title}',
+          'Add to Plan · ${widget.emoji} ${widget.title}')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('计划日期', style: TextStyle(fontSize: 13)),
+          Text(t('计划日期', 'Plan Date'), style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -120,7 +127,9 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
                   onTap: () => setState(() => _date = quickDays[i]),
                 ),
               buildChip(
-                label: isCustom ? '📅 ${formatMdCn(_date)}' : '📅 选日期',
+                label: isCustom
+                    ? '📅 ${formatMdCn(_date)}'
+                    : t('📅 选日期', '📅 Pick a date'),
                 selected: isCustom,
                 onTap: () async {
                   final picked =
@@ -133,9 +142,9 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
           const SizedBox(height: 12),
           TextField(
             controller: _noteCtrl,
-            decoration: const InputDecoration(
-              labelText: '备注（可选）',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: t('备注（可选）', 'Note (optional)'),
+              border: const OutlineInputBorder(),
               isDense: true,
             ),
           ),
@@ -143,11 +152,12 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context), child: const Text('取消')),
+            onPressed: () => Navigator.pop(context),
+            child: Text(t('取消', 'Cancel'))),
         FilledButton(
           onPressed: () => Navigator.pop(
               context, _PlanDraft(_date, _noteCtrl.text.trim())),
-          child: const Text('确认加入'),
+          child: Text(t('确认加入', 'Add to Plan')),
         ),
       ],
     );

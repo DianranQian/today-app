@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
+import '../../core/language.dart';
 import '../../core/theme.dart';
 import 'data/data_store.dart';
 import 'pages/home_page.dart';
@@ -51,23 +52,23 @@ class _EatAppPageState extends State<EatAppPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
-              label: '首页'),
+              label: t('首页', 'Home')),
           NavigationDestination(
               icon: Icon(Icons.restaurant_menu_outlined),
               selectedIcon: Icon(Icons.restaurant_menu),
-              label: '菜单'),
+              label: t('菜单', 'Menu')),
           NavigationDestination(
               icon: Icon(Icons.near_me_outlined),
               selectedIcon: Icon(Icons.near_me),
-              label: '附近'),
+              label: t('附近', 'Nearby')),
           NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
-              label: '设置'),
+              label: t('设置', 'Settings')),
         ],
       ),
       ),

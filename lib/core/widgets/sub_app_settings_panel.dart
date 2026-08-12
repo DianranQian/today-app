@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../backup.dart';
+import '../language.dart';
 
 /// 子应用设置面板（通用）：
 /// 避免近期重复开关、清空历史、导出/导入本应用数据
@@ -17,7 +18,7 @@ class SubAppSettingsPanel extends StatefulWidget {
     required this.onClearHistory,
     this.extra,
     this.showAvoidRecent = true,
-    this.clearLabel = '清空历史',
+    this.clearLabel,
   });
 
   /// 子应用标识（eat/go/wear/contact/todo）
@@ -36,8 +37,8 @@ class SubAppSettingsPanel extends StatefulWidget {
   /// 是否显示「避免近期重复」开关（待办等无此概念的应用传 false）
   final bool showAvoidRecent;
 
-  /// 清空按钮文案
-  final String clearLabel;
+  /// 清空按钮文案（null 时用默认「清空历史」）
+  final String? clearLabel;
 
   @override
   State<SubAppSettingsPanel> createState() => _SubAppSettingsPanelState();
@@ -81,40 +82,44 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
       final action = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('导出完成'),
+          title: Text(t('导出完成', 'Export Complete')),
           content: Text(withImages
-              ? '已生成「${widget.appName}」数据备份（含该应用的照片）。'
-              : '已生成「${widget.appName}」纯数据 JSON（不含照片）。'),
+              ? t('已生成「${widget.appName}」数据备份（含该应用的照片）。',
+                  'Backup created for "${widget.appName}" (includes photos).')
+              : t('已生成「${widget.appName}」纯数据 JSON（不含照片）。',
+                  'Exported "${widget.appName}" as data-only JSON (no photos).')),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'share'),
-                child: const Text('分享')),
+                child: Text(t('分享', 'Share'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'download'),
-                child: const Text('存入下载')),
+                child: Text(t('存入下载', 'Save to Downloads'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('关闭')),
+                child: Text(t('关闭', 'Close'))),
           ],
         ),
       );
       if (action == 'share') {
         await Share.shareXFiles([XFile(file.path)],
-            subject: '${widget.appName} 数据', text: '${widget.appName} 数据');
+            subject: t('${widget.appName} 数据', '${widget.appName} data'),
+            text: t('${widget.appName} 数据', '${widget.appName} data'));
       } else if (action == 'download') {
         final downloads = await getDownloadsDirectory();
         if (downloads != null) {
           final dest = '${downloads.path}${file.uri.pathSegments.last}';
           file.copySync(dest);
-          _toast('已存入下载目录');
+          _toast(t('已存入下载目录', 'Saved to Downloads folder'));
         } else {
-          _toast('无法访问下载目录，已保留在应用目录');
+          _toast(t('无法访问下载目录，已保留在应用目录',
+              'Cannot access Downloads folder; file kept in app folder'));
         }
       }
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('导出失败：$e');
+      _toast(t('导出失败：$e', 'Export failed: $e'));
     }
   }
 
@@ -132,11 +137,12 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
       await widget.reload();
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('导入成功（$restored 项），已生效');
+      _toast(t('导入成功（$restored 项），已生效',
+          'Import successful ($restored items)'));
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('导入失败：$e');
+      _toast(t('导入失败：$e', 'Import failed: $e'));
     }
   }
 
@@ -150,8 +156,9 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
             child: Column(
               children: [
                 SwitchListTile(
-                  title: const Text('避免近期重复'),
-                  subtitle: const Text('7 天内用过的不会再次推荐'),
+                  title: Text(t('避免近期重复', 'Avoid Recent Repeats')),
+                  subtitle: Text(t('7 天内用过的不会再次推荐',
+                      'Items used within 7 days won\'t be suggested again')),
                   value: _avoidRecent,
                   onChanged: (v) {
                     setState(() => _avoidRecent = v);
@@ -171,31 +178,35 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
             children: [
               ListTile(
                 leading: const Icon(Icons.upload_file, color: Colors.orange),
-                title: const Text('导出 ZIP 备份'),
-                subtitle: Text('${widget.appName} 数据 + 该应用照片'),
+                title: Text(t('导出 ZIP 备份', 'Export ZIP Backup')),
+                subtitle: Text(t('${widget.appName} 数据 + 该应用照片',
+                    '${widget.appName} data + photos')),
                 onTap: _busy ? null : () => _export(true),
               ),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.code, color: Colors.orange),
-                title: const Text('导出 JSON 数据'),
-                subtitle: Text('${widget.appName} 纯数据，轻量易分享'),
+                title: Text(t('导出 JSON 数据', 'Export JSON Data')),
+                subtitle: Text(t('${widget.appName} 纯数据，轻量易分享',
+                    '${widget.appName} data only, easy to share')),
                 onTap: _busy ? null : () => _export(false),
               ),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.download, color: Colors.orange),
-                title: const Text('导入数据'),
-                subtitle: const Text('从 ZIP/JSON 恢复（立即生效）'),
+                title: Text(t('导入数据', 'Import Data')),
+                subtitle: Text(t('从 ZIP/JSON 恢复（立即生效）',
+                    'Restore from ZIP/JSON (takes effect immediately)')),
                 onTap: _busy ? null : _import,
               ),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.delete_sweep, color: Colors.red),
-                title: Text(widget.clearLabel),
+                title: Text(widget.clearLabel ??
+                    t('清空历史', 'Clear History')),
                 onTap: () {
                   widget.onClearHistory();
-                  _toast('已清空');
+                  _toast(t('已清空', 'Cleared'));
                 },
               ),
             ],
@@ -203,7 +214,8 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
         ),
         const SizedBox(height: 16),
         Center(
-          child: Text('「${widget.appName}」数据仅存本机',
+          child: Text(t('「${widget.appName}」数据仅存本机',
+              '"${widget.appName}" data stays on this device only'),
               style: TextStyle(color: Colors.grey[400], fontSize: 12)),
         ),
       ],

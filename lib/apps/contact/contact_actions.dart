@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/language.dart';
 import 'contact_models.dart';
 
 /// 联系方式交互：拨号 / 发邮件 / 复制
@@ -14,7 +15,7 @@ class ContactActions {
           await launchUrl(uri);
         } else {
           if (!context.mounted) return;
-          _toast(context, '无法拨号');
+          _toast(context, t('无法拨号', 'Unable to dial'));
         }
       case ContactType.email:
         final uri = Uri(scheme: 'mailto', path: m.value);
@@ -22,14 +23,14 @@ class ContactActions {
           await launchUrl(uri);
         } else {
           if (!context.mounted) return;
-          _toast(context, '无法打开邮件应用');
+          _toast(context, t('无法打开邮件应用', 'Unable to open email app'));
         }
       case ContactType.wechat:
       case ContactType.qq:
       case ContactType.other:
         await Clipboard.setData(ClipboardData(text: m.value));
         if (!context.mounted) return;
-        _toast(context, '已复制 ${m.type.label}：${m.value}');
+        _toast(context, t('已复制 ${m.type.label}：${m.value}', 'Copied ${m.type.label}: ${m.value}'));
     }
   }
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../language.dart';
 import '../profile_store.dart';
 
 /// 配置管理弹窗（通用）：另存为 / 应用 / 导出 / AI 汇总 / 删除
@@ -80,12 +81,12 @@ class _ProfileDialogState extends State<_ProfileDialog> {
   Future<void> _saveAs() async {
     final name = _newNameCtrl.text.trim();
     if (name.isEmpty) {
-      _toast('请输入配置名称');
+      _toast(t('请输入配置名称', 'Please enter a profile name'));
       return;
     }
     await ProfileStore.save(widget.appId, name, widget.currentItems);
     _newNameCtrl.clear();
-    _toast('已保存配置「$name」');
+    _toast(t('已保存配置「$name」', 'Profile "$name" saved'));
     await _refresh();
   }
 
@@ -93,7 +94,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
     setState(() => _busy = true);
     final items = await ProfileStore.load(widget.appId, name);
     if (items.isEmpty) {
-      _toast('配置数据为空');
+      _toast(t('配置数据为空', 'Profile data is empty'));
       setState(() => _busy = false);
       return;
     }
@@ -101,7 +102,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
     if (!mounted) return;
     setState(() => _busy = false);
     Navigator.pop(context);
-    _toast('已应用配置「$name」');
+    _toast(t('已应用配置「$name」', 'Profile "$name" applied'));
   }
 
   Future<void> _export(String name) async {
@@ -112,19 +113,19 @@ class _ProfileDialogState extends State<_ProfileDialog> {
     final fname =
         '${widget.exportBaseName}_${name.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')}.json';
     File('${dir.path}/$fname').writeAsStringSync(jsonEncode(items));
-    _toast('已导出：$fname');
+    _toast(t('已导出：$fname', 'Exported: $fname'));
   }
 
   Future<void> _delete(String name) async {
     await ProfileStore.remove(widget.appId, name);
-    _toast('已删除配置「$name」');
+    _toast(t('已删除配置「$name」', 'Profile "$name" deleted'));
     await _refresh();
   }
 
   Future<void> _aiCurate() async {
     final curator = widget.aiCurate;
     if (curator == null) {
-      _toast('该子应用暂不支持 AI 汇总');
+      _toast(t('该子应用暂不支持 AI 汇总', 'AI summarize is not supported for this app'));
       return;
     }
     setState(() => _busy = true);
@@ -132,12 +133,14 @@ class _ProfileDialogState extends State<_ProfileDialog> {
       final name = await curator();
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('AI 汇总完成：已保存配置「$name」');
+      _toast(t('AI 汇总完成：已保存配置「$name」',
+          'AI summary done: profile "$name" saved'));
       await _refresh();
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('AI 汇总失败：${e.toString().replaceFirst('Exception: ', '')}');
+      _toast(t('AI 汇总失败：${e.toString().replaceFirst('Exception: ', '')}',
+          'AI summary failed: ${e.toString().replaceFirst('Exception: ', '')}'));
     }
   }
 
@@ -145,7 +148,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     return AlertDialog(
-      title: const Text('配置管理'),
+      title: Text(t('配置管理', 'Profile Manager')),
       content: SizedBox(
         width: 320,
         child: Column(
@@ -158,7 +161,9 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                 child: OutlinedButton.icon(
                   onPressed: _busy ? null : _aiCurate,
                   icon: const Icon(Icons.auto_awesome, size: 18),
-                  label: Text(_busy ? 'AI 汇总中...' : 'AI 汇总生成配置'),
+                  label: Text(_busy
+                      ? t('AI 汇总中...', 'AI summarizing...')
+                      : t('AI 汇总生成配置', 'Generate profile with AI')),
                 ),
               ),
               const SizedBox(height: 8),
@@ -168,9 +173,9 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                 Expanded(
                   child: TextField(
                     controller: _newNameCtrl,
-                    decoration: const InputDecoration(
-                      labelText: '新配置名称',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: t('新配置名称', 'New profile name'),
+                      border: const OutlineInputBorder(),
                       isDense: true,
                     ),
                   ),
@@ -182,21 +187,24 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                     backgroundColor: primary,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('另存为'),
+                  child: Text(t('另存为', 'Save As')),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            const Text('我的配置', style: TextStyle(fontSize: 13)),
+            Text(t('我的配置', 'My Profiles'), style: const TextStyle(fontSize: 13)),
             const SizedBox(height: 4),
             Flexible(
               child: _names.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text('暂无自定义配置（「默认」为内置数据）',
-                          style: TextStyle(fontSize: 12, color: Colors.grey)),
-                    )
-                  : ListView(
+              ? Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Text(
+                      t('暂无自定义配置（「默认」为内置数据）',
+                          'No custom profiles yet ("Default" is built-in)'),
+                      style:
+                          const TextStyle(fontSize: 12, color: Colors.grey)),
+                )
+              : ListView(
                       shrinkWrap: true,
                       children: _names.map((name) {
                         return ListTile(
@@ -208,7 +216,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                tooltip: '应用',
+                                tooltip: t('应用', 'Apply'),
                                 icon: const Icon(Icons.check_circle_outline,
                                     color: Colors.green),
                                 onPressed: _busy
@@ -216,13 +224,13 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                                     : () => _apply(name),
                               ),
                               IconButton(
-                                tooltip: '导出',
+                                tooltip: t('导出', 'Export'),
                                 icon: const Icon(Icons.ios_share,
                                     color: Colors.blue),
                                 onPressed: () => _export(name),
                               ),
                               IconButton(
-                                tooltip: '删除',
+                                tooltip: t('删除', 'Delete'),
                                 icon: const Icon(Icons.delete_outline,
                                     color: Colors.red),
                                 onPressed: () => _delete(name),
@@ -238,7 +246,8 @@ class _ProfileDialogState extends State<_ProfileDialog> {
       ),
       actions: [
         TextButton(
-            onPressed: () => Navigator.pop(context), child: const Text('关闭')),
+            onPressed: () => Navigator.pop(context),
+            child: Text(t('关闭', 'Close'))),
       ],
     );
   }

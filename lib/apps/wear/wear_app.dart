@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
+import '../../core/language.dart';
 import '../../core/theme.dart';
 import 'wear_data_store.dart';
 import 'wear_home_page.dart';
@@ -45,19 +46,19 @@ class _WearAppPageState extends State<WearAppPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
-              label: '首页'),
+              label: t('首页', 'Home')),
           NavigationDestination(
               icon: Icon(Icons.checkroom_outlined),
               selectedIcon: Icon(Icons.checkroom),
-              label: '管理'),
+              label: t('管理', 'Manage')),
           NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
-              label: '设置'),
+              label: t('设置', 'Settings')),
         ],
       ),
       ),

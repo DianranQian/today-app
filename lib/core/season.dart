@@ -1,5 +1,12 @@
+import 'language.dart';
+
 /// 通用季节（核心层，供各子应用复用）
 enum Season { spring, summer, autumn, winter }
+
+const _enMonths = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
 
 /// 目标日期（全局，存 prefs）
 ///
@@ -37,8 +44,9 @@ Season get targetSeason => seasonFor(targetDate);
 
 /// 中文星期（周一~周日）
 String weekdayCn(int weekday) {
-  const names = ['一', '二', '三', '四', '五', '六', '日'];
-  return names[weekday - 1];
+  const zh = ['一', '二', '三', '四', '五', '六', '日'];
+  const en = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return t('周${zh[weekday - 1]}', en[weekday - 1]);
 }
 
 /// 今天/明天/后天（按自然日差，其余返回 null）
@@ -46,24 +54,28 @@ String? quickDayName(DateTime d) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final diff = d.difference(today).inDays;
-  return switch (diff) { 0 => '今天', 1 => '明天', 2 => '后天', _ => null };
+  return switch (diff) {
+    0 => t('今天', 'Today'),
+    1 => t('明天', 'Tomorrow'),
+    2 => t('后天', 'Day after'),
+    _ => null,
+  };
 }
 
-/// 8月10日
-String formatMdCn(DateTime d) => '${d.month}月${d.day}日';
+/// 8月10日 / Aug 10
+String formatMdCn(DateTime d) =>
+    t('${d.month}月${d.day}日', '${_enMonths[d.month - 1]} ${d.day}');
 
 /// 8/10
 String formatMd(DateTime d) => '${d.month}/${d.day}';
 
 extension SeasonExt on Season {
-  String get label {
-    switch (this) {
-      case Season.spring: return '春';
-      case Season.summer: return '夏';
-      case Season.autumn: return '秋';
-      case Season.winter: return '冬';
-    }
-  }
+  String get label => switch (this) {
+        Season.spring => t('春', 'Spring'),
+        Season.summer => t('夏', 'Summer'),
+        Season.autumn => t('秋', 'Autumn'),
+        Season.winter => t('冬', 'Winter'),
+      };
 
   static Season fromString(String s) {
     switch (s) {

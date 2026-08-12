@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/language.dart';
 import '../../core/widgets/sub_app_settings_panel.dart';
 import 'contact_data_store.dart';
 import 'contact_models.dart';
@@ -38,13 +39,13 @@ class _ContactSettingsPageState extends State<ContactSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('设置'),
+        title: Text(t('设置', 'Settings')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
       body: SubAppSettingsPanel(
         appId: 'contact',
-        appName: '今天联系谁',
+        appName: t('今天联系谁', 'Who to call today?'),
         reload: ContactDataStore.load,
         onClearHistory: () {
           // 联系人无历史概念，清空所有联系人
@@ -54,7 +55,7 @@ class _ContactSettingsPageState extends State<ContactSettingsPage> {
         extra: Card(
           child: ListTile(
             leading: const Icon(Icons.hourglass_empty, color: Colors.orange),
-            title: const Text('新增联系人默认频率'),
+            title: Text(t('新增联系人默认频率', 'Default frequency for new contacts')),
             trailing: DropdownButton<ContactFrequency>(
               value: _defaultFrequency,
               items: [

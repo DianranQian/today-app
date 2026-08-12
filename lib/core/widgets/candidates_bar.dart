@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../language.dart';
 
 /// 备选列表条：展示最近几次 roll 的结果，点击回选
 class CandidatesBar<T> extends StatelessWidget {
@@ -26,10 +27,12 @@ class CandidatesBar<T> extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text('备选',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            Text(t('备选', 'Candidates'),
+                style: const TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(width: 8),
-            Text('点选回看 · 最近 ${items.length} 次',
+            Text(t('点选回看 · 最近 ${items.length} 次',
+                'Tap to re-pick · last ${items.length}'),
                 style: TextStyle(fontSize: 11, color: Colors.grey[500])),
           ],
         ),

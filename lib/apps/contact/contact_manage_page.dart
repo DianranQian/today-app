@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/language.dart';
 import '../../core/widgets/profile_dialog.dart';
 import '../../core/image_helper.dart';
 import 'contact_actions.dart';
@@ -69,11 +70,11 @@ class _ContactManagePageState extends State<ContactManagePage> {
   void _add() {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast('请输入称呼');
+      _showToast(t('请输入称呼', 'Please enter a name'));
       return;
     }
     if (ContactDataStore.contacts.any((c) => c.name == name)) {
-      _showToast('这个联系人已经存在了');
+      _showToast(t('这个联系人已经存在了', 'This contact already exists'));
       return;
     }
     ContactDataStore.contacts.add(ContactItem(
@@ -94,7 +95,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
     _emailCtrl.clear();
     _qqCtrl.clear();
     setState(() {});
-    _showToast('已添加 $name');
+    _showToast(t('已添加 $name', 'Added $name'));
   }
 
   void _delete(int index) {
@@ -102,13 +103,13 @@ class _ContactManagePageState extends State<ContactManagePage> {
     ContactDataStore.contacts.removeAt(index);
     ContactDataStore.save();
     setState(() {});
-    _showToast('已删除 $name');
+    _showToast(t('已删除 $name', 'Deleted $name'));
   }
 
   void _checkIn(int index) {
     ContactDataStore.checkIn(ContactDataStore.contacts[index]);
     setState(() {});
-    _showToast('已打卡');
+    _showToast(t('已打卡', 'Checked in'));
   }
 
 
@@ -126,7 +127,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
           child: OutlinedButton.icon(
             onPressed: _pickImage,
             icon: const Icon(Icons.add_photo_alternate, size: 18),
-            label: const Text('添加头像'),
+            label: Text(t('添加头像', 'Add Photo')),
           ),
         ),
         if (_imagePath != null)
@@ -165,12 +166,12 @@ class _ContactManagePageState extends State<ContactManagePage> {
     final contacts = ContactDataStore.search(_searchCtrl.text);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('管理联系人'),
+        title: Text(t('管理联系人', 'Manage Contacts')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
           IconButton(
-            tooltip: '配置集',
+            tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),
             onPressed: _openProfiles,
           ),
@@ -185,7 +186,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('添加联系人（隐私：数据仅存本机，不读系统通讯录）',
+                  Text(t('添加联系人（隐私：数据仅存本机，不读系统通讯录）', 'Add contact (private: data stays on this device, no system contacts access)'),
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
@@ -194,8 +195,8 @@ class _ContactManagePageState extends State<ContactManagePage> {
                       Expanded(
                         child: TextField(
                           controller: _nameCtrl,
-                          decoration: const InputDecoration(
-                            labelText: '称呼',
+                          decoration: InputDecoration(
+                            labelText: t('称呼', 'Name'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -224,8 +225,8 @@ class _ContactManagePageState extends State<ContactManagePage> {
                       Expanded(
                         child: TextField(
                           controller: _relationCtrl,
-                          decoration: const InputDecoration(
-                            labelText: '关系（如：大学室友）',
+                          decoration: InputDecoration(
+                            labelText: t('关系（如：大学室友）', 'Relation (e.g. college roommate)'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -235,8 +236,8 @@ class _ContactManagePageState extends State<ContactManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<ContactFrequency>(
                           value: _frequency,
-                          decoration: const InputDecoration(
-                            labelText: '联系频率',
+                          decoration: InputDecoration(
+                            labelText: t('联系频率', 'Frequency'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -252,15 +253,15 @@ class _ContactManagePageState extends State<ContactManagePage> {
                   ),
                   const SizedBox(height: 12),
                   // 联系方式（展开式：填了哪个存哪个）
-                  const Text('联系方式',
+                  Text(t('联系方式', 'Contact Info'),
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _phoneCtrl,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone, color: Colors.blue),
-                      labelText: '手机号',
+                      labelText: t('手机号', 'Phone'),
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -268,9 +269,9 @@ class _ContactManagePageState extends State<ContactManagePage> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _wechatCtrl,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.chat, color: Colors.green),
-                      labelText: '微信号',
+                      labelText: t('微信号', 'WeChat'),
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -279,9 +280,9 @@ class _ContactManagePageState extends State<ContactManagePage> {
                   TextField(
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.mail, color: Colors.orange),
-                      labelText: '邮箱',
+                      labelText: t('邮箱', 'Email'),
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -308,7 +309,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('添加'),
+                      child: Text(t('添加', 'Add')),
                     ),
                   ),
                 ],
@@ -318,9 +319,9 @@ class _ContactManagePageState extends State<ContactManagePage> {
           const SizedBox(height: 12),
           TextField(
             controller: _searchCtrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
-              hintText: '按称呼或关系搜索',
+              hintText: t('按称呼或关系搜索', 'Search by name or relation'),
               border: OutlineInputBorder(),
               isDense: true,
             ),
@@ -328,9 +329,9 @@ class _ContactManagePageState extends State<ContactManagePage> {
           ),
           const SizedBox(height: 8),
           if (contacts.isEmpty)
-            const Center(child: Padding(
+            Center(child: Padding(
               padding: EdgeInsets.all(32),
-              child: Text('还没有联系人，添加一些吧', style: TextStyle(color: Colors.grey)),
+              child: Text(t('还没有联系人，添加一些吧', 'No contacts yet. Add some!'), style: TextStyle(color: Colors.grey)),
             ))
           else
             ...contacts.asMap().entries.map((entry) {
@@ -357,7 +358,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                         c.contacts
                             .map((m) => '${m.type.icon}${m.value}')
                             .join('  '),
-                      c.isOverdue ? '⚠️ 逾期 ${c.overdueDays} 天' : '上次 ${c.daysSinceContact} 天前',
+                      c.isOverdue ? t('⚠️ 逾期 ${c.overdueDays} 天', '⚠️ ${c.overdueDays} days overdue') : t('上次 ${c.daysSinceContact} 天前', 'Last contact ${c.daysSinceContact} days ago'),
                     ].join(' · '),
                   ),
                   trailing: Row(
@@ -365,20 +366,20 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     children: [
                       if (c.contacts.isNotEmpty)
                         IconButton(
-                          tooltip: '拨打/复制',
+                          tooltip: t('拨打/复制', 'Call/Copy'),
                           icon: const Icon(Icons.phone_in_talk,
                               color: Colors.blue),
                           onPressed: () =>
                               ContactActions.perform(context, c.contacts.first),
                         ),
                       IconButton(
-                        tooltip: '打卡已联系',
+                        tooltip: t('打卡已联系', 'Check in'),
                         icon: const Icon(Icons.check_circle_outline,
                             color: Colors.green),
                         onPressed: () => _checkIn(i),
                       ),
                       IconButton(
-                        tooltip: '删除',
+                        tooltip: t('删除', 'Delete'),
                         icon: const Icon(Icons.delete_outline, color: Colors.red),
                         onPressed: () => _delete(i),
                       ),

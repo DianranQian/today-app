@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/image_helper.dart';
+import '../../core/language.dart';
 import 'dart:convert';
 import '../../core/profile_store.dart';
 import '../../core/services/ai_service.dart';
@@ -33,11 +34,11 @@ class _GoManagePageState extends State<GoManagePage> {
   void _add() {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast('请输入去处名称');
+      _showToast(t('请输入去处名称', 'Enter a place name'));
       return;
     }
     if (GoDataStore.places.any((p) => p.name == name)) {
-      _showToast('这个去处已经存在了');
+      _showToast(t('这个去处已经存在了', 'This place already exists'));
       return;
     }
     GoDataStore.places.add(PlaceItem(
@@ -52,7 +53,7 @@ class _GoManagePageState extends State<GoManagePage> {
     _emojiCtrl.clear();
     _imagePath = null;
     setState(() {});
-    _showToast('已添加 $name');
+    _showToast(t('已添加 $name', 'Added $name'));
   }
 
   void _delete(int index) {
@@ -60,7 +61,7 @@ class _GoManagePageState extends State<GoManagePage> {
     GoDataStore.places.removeAt(index);
     GoDataStore.save();
     setState(() {});
-    _showToast('已删除 $name');
+    _showToast(t('已删除 $name', 'Deleted $name'));
   }
 
 
@@ -78,7 +79,7 @@ class _GoManagePageState extends State<GoManagePage> {
           child: OutlinedButton.icon(
             onPressed: _pickImage,
             icon: const Icon(Icons.add_photo_alternate, size: 18),
-            label: const Text('添加图片'),
+            label: Text(t('添加图片', 'Add Image')),
           ),
         ),
         if (_imagePath != null)
@@ -138,12 +139,12 @@ class _GoManagePageState extends State<GoManagePage> {
     final places = GoDataStore.search(_searchCtrl.text);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('管理去处'),
+        title: Text(t('管理去处', 'Manage Places')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
           IconButton(
-            tooltip: '配置集',
+            tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),
             onPressed: _openProfiles,
           ),
@@ -158,7 +159,7 @@ class _GoManagePageState extends State<GoManagePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('添加去处',
+                  Text(t('添加去处', 'Add a Place'),
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
@@ -167,8 +168,8 @@ class _GoManagePageState extends State<GoManagePage> {
                       Expanded(
                         child: TextField(
                           controller: _nameCtrl,
-                          decoration: const InputDecoration(
-                            labelText: '去处名称',
+                          decoration: InputDecoration(
+                            labelText: t('去处名称', 'Place name'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -180,8 +181,8 @@ class _GoManagePageState extends State<GoManagePage> {
                         width: 60,
                         child: TextField(
                           controller: _emojiCtrl,
-                          decoration: const InputDecoration(
-                            labelText: 'Emoji',
+                          decoration: InputDecoration(
+                            labelText: t('Emoji', 'Emoji'),
                             border: OutlineInputBorder(),
                             isDense: true,
                             counterText: '',
@@ -197,8 +198,8 @@ class _GoManagePageState extends State<GoManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<PlaceType>(
                           value: _type,
-                          decoration: const InputDecoration(
-                            labelText: '类型',
+                          decoration: InputDecoration(
+                            labelText: t('类型', 'Type'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -215,15 +216,15 @@ class _GoManagePageState extends State<GoManagePage> {
                       Expanded(
                         child: DropdownButtonFormField<int>(
                           value: _priceTier,
-                          decoration: const InputDecoration(
-                            labelText: '消费档位',
+                          decoration: InputDecoration(
+                            labelText: t('消费档位', 'Price tier'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
-                          items: const [
-                            DropdownMenuItem(value: 1, child: Text('¥ 低')),
-                            DropdownMenuItem(value: 2, child: Text('¥¥ 中')),
-                            DropdownMenuItem(value: 3, child: Text('¥¥¥ 高')),
+                          items: [
+                            DropdownMenuItem(value: 1, child: Text(t('¥ 低', '¥ Low'))),
+                            DropdownMenuItem(value: 2, child: Text(t('¥¥ 中', '¥¥ Mid'))),
+                            DropdownMenuItem(value: 3, child: Text(t('¥¥¥ 高', '¥¥¥ High'))),
                           ],
                           onChanged: (v) => setState(() => _priceTier = v!),
                         ),
@@ -241,7 +242,7 @@ class _GoManagePageState extends State<GoManagePage> {
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('添加'),
+                      child: Text(t('添加', 'Add')),
                     ),
                   ),
                 ],
@@ -251,9 +252,9 @@ class _GoManagePageState extends State<GoManagePage> {
           const SizedBox(height: 12),
           TextField(
             controller: _searchCtrl,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
-              hintText: '按名称搜索',
+              hintText: t('按名称搜索', 'Search by name'),
               border: OutlineInputBorder(),
               isDense: true,
             ),
@@ -261,9 +262,9 @@ class _GoManagePageState extends State<GoManagePage> {
           ),
           const SizedBox(height: 8),
           if (places.isEmpty)
-            const Center(child: Padding(
+            Center(child: Padding(
               padding: EdgeInsets.all(32),
-              child: Text('没有找到匹配的去处', style: TextStyle(color: Colors.grey)),
+              child: Text(t('没有找到匹配的去处', 'No matching places'), style: TextStyle(color: Colors.grey)),
             ))
           else
             ...places.asMap().entries.map((entry) {
@@ -292,7 +293,7 @@ class _GoManagePageState extends State<GoManagePage> {
             }),
           const SizedBox(height: 12),
           if (GoDataStore.history.isNotEmpty) ...[
-            const Text('最近推荐',
+            Text(t('最近推荐', 'Recent picks'),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             ...GoDataStore.history.take(20).map((h) {
@@ -309,9 +310,9 @@ class _GoManagePageState extends State<GoManagePage> {
               onPressed: () {
                 GoDataStore.clearHistory();
                 setState(() {});
-                _showToast('历史已清空');
+                _showToast(t('历史已清空', 'History cleared'));
               },
-              child: const Text('清空历史'),
+              child: Text(t('清空历史', 'Clear History')),
             ),
           ],
         ],

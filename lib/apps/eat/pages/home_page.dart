@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
+import '../../../core/language.dart';
 import '../../../core/plan_store.dart';
 import '../../../core/season.dart' as core_season;
 import '../../../core/theme.dart';
@@ -88,7 +89,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (dishPool.isEmpty) {
       dishPool = DataStore.getFilteredDishes(mealTime: _selectedMeal, cookMode: _selectedMode);
       if (dishPool.isEmpty) {
-        _showToast('当前条件下没有菜品，去管理页添加吧！');
+        _showToast(t('当前条件下没有菜品，去管理页添加吧！',
+            'No dishes match these filters. Add some in the manage page!'));
         setState(() => _isPicking = false);
         return;
       }
@@ -250,7 +252,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _pickedDish?.name) {
-      _showToast('当前条件下就这一道菜啦');
+      _showToast(t('当前条件下就这一道菜啦', 'Only one dish matches these filters'));
       return;
     }
     var next = DataStore.pickFrom(pool,
@@ -283,7 +285,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final pool = DataStore.getFilteredStaples(mealTime: _selectedMeal);
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _pickedStaple?.name) {
-      _showToast('主食就这一样啦');
+      _showToast(t('主食就这一样啦', 'Only one staple is available'));
       return;
     }
     var next = DataStore.pickFrom(pool,
@@ -351,7 +353,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('今天吃什么'),
+        title: Text(t('今天吃什么', 'What to Eat Today')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -359,19 +361,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         padding: const EdgeInsets.all(16),
         children: [
           // 目标日期
-          _buildSectionTitle('吃哪天的', '选择日期（影响应季推荐）'),
+          _buildSectionTitle(t('吃哪天的', 'Pick a day'), t('选择日期（影响应季推荐）', 'Choose a date (affects seasonal picks)')),
           const SizedBox(height: 8),
           TargetDateSelector(onChanged: () => setState(() {})),
           const SizedBox(height: 16),
 
           // Meal time selector
-          _buildSectionTitle('吃什么', '选择餐段'),
+          _buildSectionTitle(t('吃什么', 'What to eat'), t('选择餐段', 'Pick a meal')),
           const SizedBox(height: 8),
           _buildMealSelector(),
           const SizedBox(height: 20),
 
           // Cook mode selector
-          _buildSectionTitle('怎么吃', '选择方式'),
+          _buildSectionTitle(t('怎么吃', 'How to eat'), t('选择方式', 'Pick a way')),
           const SizedBox(height: 8),
           _buildModeSelector(),
           const SizedBox(height: 16),
@@ -380,8 +382,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Card(
             child: SwitchListTile(
               secondary: Icon(Icons.local_drink, color: Theme.of(context).colorScheme.primary),
-              title: const Text('想喝饮品'),
-              subtitle: const Text('开启后随机推荐一杯饮品'),
+              title: Text(t('想喝饮品', 'Want a drink')),
+              subtitle: Text(t('开启后随机推荐一杯饮品', 'Recommends a drink with your pick')),
               value: _wantDrink,
               onChanged: _isPicking
                   ? null
@@ -418,7 +420,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: ElevatedButton.icon(
               onPressed: _isPicking ? null : _pick,
               icon: const Icon(Icons.casino, size: 24),
-              label: Text(_isPicking ? '正在选...' : '随机选一个！',
+              label: Text(_isPicking ? t('正在选...', 'Picking...') : t('随机选一个！', 'Pick for me!'),
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -534,7 +536,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             children: [
               const Text('🤔', style: TextStyle(fontSize: 64)),
               const SizedBox(height: 12),
-              Text('选择餐段和方式\n点击下方按钮开始', 
+              Text(t('选择餐段和方式\n点击下方按钮开始',
+                  'Pick a meal and a way\nThen tap the button below'),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey[500], fontSize: 14, height: 1.5)),
             ],
@@ -591,7 +594,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         children: [
                           const Text('🍃', style: TextStyle(fontSize: 15)),
                           const SizedBox(width: 6),
-                          Text('应季',
+                          Text(t('应季', 'In season'),
                               style: TextStyle(
                                   fontSize: 13,
                                   color: Theme.of(context).colorScheme.primaryDark,
@@ -606,7 +609,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       color: Theme.of(context).colorScheme.primary.withAlpha(25),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text('${_selectedMeal == MealTime.all ? '通用' : _selectedMeal.label} · ${_selectedMode == CookMode.all ? '不限方式' : _selectedMode.label}',
+                    child: Text(t(
+                        '${_selectedMeal == MealTime.all ? '通用' : _selectedMeal.label} · ${_selectedMode == CookMode.all ? '不限方式' : _selectedMode.label}',
+                        '${_selectedMeal == MealTime.all ? 'Any meal' : _selectedMeal.label} · ${_selectedMode == CookMode.all ? 'Any way' : _selectedMode.label}'),
                       style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary)),
                   ),
                 ],
@@ -615,7 +620,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               // Ingredients for cook mode
               if (isCook && _pickedDish!.ingredients.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _buildIngredientsList(_pickedDish!.ingredients, '菜品原料'),
+                _buildIngredientsList(_pickedDish!.ingredients, t('菜品原料', 'Dish ingredients')),
               ],
 
               // Staple food for cook mode（可点击换一个）
@@ -639,7 +644,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           Text(_pickedStaple!.emoji,
                               style: const TextStyle(fontSize: 28)),
                           const SizedBox(width: 8),
-                          Text('搭配 ${_pickedStaple!.name}',
+                          Text(t('搭配 ${_pickedStaple!.name}', 'With ${_pickedStaple!.name}'),
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                           const SizedBox(width: 8),
@@ -650,7 +655,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
                 if (_pickedStaple!.ingredients.isNotEmpty)
-                  _buildIngredientsList(_pickedStaple!.ingredients, '主食原料'),
+                  _buildIngredientsList(_pickedStaple!.ingredients, t('主食原料', 'Staple ingredients')),
               ],
 
               // Drink（可点击换一个）
@@ -674,7 +679,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           Text(_pickedDrink!.emoji,
                               style: const TextStyle(fontSize: 28)),
                           const SizedBox(width: 8),
-                          Text('随杯 ${_pickedDrink!.name}',
+                          Text(t('随杯 ${_pickedDrink!.name}', 'With ${_pickedDrink!.name}'),
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w500)),
                           const SizedBox(width: 8),
@@ -700,7 +705,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   emoji: _pickedDish!.emoji,
                 ),
                 icon: const Icon(Icons.event_note, size: 18),
-                label: const Text('加入计划'),
+                label: Text(t('加入计划', 'Add to plan')),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.primary,
                   side: BorderSide(
@@ -732,7 +737,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SlotReel(
-                    label: '菜',
+                    label: t('菜', 'Dish'),
                     items: _dishRollItems,
                     controller: _dishWheelController,
                     emojiOf: (d) => d.displayEmoji,
@@ -740,7 +745,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                   if (_hasStapleReel)
                     SlotReel(
-                      label: '主食',
+                      label: t('主食', 'Staple'),
                       items: _stapleRollItems,
                       controller: _stapleWheelController,
                       emojiOf: (d) => d.displayEmoji,
@@ -748,7 +753,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                   if (_hasDrinkReel)
                     SlotReel(
-                      label: '饮品',
+                      label: t('饮品', 'Drink'),
                       items: _drinkRollItems,
                       controller: _drinkWheelController,
                       emojiOf: (d) => d.displayEmoji,

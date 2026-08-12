@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/language.dart';
 import '../../core/season.dart';
 import '../../core/widgets/date_selector.dart';
 import 'todo_models.dart';
@@ -26,7 +27,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
   void _add() {
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
-      _toast('请输入待办内容');
+      _toast(t('请输入待办内容', 'Please enter a task'));
       return;
     }
     TodoDataStore.add(TodoItem(
@@ -48,7 +49,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
   String _dayLabel(DateTime d) {
     final name = quickDayName(d);
     if (name != null) return '$name · ${formatMdCn(d)}';
-    return '${formatMdCn(d)} · 周${weekdayCn(d.weekday)}';
+    return '${formatMdCn(d)} · ${weekdayCn(d.weekday)}';
   }
 
   @override
@@ -59,7 +60,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('今天待办'),
+        title: Text(t('今天待办', 'Tasks')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -72,9 +73,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
               children: [
                 TextField(
                   controller: _titleCtrl,
-                  decoration: const InputDecoration(
-                    hintText: '添加待办事项...',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    hintText: t('添加待办事项...', 'Add a task...'),
+                    border: const OutlineInputBorder(),
                     isDense: true,
                   ),
                   onSubmitted: (_) => _add(),
@@ -85,9 +86,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
                     Expanded(
                       child: TextField(
                         controller: _noteCtrl,
-                        decoration: const InputDecoration(
-                          hintText: '备注（可选）',
-                          border: OutlineInputBorder(),
+                        decoration: InputDecoration(
+                          hintText: t('备注（可选）', 'Note (optional)'),
+                          border: const OutlineInputBorder(),
                           isDense: true,
                         ),
                       ),
@@ -99,7 +100,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                         backgroundColor: primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text('添加'),
+                      child: Text(t('添加', 'Add')),
                     ),
                   ],
                 ),
@@ -120,7 +121,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Text('待办 $pending 项',
+                Text(t('待办 $pending 项', '$pending tasks'),
                     style: const TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w600)),
                 const Spacer(),
@@ -129,9 +130,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
                     onPressed: () {
                       TodoDataStore.clearDone();
                       setState(() {});
-                      _toast('已清空已完成');
+                      _toast(t('已清空已完成', 'Cleared completed items'));
                     },
-                    child: const Text('清空已完成'),
+                    child: Text(t('清空已完成', 'Clear Completed')),
                   ),
               ],
             ),
@@ -146,7 +147,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                       children: [
                         const Text('📝', style: TextStyle(fontSize: 56)),
                         const SizedBox(height: 12),
-                        Text('还没有待办\n在上方添加一条吧',
+                        Text(t('还没有待办\n在上方添加一条吧', 'No tasks yet\nAdd one above'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Colors.grey[500],
@@ -174,7 +175,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                               onLongPress: () {
                                 TodoDataStore.remove(todo);
                                 setState(() {});
-                                _toast('已删除');
+                                _toast(t('已删除', 'Deleted'));
                               },
                               child: CheckboxListTile(
                                 value: todo.done,

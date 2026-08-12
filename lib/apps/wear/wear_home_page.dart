@@ -85,7 +85,7 @@ class _WearHomePageState extends State<WearHomePage> {
       }
     }
     if (pool.isEmpty) {
-      _showToast('当前条件下没有穿搭，试试放宽温度或场景');
+      _showToast(t('当前条件下没有穿搭，试试放宽温度或场景', 'No outfits match these filters. Try loosening them.'));
       setState(() => _isPicking = false);
       return;
     }
@@ -166,7 +166,7 @@ class _WearHomePageState extends State<WearHomePage> {
         temperature: _temperature);
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _picked?.name) {
-      _showToast('当前条件下就这一套啦');
+      _showToast(t('当前条件下就这一套啦', 'Only one outfit matches these filters'));
       return;
     }
     var next = WearDataStore.pickFrom(pool);
@@ -260,7 +260,7 @@ class _WearHomePageState extends State<WearHomePage> {
             _buildFilterRow(
               Icons.checkroom,
               t('穿什么', 'Outfit'),
-              Text('${t('场景', 'Scene')} · ${targetSeason.label}季',
+              Text(t('${targetSeason.label}季', targetSeason.label),
                   style: TextStyle(fontSize: 12, color: Colors.grey[500])),
               _buildSceneChips(),
             ),
@@ -516,9 +516,10 @@ class _WearHomePageState extends State<WearHomePage> {
 
     final tags = <String>[
       if (_picked!.seasons.isNotEmpty)
-        '${_picked!.seasons.map((s) => s.label).join('/')}季'
+        t('${_picked!.seasons.map((s) => s.label).join('/')}季',
+            _picked!.seasons.map((s) => s.label).join('/'))
       else
-        '四季通用',
+        t('四季通用', 'All seasons'),
       if (_picked!.tempMin != null || _picked!.tempMax != null)
         '${_picked!.tempMin ?? '~'}~${_picked!.tempMax ?? '~'}°C',
     ];
@@ -603,7 +604,7 @@ class _WearHomePageState extends State<WearHomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: SlotReel(
-                label: '穿搭',
+                label: t('穿搭', 'Outfit'),
                 items: _rollItems,
                 controller: _wheelController,
                 emojiOf: (o) => o.emoji,
@@ -615,7 +616,7 @@ class _WearHomePageState extends State<WearHomePage> {
                   WearGender.female =>
                     const Icon(Icons.female, size: 12, color: Colors.pink),
                   WearGender.unisex =>
-                    Text('通用',
+                    Text(t('通用', 'Unisex'),
                         style: TextStyle(
                             fontSize: 9, color: Colors.grey[600])),
                 },

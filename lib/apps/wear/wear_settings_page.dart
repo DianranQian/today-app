@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/language.dart';
 import '../../core/widgets/sub_app_settings_panel.dart';
 import 'wear_data_store.dart';
 
@@ -10,13 +11,13 @@ class WearSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('设置'),
+        title: Text(t('设置', 'Settings')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
-      body: const SubAppSettingsPanel(
+      body: SubAppSettingsPanel(
         appId: 'wear',
-        appName: '今天穿什么',
+        appName: t('今天穿什么', 'Outfits'),
         reload: WearDataStore.load,
         onClearHistory: WearDataStore.clearHistory,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import '../../core/language.dart';
 import '../../core/services/amap_api.dart';
 import '../../core/services/ai_service.dart';
 
@@ -36,7 +37,7 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
         final lng = double.tryParse(parts[1].trim());
         if (lat != null && lng != null) return (lat, lng);
       }
-      throw Exception('坐标格式错误，请用 经度,纬度 格式（如 121.47,31.23）');
+      throw Exception(t('坐标格式错误，请用 经度,纬度 格式（如 121.47,31.23）', 'Invalid coordinates. Use longitude,latitude (e.g. 121.47,31.23)'));
     }
     final pos = await _getPosition();
     return (pos.latitude!, pos.longitude!);
@@ -46,7 +47,7 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
     final location = Location();
     if (!await location.serviceEnabled()) {
       final ok = await location.requestService();
-      if (!ok) throw Exception('需要开启系统定位服务');
+      if (!ok) throw Exception(t('需要开启系统定位服务', 'Please enable location services'));
     }
     var permission = await location.hasPermission();
     if (permission == PermissionStatus.denied) {
@@ -54,11 +55,11 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
     }
     if (permission == PermissionStatus.denied ||
         permission == PermissionStatus.deniedForever) {
-      throw Exception('需要定位权限才能搜索附近去处，请到系统设置中授权');
+      throw Exception(t('需要定位权限才能搜索附近去处，请到系统设置中授权', 'Location permission is needed to search nearby. Grant it in system settings'));
     }
     final pos = await location.getLocation();
     if (pos.latitude == null || pos.longitude == null) {
-      throw Exception('定位失败，请稍后重试');
+      throw Exception(t('定位失败，请稍后重试', 'Location failed. Try again later'));
     }
     return pos;
   }
@@ -76,8 +77,8 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
       setState(() {
         _pois = pois;
         _loading = false;
-        _locationText = '坐标：${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
-        if (pois.isEmpty) _error = '附近 3 公里内没有找到去处';
+        _locationText = t('坐标：${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}', 'Coords: ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}');
+        if (pois.isEmpty) _error = t('附近 3 公里内没有找到去处', 'No places found within 3 km');
       });
     } catch (e) {
       if (!mounted) return;
@@ -120,7 +121,7 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
     final primary = Theme.of(context).colorScheme.primary;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('附近去处'),
+        title: Text(t('附近去处', 'Nearby')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -135,8 +136,8 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                 TextField(
                   controller: _coordCtrl,
                   keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(
-                    hintText: '经纬度（可选，如 121.47,31.23）',
+                  decoration: InputDecoration(
+                    hintText: t('经纬度（可选，如 121.47,31.23）', 'Coords (optional, e.g. 121.47,31.23)'),
                     border: OutlineInputBorder(),
                     isDense: true,
                     prefixIcon: Icon(Icons.edit_location, size: 18),
@@ -155,7 +156,7 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.my_location),
-                    label: Text(_loading ? '正在搜索...' : '定位并搜索附近去处'),
+                    label: Text(_loading ? t('正在搜索...', 'Searching...') : t('定位并搜索附近去处', 'Locate & Search Nearby')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary,
                       foregroundColor: Colors.white,
@@ -184,7 +185,7 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.auto_awesome, size: 18),
-                      label: Text(_aiLoading ? 'AI 思考中...' : 'AI 推荐：附近值得去哪？'),
+                      label: Text(_aiLoading ? t('AI 思考中...', 'AI thinking...') : t('AI 推荐：附近值得去哪？', 'AI picks: where to go?')),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: primary,
                         side: BorderSide(color: primary),
@@ -209,8 +210,8 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                               Icon(Icons.auto_awesome,
                                   size: 16, color: primary),
                               const SizedBox(width: 6),
-                              const Text('AI 推荐',
-                                  style: TextStyle(
+                              Text(t('AI 推荐', 'AI Picks'),
+                                  style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600)),
                             ],
@@ -246,11 +247,11 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                       children: [
                         const Text('📍', style: TextStyle(fontSize: 48)),
                         const SizedBox(height: 8),
-                        Text('搜索后展示附近去处',
+                        Text(t('搜索后展示附近去处', 'Nearby places will show up after searching'),
                             style:
                                 TextStyle(color: Colors.grey[500], fontSize: 14)),
                         const SizedBox(height: 4),
-                        Text('支持 AI 分析帮你决定去哪',
+                        Text(t('支持 AI 分析帮你决定去哪', 'AI analysis helps you decide'),
                             style:
                                 TextStyle(color: Colors.grey[400], fontSize: 12)),
                       ],
@@ -272,8 +273,8 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                             children: [
                               Text(
                                 [
-                                  if (rating > 0) '评分 $rating',
-                                  if (p.cost.isNotEmpty) '人均 ¥${p.cost}',
+                                  if (rating > 0) t('评分 $rating', 'Rating $rating'),
+                                  if (p.cost.isNotEmpty) t('人均 ¥${p.cost}', 'Avg ¥${p.cost}'),
                                   '${p.distance}m',
                                 ].join(' · '),
                                 style: const TextStyle(fontSize: 12),

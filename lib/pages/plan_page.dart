@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/language.dart';
 import '../core/plan_store.dart';
 import '../core/season.dart';
 
@@ -14,7 +15,7 @@ class _PlanPageState extends State<PlanPage> {
   String dayLabel(DateTime d) {
     final name = quickDayName(d);
     if (name != null) return '$name · ${formatMdCn(d)}';
-    return '${formatMdCn(d)} · 周${weekdayCn(d.weekday)}';
+    return '${formatMdCn(d)} · ${weekdayCn(d.weekday)}';
   }
 
   @override
@@ -23,7 +24,7 @@ class _PlanPageState extends State<PlanPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('计划清单'),
+        title: Text(t('计划清单', 'Plan List')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -34,7 +35,7 @@ class _PlanPageState extends State<PlanPage> {
                 children: [
                   const Text('📅', style: TextStyle(fontSize: 56)),
                   const SizedBox(height: 12),
-                  Text('还没有计划\n在子应用里选中后点「加入计划」',
+                  Text(t('还没有计划\n在子应用里选中后点「加入计划」', 'No plans yet\nPick an item in a sub-app and tap "Add to Plan"'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Colors.grey[500],

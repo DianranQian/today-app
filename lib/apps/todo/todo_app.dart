@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/app_settings.dart';
+import '../../core/language.dart';
 import '../../core/theme.dart';
 import 'todo_data_store.dart';
 import 'todo_home_page.dart';
@@ -43,15 +44,15 @@ class _TodoAppPageState extends State<TodoAppPage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
               icon: Icon(Icons.checklist_outlined),
               selectedIcon: Icon(Icons.checklist),
-              label: '待办'),
+              label: t('待办', 'Tasks')),
           NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
-              label: '设置'),
+              label: t('设置', 'Settings')),
         ],
       ),
       ),
