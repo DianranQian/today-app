@@ -1,18 +1,25 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../core/scheme_store.dart';
 import 'todo_models.dart';
 
 class TodoDataStore {
   static List<TodoItem> items = [];
 
   static Future<void> load() async {
-    await SchemeStore.migrateLegacy('todo');
-    final scheme = await SchemeStore.current('todo');
     final prefs = await SharedPreferences.getInstance();
-    var raw = prefs.getString(SchemeStore.dataKey('todo', scheme, 'items'));
-    if ((raw == null || raw.isEmpty) && scheme == SchemeStore.defaultSchemeName('todo')) {
-      raw = prefs.getString('todo_items');
+    var raw = prefs.getString('todo_items');
+    // 兼容：早期版本做过方案化迁移，若数据在旧方案键里则迁回直连键
+    if (raw == null || raw.isEmpty) {
+      for (final key in prefs.getKeys()) {
+        if (key.startsWith('todo_scheme_') && key.endsWith('_items')) {
+          final v = prefs.getString(key);
+          if (v != null && v.isNotEmpty) {
+            raw = v;
+            await prefs.setString('todo_items', v);
+          }
+          break;
+        }
+      }
     }
     if (raw != null && raw.isNotEmpty) {
       try {
@@ -28,9 +35,7 @@ class TodoDataStore {
 
   static Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
-    final scheme = SchemeStore.cachedCurrent('todo');
-    prefs.setString(SchemeStore.dataKey('todo', scheme, 'items'),
-        jsonEncode(items.map((e) => e.toJson()).toList()));
+    prefs.setString('todo_items', jsonEncode(items.map((e) => e.toJson()).toList()));
   }
 
   static void add(TodoItem item) {

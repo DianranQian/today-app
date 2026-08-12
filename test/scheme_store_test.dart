@@ -20,18 +20,17 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('eat_scheme_菜单一_dishes'), '[{"name":"A"}]');
     expect(prefs.getString('dishes'), '[{"name":"A"}]');
-    expect(prefs.getString('go_scheme_方案一_places'), '[{"name":"P"}]');
+    expect(prefs.getString('go_scheme_地点集_places'), '[{"name":"P"}]');
     expect(await SchemeStore.current('eat'), '菜单一');
-    expect(await SchemeStore.current('go'), '方案一');
-    expect(await SchemeStore.randomPool('go'), ['方案一']);
+    expect(await SchemeStore.current('go'), '地点集');
+    expect(await SchemeStore.randomPool('go'), ['地点集']);
   });
 
-  test('默认方案名按应用区分：eat=菜单一，其他=方案一', () async {
+  test('默认方案名按应用区分', () async {
     expect(SchemeStore.defaultSchemeName('eat'), '菜单一');
-    expect(SchemeStore.defaultSchemeName('go'), '方案一');
-    expect(SchemeStore.defaultSchemeName('wear'), '方案一');
-    expect(SchemeStore.defaultSchemeName('contact'), '方案一');
-    expect(SchemeStore.defaultSchemeName('todo'), '方案一');
+    expect(SchemeStore.defaultSchemeName('go'), '地点集');
+    expect(SchemeStore.defaultSchemeName('wear'), '衣柜');
+    expect(SchemeStore.defaultSchemeName('contact'), '电话簿');
   });
 
   test('迁移幂等：二次调用不重复写入', () async {

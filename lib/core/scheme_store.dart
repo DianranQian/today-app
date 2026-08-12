@@ -12,17 +12,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// 方案化列表键（旧键 → 方案内键名），历史/设置/忌口等全局键不动。
 class SchemeStore {
-  /// 默认内置方案名（eat 叫「菜单一」，其余叫「方案一」）
-  static String defaultSchemeName(String appId) =>
-      appId == 'eat' ? '菜单一' : '方案一';
+  /// 默认内置方案名（eat=菜单一 / go=地点集 / wear=衣柜 / contact=电话簿）
+  static String defaultSchemeName(String appId) {
+    switch (appId) {
+      case 'eat': return '菜单一';
+      case 'go': return '地点集';
+      case 'wear': return '衣柜';
+      case 'contact': return '电话簿';
+      default: return '方案一';
+    }
+  }
 
   /// 各子应用的方案化列表键：方案内键名 → 旧键名（迁移兜底用）
+  /// 注：todo（待办）不做方案，直接读写 `todo_items`
   static const Map<String, Map<String, String>> schemeListKeys = {
     'eat': {'dishes': 'dishes', 'staples': 'staples', 'drinks': 'drinks'},
     'go': {'places': 'go_places'},
     'wear': {'outfits': 'wear_outfits'},
     'contact': {'contacts': 'contact_contacts'},
-    'todo': {'items': 'todo_items'},
   };
 
   /// 方案或随机池变化时通知（值为 appId，壳层/home 监听后重载）

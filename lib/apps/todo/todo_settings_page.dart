@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../core/language.dart';
-import '../../core/widgets/scheme_switcher.dart';
 import '../../core/widgets/sub_app_settings_panel.dart';
 import 'todo_data_store.dart';
 
@@ -15,10 +14,6 @@ class TodoSettingsPage extends StatelessWidget {
         title: Text(t('设置', 'Settings')),
         centerTitle: true,
         toolbarHeight: 44,
-        actions: [
-          SchemeSwitcherButton(
-              appId: 'todo', onSwitched: () => TodoDataStore.load()),
-        ],
       ),
       body: SubAppSettingsPanel(
         appId: 'todo',

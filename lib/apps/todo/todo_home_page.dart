@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/language.dart';
 import '../../core/season.dart';
-import '../../core/widgets/scheme_switcher.dart';
 import '../../core/widgets/date_selector.dart';
 import 'todo_models.dart';
 import 'todo_data_store.dart';
@@ -64,10 +63,6 @@ class _TodoHomePageState extends State<TodoHomePage> {
         title: Text(t('今天待办', 'Tasks')),
         centerTitle: true,
         toolbarHeight: 44,
-        actions: [
-          SchemeSwitcherButton(
-              appId: 'todo', onSwitched: () => TodoDataStore.load()),
-        ],
       ),
       body: Column(
         children: [
