@@ -17,6 +17,13 @@ class _NearbyPageState extends State<NearbyPage> {
   String? _locationText;
   String? _aiResult;
   bool _aiLoading = false;
+  final _coordCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _coordCtrl.dispose();
+    super.dispose();
+  }
 
   Future<LocationData> _getPosition() async {
     final location = Location();
@@ -39,6 +46,21 @@ class _NearbyPageState extends State<NearbyPage> {
     return pos;
   }
 
+  Future<(double, double)> _getCoords() async {
+    final manual = _coordCtrl.text.trim();
+    if (manual.isNotEmpty) {
+      final parts = manual.split(',');
+      if (parts.length == 2) {
+        final lat = double.tryParse(parts[0].trim());
+        final lng = double.tryParse(parts[1].trim());
+        if (lat != null && lng != null) return (lat, lng);
+      }
+      throw Exception('坐标格式错误，请用 经度,纬度 格式（如 121.47,31.23）');
+    }
+    final pos = await _getPosition();
+    return (pos.latitude!, pos.longitude!);
+  }
+
   Future<void> _search() async {
     setState(() {
       _loading = true;
@@ -46,13 +68,13 @@ class _NearbyPageState extends State<NearbyPage> {
       _aiResult = null;
     });
     try {
-      final pos = await _getPosition();
-      final pois = await AmapApi.around(pos.latitude!, pos.longitude!);
+      final (lat, lng) = await _getCoords();
+      final pois = await AmapApi.around(lat, lng);
       if (!mounted) return;
       setState(() {
         _pois = pois;
         _loading = false;
-        _locationText = '当前位置：${pos.latitude!.toStringAsFixed(4)}, ${pos.longitude!.toStringAsFixed(4)}';
+        _locationText = '坐标：${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}';
         if (pois.isEmpty) _error = '附近 3 公里内没有找到餐厅';
       });
     } catch (e) {
@@ -96,6 +118,18 @@ class _NearbyPageState extends State<NearbyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 手动坐标（可选，真机留空即可用 GPS）
+                TextField(
+                  controller: _coordCtrl,
+                  keyboardType: TextInputType.text,
+                  decoration: const InputDecoration(
+                    hintText: '经纬度（可选，如 121.47,31.23）',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                    prefixIcon: Icon(Icons.edit_location, size: 18),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -169,7 +203,12 @@ class _NearbyPageState extends State<NearbyPage> {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          SelectableText(_aiResult!, style: const TextStyle(fontSize: 13, height: 1.6)),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 140),
+                            child: SingleChildScrollView(
+                              child: SelectableText(_aiResult!, style: const TextStyle(fontSize: 13, height: 1.6)),
+                            ),
+                          ),
                         ],
                       ),
                     ),
