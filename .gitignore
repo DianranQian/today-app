@@ -41,3 +41,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# OpenCode 会话记录（本地工具数据，不提交）
+.opencode/
+docs/
