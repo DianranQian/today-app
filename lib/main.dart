@@ -149,8 +149,8 @@ class HomeEntryPage extends StatelessWidget {
         onTap: () => _openApp(context, const TodoAppPage()),
           ),
           const SizedBox(height: 24),
-          // 打赏入口（iOS 审核风险，构建时隐藏）
-          if (!Platform.isIOS)
+          // 打赏入口（iOS 与上架版 release 构建时隐藏收款码）
+          if (!Platform.isIOS && donationEnabled)
             Center(
               child: InkWell(
                 borderRadius: BorderRadius.circular(20),

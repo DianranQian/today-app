@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/backup.dart';
+import '../../../core/donation.dart';
 import '../../../core/language.dart';
 import '../../../core/widgets/scheme_random_pool.dart';
 import '../models/food_item.dart';
@@ -247,9 +248,15 @@ class _SettingsPageState extends State<SettingsPage> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.favorite, color: Colors.red),
-              title: Text(t('赛博乞讨')),
-              subtitle: Text(t('来都来了，不赏两个？♥')),
-              onTap: () => _showDonationDialog(),
+              title: Text(donationEnabled
+                  ? t('赛博乞讨')
+                  : t('支持开发者')),
+              subtitle: Text(donationEnabled
+                  ? t('来都来了，不赏两个？♥')
+                  : t('去爱发电支持一下')),
+              onTap: donationEnabled
+                  ? () => _showDonationDialog()
+                  : openAifadian,
               trailing: const Icon(Icons.open_in_new, color: Colors.grey),
             ),
           ),

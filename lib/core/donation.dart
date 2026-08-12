@@ -1,7 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'language.dart';
 
-/// 赛博乞讨：微信收款码打赏弹窗（核心层，供主框架与各子应用复用）
+/// 爱发电主页（上架版打赏入口）
+const aifadianUrl = 'https://www.ifdian.net/a/dianranqian13579';
+
+/// 打赏入口是否可用：上架版（release）隐藏微信收款码
+bool get donationEnabled => !kReleaseMode;
+
+/// 打开爱发电主页（上架版入口）
+Future<void> openAifadian() async {
+  final url = Uri.parse(aifadianUrl);
+  if (await canLaunchUrl(url)) {
+    await launchUrl(url, mode: LaunchMode.externalApplication);
+  }
+}
+
+/// 赛博乞讨：微信收款码打赏弹窗（调试版，供主框架与各子应用复用）
 void showDonationDialog(BuildContext context) {
   showDialog(
     context: context,

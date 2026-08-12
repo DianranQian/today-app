@@ -45,3 +45,9 @@ app.*.map.json
 # OpenCode 会话记录（本地工具数据，不提交）
 .opencode/
 docs/
+
+# Release 签名（本地机密，不提交）
+android/key.properties
+android/app/*.jks
+
+android/build/

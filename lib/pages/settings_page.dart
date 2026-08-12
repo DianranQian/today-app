@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/app_settings.dart';
 import '../core/backup.dart';
@@ -9,6 +10,9 @@ import '../core/donation.dart';
 import '../core/l10n/l10n.dart';
 import '../core/language.dart';
 import '../core/theme.dart';
+
+/// 隐私政策地址（上架前替换为实际托管地址）
+const privacyPolicyUrl = 'https://github.com/DianranQian/today-app';
 
 /// 主框架通用设置：主题色、数据导入导出、打赏
 class SettingsPage extends StatefulWidget {
@@ -197,6 +201,15 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      _toast(t('无法打开链接'));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -375,10 +388,42 @@ class _SettingsPageState extends State<SettingsPage> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.favorite, color: Colors.red),
-              title: const Text('赛博乞讨'),
-              subtitle: const Text('来都来了，不赏两个？♥'),
-              onTap: () => showDonationDialog(context),
+              title: Text(donationEnabled
+                  ? t('赛博乞讨')
+                  : t('支持开发者')),
+              subtitle: Text(donationEnabled
+                  ? t('来都来了，不赏两个？♥')
+                  : t('去爱发电支持一下')),
+              onTap: donationEnabled
+                  ? () => showDonationDialog(context)
+                  : openAifadian,
               trailing: const Icon(Icons.open_in_new, color: Colors.grey),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.info_outline, color: Colors.grey),
+                  title: Text(t('关于')),
+                  subtitle: const Text('What to Do v0.1.0'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined, color: Colors.grey),
+                  title: Text(t('隐私政策')),
+                  subtitle: Text(t('查看隐私政策')),
+                  trailing: const Icon(Icons.open_in_new, color: Colors.grey),
+                  onTap: () => _openUrl(privacyPolicyUrl),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.gavel_outlined, color: Colors.grey),
+                  title: Text(t('ICP 备案号')),
+                  subtitle: Text('—'),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),

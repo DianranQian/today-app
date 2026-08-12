@@ -171,7 +171,7 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
     if (schemes.length <= 1) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('至少保留一个方案', 'Keep at least one scheme')),
+        SnackBar(content: Text(t('至少保留一个方案')),
             behavior: SnackBarBehavior.floating),
       );
       return;

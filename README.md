@@ -45,7 +45,7 @@ flutter build apk --release   # 打包
 ```
 
 - Flutter 3.24+ / Dart 3.5+
-- Android 6.0+（minSdk 23），compileSdk 35
+- Android 6.0+（minSdk 23），compileSdk 36
 - 注意：项目路径请使用纯英文（中文路径会导致 impellerc 构建失败）
 
 ## 技术架构
