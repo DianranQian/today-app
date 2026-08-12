@@ -12,6 +12,7 @@ class WearDataStore {
 
   static Future<void> load() async {
     await SchemeStore.migrateLegacy('wear');
+    await SchemeStore.migrateDefaultName('wear');
     final scheme = await SchemeStore.current('wear');
     final prefs = await SharedPreferences.getInstance();
 

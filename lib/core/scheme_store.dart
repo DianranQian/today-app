@@ -93,6 +93,35 @@ class SchemeStore {
     _currentCache[appId] = defaultName;
   }
 
+  /// 默认名迁移：早期版本默认名是「菜单一/方案一」，
+  /// 若用户只有一个默认方案（未新建自定义方案），自动重命名为当前默认名
+  static Future<void> migrateDefaultName(String appId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey(_schemesKey(appId))) return;
+    final newName = defaultSchemeName(appId);
+    final list = prefs.getStringList(_schemesKey(appId)) ?? <String>[];
+    if (list.length != 1) return; // 已有自定义方案，不打扰
+    final old = list.first;
+    if (old == newName) return;
+    if (old != '菜单一' && old != '方案一') return; // 用户自定义名，不动
+    final keys = schemeListKeys[appId] ?? const <String, String>{};
+    for (final entry in keys.entries) {
+      final src = dataKey(appId, old, entry.key);
+      final v = prefs.getString(src);
+      if (v != null && v.isNotEmpty) {
+        await prefs.setString(dataKey(appId, newName, entry.key), v);
+        await prefs.remove(src);
+      }
+    }
+    await prefs.setStringList(_schemesKey(appId), [newName]);
+    await prefs.setString(_currentKey(appId), newName);
+    final rp = prefs.getStringList(_randomKey(appId)) ?? <String>[];
+    if (rp.length == 1) {
+      await prefs.setStringList(_randomKey(appId), [newName]);
+    }
+    _currentCache[appId] = newName;
+  }
+
   /// 新建空白方案（重名拒绝）
   static Future<void> create(String appId, String name) async {
     final trimmed = name.trim();

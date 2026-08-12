@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/image_helper.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import 'dart:convert';
 import '../../core/profile_store.dart';
 import '../../core/services/ai_service.dart';
@@ -25,7 +26,21 @@ class _GoManagePageState extends State<GoManagePage> {
   String? _imagePath;
 
   @override
+  void initState() {
+    super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'go') return;
+    GoDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _nameCtrl.dispose();
     _emojiCtrl.dispose();
     _searchCtrl.dispose();

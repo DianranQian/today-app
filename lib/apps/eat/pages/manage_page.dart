@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
 import '../../../core/language.dart';
+import '../../../core/scheme_store.dart';
 import '../../../core/profile_store.dart';
 import '../../../core/services/ai_service.dart';
 import '../../../core/widgets/profile_dialog.dart';
@@ -46,10 +47,19 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'eat') return;
+    DataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _tabController.dispose();
     _dishNameCtrl.dispose();
     _dishEmojiCtrl.dispose();

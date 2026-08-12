@@ -9,6 +9,7 @@ class ContactDataStore {
 
   static Future<void> load() async {
     await SchemeStore.migrateLegacy('contact');
+    await SchemeStore.migrateDefaultName('contact');
     final scheme = await SchemeStore.current('contact');
     final prefs = await SharedPreferences.getInstance();
     avoidRecent = prefs.getBool('contact_avoid_recent') ?? true;

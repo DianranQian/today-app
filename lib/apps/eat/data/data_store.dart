@@ -49,6 +49,7 @@ class DataStore {
 
   static Future<void> load() async {
     await SchemeStore.migrateLegacy('eat');
+    await SchemeStore.migrateDefaultName('eat');
     final scheme = await SchemeStore.current('eat');
     final prefs = await SharedPreferences.getInstance();
 

@@ -11,6 +11,7 @@ class GoDataStore {
 
   static Future<void> load() async {
     await SchemeStore.migrateLegacy('go');
+    await SchemeStore.migrateDefaultName('go');
     final scheme = await SchemeStore.current('go');
     final prefs = await SharedPreferences.getInstance();
 
