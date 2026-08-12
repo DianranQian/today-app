@@ -51,47 +51,56 @@ class DataStore {
     await SchemeStore.migrateLegacy('eat');
     await SchemeStore.migrateDefaultName('eat');
     final scheme = await SchemeStore.current('eat');
+    final isDefault = scheme == SchemeStore.defaultSchemeName('eat');
     final prefs = await SharedPreferences.getInstance();
 
     final dishesJson = _readListJson(prefs, scheme, 'dishes');
     if (dishesJson != null && dishesJson.isNotEmpty) {
       final cleaned = _sanitize(dishesJson);
       if (cleaned.isEmpty) {
-        dishes = getDefaultDishes();
+        dishes = isDefault ? getDefaultDishes() : <FoodItem>[];
       } else {
         try {
           final parsed = (jsonDecode(cleaned) as List)
               .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
               .where((d) => d.name.isNotEmpty)
               .toList();
-          // 解析结果为空时回退默认库，避免空数组导致库永久为空
-          dishes = parsed.isEmpty ? getDefaultDishes() : parsed;
+          // 解析结果为空时回退默认库，避免空数组导致库永久为空（仅默认方案）
+          dishes = parsed.isEmpty
+              ? (isDefault ? getDefaultDishes() : <FoodItem>[])
+              : parsed;
         } catch (_) {
-          dishes = getDefaultDishes();
+          dishes = isDefault ? getDefaultDishes() : <FoodItem>[];
         }
       }
-    } else {
+    } else if (isDefault) {
       dishes = getDefaultDishes();
+    } else {
+      dishes = [];
     }
 
     final staplesJson = _readListJson(prefs, scheme, 'staples');
     if (staplesJson != null && staplesJson.isNotEmpty) {
       final cleaned = _sanitize(staplesJson);
       if (cleaned.isEmpty) {
-        staples = getDefaultStaples();
+        staples = isDefault ? getDefaultStaples() : <FoodItem>[];
       } else {
         try {
           final parsed = (jsonDecode(cleaned) as List)
               .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
               .where((s) => s.name.isNotEmpty)
               .toList();
-          staples = parsed.isEmpty ? getDefaultStaples() : parsed;
+          staples = parsed.isEmpty
+              ? (isDefault ? getDefaultStaples() : <FoodItem>[])
+              : parsed;
         } catch (_) {
-          staples = getDefaultStaples();
+          staples = isDefault ? getDefaultStaples() : <FoodItem>[];
         }
       }
-    } else {
+    } else if (isDefault) {
       staples = getDefaultStaples();
+    } else {
+      staples = [];
     }
 
     final historyJson = prefs.getString('history');
@@ -111,20 +120,24 @@ class DataStore {
     if (drinksJson != null && drinksJson.isNotEmpty) {
       final cleaned = _sanitize(drinksJson);
       if (cleaned.isEmpty) {
-        drinks = getDefaultDrinks();
+        drinks = isDefault ? getDefaultDrinks() : <FoodItem>[];
       } else {
         try {
           final parsed = (jsonDecode(cleaned) as List)
               .map((e) => FoodItem.fromJson(e as Map<String, dynamic>))
               .where((d) => d.name.isNotEmpty)
               .toList();
-          drinks = parsed.isEmpty ? getDefaultDrinks() : parsed;
+          drinks = parsed.isEmpty
+              ? (isDefault ? getDefaultDrinks() : <FoodItem>[])
+              : parsed;
         } catch (_) {
-          drinks = getDefaultDrinks();
+          drinks = isDefault ? getDefaultDrinks() : <FoodItem>[];
         }
       }
-    } else {
+    } else if (isDefault) {
       drinks = getDefaultDrinks();
+    } else {
+      drinks = [];
     }
 
     final settingsJson = prefs.getString('settings');

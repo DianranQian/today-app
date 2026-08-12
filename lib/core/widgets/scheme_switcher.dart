@@ -167,12 +167,23 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
       ),
     );
     if (ok != true) return;
-    if (name == current) {
+    final schemes = await SchemeStore.list(widget.appId);
+    if (schemes.length <= 1) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('不能删除当前方案')),
+        SnackBar(content: Text(t('至少保留一个方案', 'Keep at least one scheme')),
             behavior: SnackBarBehavior.floating),
       );
+      return;
+    }
+    if (name == current) {
+      // 删除当前方案：先切换到剩余第一个，再删除
+      final next = schemes.firstWhere((s) => s != name);
+      await SchemeStore.switchTo(widget.appId, next);
+      await SchemeStore.remove(widget.appId, name);
+      await widget.onSwitched();
+      if (!mounted) return;
+      Navigator.pop(context);
       return;
     }
     try {
@@ -250,27 +261,29 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
                             ),
                             title: Text(
                                 SchemeStore.displayName(widget.appId, name)),
-                            trailing: isCurrent
-                                ? null
-                                : PopupMenuButton<String>(
-                                    icon: const Icon(Icons.more_vert,
-                                        size: 20, color: Colors.grey),
-                                    onSelected: (action) {
-                                      if (action == 'rename') {
-                                        _rename(name);
-                                      } else if (action == 'delete') {
-                                        _remove(name, current);
-                                      }
-                                    },
-                                    itemBuilder: (_) => [
-                                      PopupMenuItem(
-                                          value: 'rename',
-                                          child: Text(t('重命名'))),
-                                      PopupMenuItem(
-                                          value: 'delete',
-                                          child: Text(t('删除'))),
-                                    ],
-                                  ),
+                            trailing: PopupMenuButton<String>(
+                              icon: Icon(Icons.more_vert,
+                                  size: 20,
+                                  color: isCurrent
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey),
+                              onSelected: (action) {
+                                if (action == 'rename') {
+                                  _rename(name);
+                                } else if (action == 'delete') {
+                                  _remove(name, current);
+                                }
+                              },
+                              itemBuilder: (_) => [
+                                PopupMenuItem(
+                                    value: 'rename',
+                                    child: Text(t('重命名'))),
+                                PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text(t('删除'),
+                                        style: const TextStyle(color: Colors.red))),
+                              ],
+                            ),
                             onTap: isCurrent
                                 ? null
                                 : () => _switchTo(name),

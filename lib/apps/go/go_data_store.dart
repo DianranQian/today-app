@@ -17,7 +17,8 @@ class GoDataStore {
 
     final placesJson = prefs.getString(SchemeStore.dataKey('go', scheme, 'places'));
     var json = placesJson;
-    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName('go')) {
+    final isDefault = scheme == SchemeStore.defaultSchemeName('go');
+    if ((json == null || json.isEmpty) && isDefault) {
       json = prefs.getString('go_places');
     }
     if (json != null && json.isNotEmpty) {
@@ -26,12 +27,17 @@ class GoDataStore {
             .map((e) => PlaceItem.fromJson(e as Map<String, dynamic>))
             .where((p) => p.name.isNotEmpty)
             .toList();
-        places = parsed.isEmpty ? getDefaultPlaces() : parsed;
+        // 解析结果为空时回退默认库，避免空数组导致库永久为空（仅默认方案）
+        places = parsed.isEmpty
+            ? (isDefault ? getDefaultPlaces() : <PlaceItem>[])
+            : parsed;
       } catch (_) {
-        places = getDefaultPlaces();
+        places = isDefault ? getDefaultPlaces() : <PlaceItem>[];
       }
-    } else {
+    } else if (isDefault) {
       places = getDefaultPlaces();
+    } else {
+      places = [];
     }
 
     avoidRecent = prefs.getBool('go_avoid_recent') ?? true;

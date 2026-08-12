@@ -19,7 +19,8 @@ class WearDataStore {
     final outfitsJson =
         prefs.getString(SchemeStore.dataKey('wear', scheme, 'outfits'));
     var json = outfitsJson;
-    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName('wear')) {
+    final isDefault = scheme == SchemeStore.defaultSchemeName('wear');
+    if ((json == null || json.isEmpty) && isDefault) {
       json = prefs.getString('wear_outfits');
     }
     if (json != null && json.isNotEmpty) {
@@ -28,12 +29,17 @@ class WearDataStore {
             .map((e) => _patchLegacyFields(e as Map<String, dynamic>))
             .where((o) => o.name.isNotEmpty)
             .toList();
-        outfits = parsed.isEmpty ? getDefaultOutfits() : parsed;
+        // 解析结果为空时回退默认库，避免空数组导致库永久为空（仅默认方案）
+        outfits = parsed.isEmpty
+            ? (isDefault ? getDefaultOutfits() : <OutfitItem>[])
+            : parsed;
       } catch (_) {
-        outfits = getDefaultOutfits();
+        outfits = isDefault ? getDefaultOutfits() : <OutfitItem>[];
       }
-    } else {
+    } else if (isDefault) {
       outfits = getDefaultOutfits();
+    } else {
+      outfits = [];
     }
 
     avoidRecent = prefs.getBool('wear_avoid_recent') ?? true;
