@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <clipPath id="icon">
+      <rect x="0" y="0" width="1024" height="1024" rx="232"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#icon)">
+    <rect x="0" y="0" width="1024" height="1024" fill="#AF52DE"/>
+    <circle cx="1250.0" cy="1250.0" r="408.00" fill="none" stroke="#AF52DE" stroke-width="216.0"/>
+    <circle cx="1250.0" cy="1250.0" r="624.00" fill="none" stroke="#5E5CE6" stroke-width="216.0"/>
+    <circle cx="1250.0" cy="1250.0" r="840.00" fill="none" stroke="#0A84FF" stroke-width="216.0"/>
+    <circle cx="1250.0" cy="1250.0" r="1056.00" fill="none" stroke="#34C759" stroke-width="216.0"/>
+    <circle cx="1250.0" cy="1250.0" r="1272.00" fill="none" stroke="#FFCC00" stroke-width="216.0"/>
+    <circle cx="1250.0" cy="1250.0" r="1488.00" fill="none" stroke="#FF9500" stroke-width="216.0"/>
+    <circle cx="1250.0" cy="1250.0" r="1704.00" fill="none" stroke="#FF3B30" stroke-width="216.0"/>
+    <g transform="translate(512.0 512.0) scale(0.95) translate(-512.0 -512.0)">
+    <g transform="translate(83.75 22.00)">
+      <g filter="url(#soft)" opacity="0.38">
+        <g transform="translate(0 14)">
+          <path d="M 110.0 650.0 L 110.0 330.0 L 185.0 330.0 A 165.0 165.0 0 0 1 185.0 650.0 Z" fill="none" stroke="#3B1F0B" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+          <ellipse cx="517.0" cy="490.0" rx="115.0" ry="170.0" fill="none" stroke="#3B1F0B" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M 738.5 536.5 L 738.5 332.0" fill="none" stroke="#3B1F0B" stroke-width="85.0" stroke-linecap="round"/>
+          <circle cx="738.5" cy="642.0" r="48.0" fill="#3B1F0B"/>
+        </g>
+      </g>
+      <g>
+        <path d="M 110.0 650.0 L 110.0 330.0 L 185.0 330.0 A 165.0 165.0 0 0 1 185.0 650.0 Z" fill="none" stroke="#FFFFFF" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+        <ellipse cx="517.0" cy="490.0" rx="115.0" ry="170.0" fill="none" stroke="#FFFFFF" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M 738.5 536.5 L 738.5 332.0" fill="none" stroke="#FFFFFF" stroke-width="85.0" stroke-linecap="round"/>
+        <circle cx="738.5" cy="642.0" r="48.0" fill="#FFFFFF"/>
+      </g>
+    </g>
+  </g>
+  </g>
+</svg>

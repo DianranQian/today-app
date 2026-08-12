@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+  <g>
+    <rect x="0" y="0" width="800" height="400" fill="#AF52DE"/>
+    <circle cx="980.0" cy="980.0" r="605.00" fill="none" stroke="#AF52DE" stroke-width="130.0"/>
+    <circle cx="980.0" cy="980.0" r="735.00" fill="none" stroke="#5E5CE6" stroke-width="130.0"/>
+    <circle cx="980.0" cy="980.0" r="865.00" fill="none" stroke="#0A84FF" stroke-width="130.0"/>
+    <circle cx="980.0" cy="980.0" r="995.00" fill="none" stroke="#34C759" stroke-width="130.0"/>
+    <circle cx="980.0" cy="980.0" r="1125.00" fill="none" stroke="#FFCC00" stroke-width="130.0"/>
+    <circle cx="980.0" cy="980.0" r="1255.00" fill="none" stroke="#FF9500" stroke-width="130.0"/>
+    <circle cx="980.0" cy="980.0" r="1385.00" fill="none" stroke="#FF3B30" stroke-width="130.0"/>
+    <g transform="translate(400.0 200.0) scale(0.68) translate(-400.0 -200.0)">
+    <g transform="translate(-28.25 -290.00)">
+      <g filter="url(#soft)" opacity="0.38">
+        <g transform="translate(0 14)">
+          <path d="M 110.0 650.0 L 110.0 330.0 L 185.0 330.0 A 165.0 165.0 0 0 1 185.0 650.0 Z" fill="none" stroke="#3B1F0B" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+          <ellipse cx="517.0" cy="490.0" rx="115.0" ry="170.0" fill="none" stroke="#3B1F0B" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M 738.5 536.5 L 738.5 332.0" fill="none" stroke="#3B1F0B" stroke-width="85.0" stroke-linecap="round"/>
+          <circle cx="738.5" cy="642.0" r="48.0" fill="#3B1F0B"/>
+        </g>
+      </g>
+      <g>
+        <path d="M 110.0 650.0 L 110.0 330.0 L 185.0 330.0 A 165.0 165.0 0 0 1 185.0 650.0 Z" fill="none" stroke="#FFFFFF" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+        <ellipse cx="517.0" cy="490.0" rx="115.0" ry="170.0" fill="none" stroke="#FFFFFF" stroke-width="80.0" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M 738.5 536.5 L 738.5 332.0" fill="none" stroke="#FFFFFF" stroke-width="85.0" stroke-linecap="round"/>
+        <circle cx="738.5" cy="642.0" r="48.0" fill="#FFFFFF"/>
+      </g>
+    </g>
+  </g>
+  </g>
+</svg>
