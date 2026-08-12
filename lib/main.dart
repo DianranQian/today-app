@@ -57,7 +57,7 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
               icon: Icon(Icons.grid_view_outlined),
               selectedIcon: Icon(Icons.grid_view),
@@ -110,12 +110,6 @@ class HomeEntryPage extends StatelessWidget {
             color: const Color(0xFFFF6B35),
             onTap: () => _openApp(context, const EatAppPage()),
           ),
-          _buildEntryCard(
-            context,
-            emoji: '📍',
-        title: t('工具', 'Tools'),
-        onTap: () => _openApp(context, const EatAppPage()),
-      ),
       _buildEntryCard(
         context,
         emoji: '📍',

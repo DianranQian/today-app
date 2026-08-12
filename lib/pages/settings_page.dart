@@ -314,10 +314,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     onChanged: (v) {
                       if (v == null) return;
                       setLanguage(v);
-                      // 重建整个 App 生效
-                      Navigator.popUntil(
-                          context, (route) => route.isFirst);
-                      runApp(const TodayApp());
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('语言已切换，重启应用生效 / Restart to apply'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
                     },
                   ),
                 ),
