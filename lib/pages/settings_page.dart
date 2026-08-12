@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../core/app_settings.dart';
 import '../core/backup.dart';
 import '../core/donation.dart';
+import '../core/language.dart';
 import '../core/theme.dart';
 
 /// 主框架通用设置：主题色、数据导入导出、打赏
@@ -291,6 +292,32 @@ class _SettingsPageState extends State<SettingsPage> {
                     onChanged: (_) {
                       AppSettings.deepseekKey = _deepseekKeyCtrl.text.trim();
                       AppSettings.save();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.language, color: Colors.orange),
+                  title: const Text('语言 / Language'),
+                  trailing: DropdownButton<String>(
+                    value: currentLang,
+                    items: const [
+                      DropdownMenuItem(value: 'zh', child: Text('中文')),
+                      DropdownMenuItem(value: 'en', child: Text('English')),
+                    ],
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setLanguage(v);
+                      // 重建整个 App 生效
+                      Navigator.popUntil(
+                          context, (route) => route.isFirst);
+                      runApp(const TodayApp());
                     },
                   ),
                 ),

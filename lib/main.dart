@@ -8,6 +8,7 @@ import 'apps/todo/todo_app.dart';
 import 'apps/wear/wear_app.dart';
 import 'core/app_settings.dart';
 import 'core/donation.dart';
+import 'core/language.dart';
 import 'core/plan_store.dart';
 import 'core/theme.dart';
 import 'core/widgets/date_selector.dart';
@@ -19,6 +20,7 @@ void main() async {
   await AppSettings.load();
   await TargetDateSelector.load();
   await PlanStore.load();
+  await loadLanguage();
   runApp(const TodayApp());
 }
 
@@ -59,11 +61,11 @@ class _MainShellState extends State<MainShell> {
           NavigationDestination(
               icon: Icon(Icons.grid_view_outlined),
               selectedIcon: Icon(Icons.grid_view),
-              label: '工具'),
+              label: t('工具', 'Tools')),
           NavigationDestination(
               icon: Icon(Icons.event_note_outlined),
               selectedIcon: Icon(Icons.event_note),
-              label: '计划'),
+              label: t('计划', 'Plan')),
         ],
       ),
     );
@@ -103,42 +105,48 @@ class HomeEntryPage extends StatelessWidget {
           _buildEntryCard(
             context,
             emoji: '🍜',
-            title: '今天吃什么',
-            subtitle: '随机推荐菜谱，告别选择困难',
+        title: t('今天吃什么', 'Food'),
+        subtitle: t('随机推荐菜谱，告别选择困难', 'Random food recommendations'),
             color: const Color(0xFFFF6B35),
             onTap: () => _openApp(context, const EatAppPage()),
           ),
           _buildEntryCard(
             context,
             emoji: '📍',
-            title: '今天去哪',
-            subtitle: '随机推荐去处，出门不再纠结',
-            color: const Color(0xFF4CAF50),
-            onTap: () => _openApp(context, const GoAppPage()),
-          ),
-          _buildEntryCard(
-            context,
-            emoji: '👕',
-            title: '今天穿什么',
-            subtitle: '按季节随机搭配，轻松出门',
-            color: const Color(0xFF42A5F5),
-            onTap: () => _openApp(context, const WearAppPage()),
-          ),
-          _buildEntryCard(
-            context,
-            emoji: '📞',
-            title: '今天联系谁',
-            subtitle: '提醒联系久未问候的亲友',
-            color: const Color(0xFF7E57C2),
-            onTap: () => _openApp(context, const ContactAppPage()),
-          ),
-          _buildEntryCard(
-            context,
-            emoji: '📋',
-            title: '今天待办',
-            subtitle: '每日待办清单，按日期管理',
-            color: const Color(0xFF8D6E63),
-            onTap: () => _openApp(context, const TodoAppPage()),
+        title: t('工具', 'Tools'),
+        onTap: () => _openApp(context, const EatAppPage()),
+      ),
+      _buildEntryCard(
+        context,
+        emoji: '📍',
+        title: t('今天去哪', 'Places'),
+        subtitle: t('随机推荐去处，出门不再纠结', 'Discover nearby attractions'),
+        color: const Color(0xFF42A5F5),
+        onTap: () => _openApp(context, const GoAppPage()),
+      ),
+      _buildEntryCard(
+        context,
+        emoji: '👕',
+        title: t('今天穿什么', 'Outfits'),
+        subtitle: t('按季节随机搭配，轻松出门', 'Seasonal outfit suggestions'),
+        color: const Color(0xFFEC407A),
+        onTap: () => _openApp(context, const WearAppPage()),
+      ),
+      _buildEntryCard(
+        context,
+        emoji: '📞',
+        title: t('今天联系谁', 'Contacts'),
+        subtitle: t('提醒联系久未问候的亲友', 'Remind to reach out'),
+        color: const Color(0xFF7E57C2),
+        onTap: () => _openApp(context, const ContactAppPage()),
+      ),
+      _buildEntryCard(
+        context,
+        emoji: '📋',
+        title: t('今天待办', 'Tasks'),
+        subtitle: t('每日待办清单，按日期管理', 'Daily to-do by date'),
+        color: const Color(0xFF8D6E63),
+        onTap: () => _openApp(context, const TodoAppPage()),
           ),
           const SizedBox(height: 24),
           // 打赏入口（iOS 审核风险，构建时隐藏）
@@ -151,7 +159,7 @@ class HomeEntryPage extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Text(
-                    'What to Do v0.1.0 · ♥ 支持一下',
+                    t('What to Do v0.1.0 · ♥ 支持一下', 'What to Do v0.1.0 · ♥ Support'),
                     style: TextStyle(color: Colors.grey[400], fontSize: 12),
                   ),
                 ),

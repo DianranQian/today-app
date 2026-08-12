@@ -72,7 +72,11 @@ class _WearHomePageState extends State<WearHomePage> {
     setState(() => _isPicking = true);
 
     var pool = WearDataStore.getFilteredOutfits(
-        scene: _selectedScene, temperature: _temperature);
+        scene: _selectedScene,
+        gender: _selectedGender,
+        group: _selectedGroup,
+        style: _selectedStyle,
+        temperature: _temperature);
     if (WearDataStore.avoidRecent) {
       final recent = WearDataStore.getRecentOutfitNames();
       if (pool.any((o) => !recent.contains(o.name))) {
@@ -154,7 +158,11 @@ class _WearHomePageState extends State<WearHomePage> {
   void _swap() {
     if (_isPicking || _picked == null) return;
     final pool = WearDataStore.getFilteredOutfits(
-        scene: _selectedScene, temperature: _temperature);
+        scene: _selectedScene,
+        gender: _selectedGender,
+        group: _selectedGroup,
+        style: _selectedStyle,
+        temperature: _temperature);
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _picked?.name) {
       _showToast('当前条件下就这一套啦');
@@ -529,7 +537,7 @@ class _WearHomePageState extends State<WearHomePage> {
               child: Text(
                 '${_picked!.scene.label} · ${tags.join(' · ')}',
                 style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
-
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(
