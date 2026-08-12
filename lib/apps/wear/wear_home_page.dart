@@ -455,25 +455,6 @@ class _WearHomePageState extends State<WearHomePage> {
                       }),
               child: const Text('清除'),
             ),
-
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: () => showAddToPlanDialog(
-                context,
-                type: PlanType.wear,
-                title: _picked!.name,
-                emoji: _picked!.emoji,
-              ),
-              icon: const Icon(Icons.event_note, size: 18),
-              label: const Text('加入计划'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
-                side: BorderSide(
-                    color: Theme.of(context).colorScheme.primary.withAlpha(80)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22)),
-              ),
-            ),
           ],
         ),
       ),
@@ -548,6 +529,27 @@ class _WearHomePageState extends State<WearHomePage> {
               child: Text(
                 '${_picked!.scene.label} · ${tags.join(' · ')}',
                 style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.primary),
+
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => showAddToPlanDialog(
+                  context,
+                  type: PlanType.wear,
+                  title: _picked!.name,
+                  emoji: _picked!.emoji,
+                ),
+                icon: const Icon(Icons.event_note, size: 18),
+                label: const Text('加入计划'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary.withAlpha(80)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22)),
+                ),
               ),
             ),
           ],

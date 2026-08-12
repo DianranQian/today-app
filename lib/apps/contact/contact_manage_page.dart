@@ -211,6 +211,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                             labelText: 'Emoji',
                             border: OutlineInputBorder(),
                             isDense: true,
+                            counterText: '',
                           ),
                           maxLength: 4,
                         ),

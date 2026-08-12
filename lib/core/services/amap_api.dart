@@ -61,7 +61,9 @@ class AmapApi {
       'extensions': 'base',
     };
     if (types.isNotEmpty) params['types'] = types;
-    final uri = Uri.parse(_base).replace(queryParameters: params);
+    // 手拼查询串，避免 Uri.replace 把 | 编码成 %7C
+    final qs = params.entries.map((e) => '${e.key}=${e.value}').join('&');
+    final uri = Uri.parse('$_base?$qs');
     final resp = await http.get(uri).timeout(const Duration(seconds: 15));
     if (resp.statusCode != 200) {
       throw Exception('请求失败：HTTP ${resp.statusCode}');

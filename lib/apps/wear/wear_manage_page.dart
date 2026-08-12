@@ -193,6 +193,7 @@ class _WearManagePageState extends State<WearManagePage> {
                             labelText: 'Emoji',
                             border: OutlineInputBorder(),
                             isDense: true,
+                            counterText: '',
                           ),
                           maxLength: 4,
                         ),
