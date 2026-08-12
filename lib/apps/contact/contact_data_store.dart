@@ -4,9 +4,11 @@ import 'contact_models.dart';
 
 class ContactDataStore {
   static List<ContactItem> contacts = [];
+  static bool avoidRecent = true;
 
   static Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
+    avoidRecent = prefs.getBool('contact_avoid_recent') ?? true;
 
     final contactsJson = prefs.getString('contact_contacts');
     if (contactsJson != null && contactsJson.isNotEmpty) {

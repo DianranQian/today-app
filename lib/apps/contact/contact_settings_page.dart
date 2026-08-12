@@ -48,9 +48,35 @@ class _ContactSettingsPageState extends State<ContactSettingsPage> {
         appName: t('今天联系谁', 'Who to call today?'),
         reload: ContactDataStore.load,
         onClearHistory: () {
-          // 联系人无历史概念，清空所有联系人
-          ContactDataStore.contacts.clear();
-          ContactDataStore.save();
+          // 联系人无历史概念，清空所有联系人（需二次确认）
+          showDialog<void>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: Text(t('清空所有联系人', 'Clear all contacts')),
+              content: Text(t('将删除全部联系人，此操作不可撤销。确定吗？',
+                  'This will delete ALL contacts. This cannot be undone. Continue?')),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(t('取消', 'Cancel'))),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    ContactDataStore.contacts.clear();
+                    ContactDataStore.save();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(t('所有联系人已清空', 'All contacts cleared')),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  child: Text(t('确定', 'Confirm'),
+                      style: const TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          );
         },
         extra: Card(
           child: ListTile(

@@ -25,8 +25,21 @@ class _ContactHomePageState extends State<ContactHomePage> {
     // 逾期优先：有逾期的人时只从逾期者里随机
     final overdue =
         ContactDataStore.contacts.where((c) => c.isOverdue).toList();
-    final pool =
-        overdue.isNotEmpty ? overdue : ContactDataStore.contacts;
+    var pool = overdue.isNotEmpty ? overdue : ContactDataStore.contacts;
+    // 避免近期重复：排除最近联系过的人（只剩 1 人时不排除）
+    if (ContactDataStore.avoidRecent && pool.length > 1) {
+      final contacted = pool.where((c) => c.lastContact != null).toList();
+      if (contacted.isNotEmpty) {
+        var mostRecent = contacted.first;
+        for (final c in contacted) {
+          if (c.lastContact!.isAfter(mostRecent.lastContact!)) {
+            mostRecent = c;
+          }
+        }
+        final rest = pool.where((c) => c != mostRecent).toList();
+        if (rest.isNotEmpty) pool = rest;
+      }
+    }
     setState(() => _picked = ContactDataStore.pickFrom(pool));
   }
 

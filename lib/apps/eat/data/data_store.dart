@@ -69,7 +69,6 @@ class DataStore {
     } else {
       dishes = getDefaultDishes();
     }
-    saveNow(prefs);
 
     final staplesJson = prefs.getString('staples');
     if (staplesJson != null && staplesJson.isNotEmpty) {
