@@ -17,7 +17,7 @@ void main() {
   testWidgets('框架入口页显示四个子应用', (WidgetTester tester) async {
     await pumpApp(tester);
 
-    expect(find.text('What to Do'), findsOneWidget);
+    expect(find.text('今天做什么'), findsOneWidget);
     expect(find.text('今天吃什么'), findsOneWidget);
     expect(find.text('今天去哪'), findsOneWidget);
     expect(find.text('今天穿什么'), findsOneWidget);

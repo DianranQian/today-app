@@ -82,7 +82,7 @@ class HomeEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('What to Do'),
+        title: const Text('今天做什么'),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [

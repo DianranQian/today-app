@@ -48,7 +48,7 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
     });
     try {
       final pos = await _getPosition();
-      final pois = await AmapApi.around(pos.latitude!, pos.longitude!);
+      final pois = await AmapApi.around(pos.latitude!, pos.longitude!, types: '');
       if (!mounted) return;
       setState(() {
         _pois = pois;

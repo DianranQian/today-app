@@ -25,14 +25,16 @@ class NearbyPoi {
     final biz = json['biz_ext'] is Map
         ? (json['biz_ext'] as Map).cast<String, dynamic>()
         : <String, dynamic>{};
+    // 安全取值：高德返回字段可能为非字符串（空数组等），用字符串插值兜底
+    String safeStr(dynamic v) => v is String ? v : '${v ?? ''}';
     return NearbyPoi(
-      name: json['name'] as String? ?? '未知',
-      address: json['address'] as String? ?? '',
-      tel: json['tel'] as String? ?? '',
-      type: json['type'] as String? ?? '',
-      distance: int.tryParse(json['distance'] as String? ?? '0') ?? 0,
-      rating: biz['rating'] as String? ?? '',
-      cost: biz['cost'] as String? ?? '',
+      name: safeStr(json['name']).isEmpty ? '未知' : safeStr(json['name']),
+      address: safeStr(json['address']),
+      tel: safeStr(json['tel']),
+      type: safeStr(json['type']),
+      distance: int.tryParse('${json['distance'] ?? '0'}') ?? 0,
+      rating: safeStr(biz['rating']),
+      cost: safeStr(biz['cost']),
     );
   }
 }
@@ -45,20 +47,21 @@ class AmapApi {
   static bool get hasKey => _key.isNotEmpty;
 
   static Future<List<NearbyPoi>> around(double lat, double lng,
-      {int radius = 3000}) async {
+      {int radius = 3000, String types = '050000'}) async {
     if (!hasKey) {
       throw Exception('尚未配置高德地图 Key，请到「设置」中填写');
     }
-    final uri = Uri.parse(_base).replace(queryParameters: {
+    final params = <String, String>{
       'key': _key,
       'location': '$lng,$lat',
-      'types': '050000',
       'radius': '$radius',
       'offset': '25',
       'page': '1',
       'sortrule': 'weight',
       'extensions': 'base',
-    });
+    };
+    if (types.isNotEmpty) params['types'] = types;
+    final uri = Uri.parse(_base).replace(queryParameters: params);
     final resp = await http.get(uri).timeout(const Duration(seconds: 15));
     if (resp.statusCode != 200) {
       throw Exception('请求失败：HTTP ${resp.statusCode}');
