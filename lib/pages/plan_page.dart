@@ -24,7 +24,7 @@ class _PlanPageState extends State<PlanPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('计划清单', 'Plan List')),
+        title: Text(t('计划清单')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -35,7 +35,7 @@ class _PlanPageState extends State<PlanPage> {
                 children: [
                   const Text('📅', style: TextStyle(fontSize: 56)),
                   const SizedBox(height: 12),
-                  Text(t('还没有计划\n在子应用里选中后点「加入计划」', 'No plans yet\nPick an item in a sub-app and tap "Add to Plan"'),
+                  Text(t('还没有计划\n在子应用里选中后点「加入计划」'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Colors.grey[500],

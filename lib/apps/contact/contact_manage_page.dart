@@ -71,11 +71,11 @@ class _ContactManagePageState extends State<ContactManagePage> {
   void _add() {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast(t('请输入称呼', 'Please enter a name'));
+      _showToast(t('请输入称呼'));
       return;
     }
     if (ContactDataStore.contacts.any((c) => c.name == name)) {
-      _showToast(t('这个联系人已经存在了', 'This contact already exists'));
+      _showToast(t('这个联系人已经存在了'));
       return;
     }
     ContactDataStore.contacts.add(ContactItem(
@@ -110,7 +110,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
   void _checkIn(int index) {
     ContactDataStore.checkIn(ContactDataStore.contacts[index]);
     setState(() {});
-    _showToast(t('已打卡', 'Checked in'));
+    _showToast(t('已打卡'));
   }
 
 
@@ -128,7 +128,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
           child: OutlinedButton.icon(
             onPressed: _pickImage,
             icon: const Icon(Icons.add_photo_alternate, size: 18),
-            label: Text(t('添加头像', 'Add Photo')),
+            label: Text(t('添加头像')),
           ),
         ),
         if (_imagePath != null)
@@ -167,14 +167,14 @@ class _ContactManagePageState extends State<ContactManagePage> {
     final contacts = ContactDataStore.search(_searchCtrl.text);
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('管理联系人', 'Manage Contacts')),
+        title: Text(t('管理联系人')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
           SchemeSwitcherButton(
               appId: 'contact', onSwitched: () => ContactDataStore.load()),
           IconButton(
-            tooltip: t('配置集', 'Profiles'),
+            tooltip: t('配置集'),
             icon: const Icon(Icons.folder_copy_outlined),
             onPressed: _openProfiles,
           ),
@@ -189,7 +189,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(t('添加联系人（隐私：数据仅存本机，不读系统通讯录）', 'Add contact (private: data stays on this device, no system contacts access)'),
+                  Text(t('添加联系人（隐私：数据仅存本机，不读系统通讯录）'),
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 12),
@@ -199,7 +199,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                         child: TextField(
                           controller: _nameCtrl,
                           decoration: InputDecoration(
-                            labelText: t('称呼', 'Name'),
+                            labelText: t('称呼'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -229,7 +229,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                         child: TextField(
                           controller: _relationCtrl,
                           decoration: InputDecoration(
-                            labelText: t('关系（如：大学室友）', 'Relation (e.g. college roommate)'),
+                            labelText: t('关系（如：大学室友）'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -240,7 +240,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                         child: DropdownButtonFormField<ContactFrequency>(
                           value: _frequency,
                           decoration: InputDecoration(
-                            labelText: t('联系频率', 'Frequency'),
+                            labelText: t('联系频率'),
                             border: OutlineInputBorder(),
                             isDense: true,
                           ),
@@ -256,7 +256,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                   ),
                   const SizedBox(height: 12),
                   // 联系方式（展开式：填了哪个存哪个）
-                  Text(t('联系方式', 'Contact Info'),
+                  Text(t('联系方式'),
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
@@ -264,7 +264,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone, color: Colors.blue),
-                      labelText: t('手机号', 'Phone'),
+                      labelText: t('手机号'),
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -274,7 +274,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     controller: _wechatCtrl,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.chat, color: Colors.green),
-                      labelText: t('微信号', 'WeChat'),
+                      labelText: t('微信号'),
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -285,7 +285,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.mail, color: Colors.orange),
-                      labelText: t('邮箱', 'Email'),
+                      labelText: t('邮箱'),
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -312,7 +312,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text(t('添加', 'Add')),
+                      child: Text(t('添加')),
                     ),
                   ),
                 ],
@@ -324,7 +324,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
             controller: _searchCtrl,
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
-              hintText: t('按称呼或关系搜索', 'Search by name or relation'),
+              hintText: t('按称呼或关系搜索'),
               border: OutlineInputBorder(),
               isDense: true,
             ),
@@ -334,7 +334,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
           if (contacts.isEmpty)
             Center(child: Padding(
               padding: EdgeInsets.all(32),
-              child: Text(t('还没有联系人，添加一些吧', 'No contacts yet. Add some!'), style: TextStyle(color: Colors.grey)),
+              child: Text(t('还没有联系人，添加一些吧'), style: TextStyle(color: Colors.grey)),
             ))
           else
             ...contacts.asMap().entries.map((entry) {
@@ -369,20 +369,20 @@ class _ContactManagePageState extends State<ContactManagePage> {
                     children: [
                       if (c.contacts.isNotEmpty)
                         IconButton(
-                          tooltip: t('拨打/复制', 'Call/Copy'),
+                          tooltip: t('拨打/复制'),
                           icon: const Icon(Icons.phone_in_talk,
                               color: Colors.blue),
                           onPressed: () =>
                               ContactActions.perform(context, c.contacts.first),
                         ),
                       IconButton(
-                        tooltip: t('打卡已联系', 'Check in'),
+                        tooltip: t('打卡已联系'),
                         icon: const Icon(Icons.check_circle_outline,
                             color: Colors.green),
                         onPressed: () => _checkIn(i),
                       ),
                       IconButton(
-                        tooltip: t('删除', 'Delete'),
+                        tooltip: t('删除'),
                         icon: const Icon(Icons.delete_outline, color: Colors.red),
                         onPressed: () => _delete(i),
                       ),

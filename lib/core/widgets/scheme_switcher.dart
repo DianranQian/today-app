@@ -64,7 +64,9 @@ class _SchemeSwitcherButtonState extends State<SchemeSwitcherButton> {
       ),
       icon: const Icon(Icons.swap_horiz, size: 18),
       label: Text(
-        _name.isEmpty ? SchemeStore.defaultSchemeName(widget.appId) : _name,
+        _name.isEmpty
+            ? SchemeStore.displayName(widget.appId, SchemeStore.defaultSchemeName(widget.appId))
+            : SchemeStore.displayName(widget.appId, _name),
         style: const TextStyle(fontSize: 13),
       ),
     );
@@ -113,7 +115,7 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
 
   Future<void> _create() async {
     final name = await _promptName(
-        t('新建方案', 'New Scheme'), t('方案名称', 'Scheme name'));
+        t('新建方案'), t('方案名称'));
     if (name == null || name.isEmpty) return;
     try {
       await SchemeStore.create(widget.appId, name);
@@ -131,7 +133,7 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
 
   Future<void> _rename(String oldName) async {
     final name = await _promptName(
-        t('重命名方案', 'Rename Scheme'), t('新名称', 'New name'), oldName);
+        t('重命名方案'), t('新名称'), oldName);
     if (name == null || name.isEmpty || name == oldName) return;
     try {
       await SchemeStore.rename(widget.appId, oldName, name);
@@ -150,16 +152,16 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(t('删除方案', 'Delete Scheme')),
+        title: Text(t('删除方案')),
         content: Text(t('确定删除「$name」及其全部数据吗？此操作不可撤销。',
             'Delete "$name" and all its data? This cannot be undone.')),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t('取消', 'Cancel'))),
+              child: Text(t('取消'))),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(t('删除', 'Delete'), style: const TextStyle(color: Colors.red)),
+            child: Text(t('删除'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -168,7 +170,7 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
     if (name == current) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('不能删除当前方案', 'Cannot delete the current scheme')),
+        SnackBar(content: Text(t('不能删除当前方案')),
             behavior: SnackBarBehavior.floating),
       );
       return;
@@ -202,10 +204,10 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t('取消', 'Cancel'))),
+              child: Text(t('取消'))),
           TextButton(
               onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-              child: Text(t('确定', 'OK'))),
+              child: Text(t('确定'))),
         ],
       ),
     );
@@ -214,14 +216,14 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(t('切换方案', 'Switch Scheme')),
+      title: Text(t('切换方案')),
       content: SizedBox(
         width: double.maxFinite,
         child: FutureBuilder<List<String>>(
           future: _schemesFuture,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Text(t('加载失败', 'Failed to load'));
+              return Text(t('加载失败'));
             }
             final schemes = snapshot.data ?? [];
             return FutureBuilder<String>(
@@ -246,7 +248,8 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
                                   ? Theme.of(context).colorScheme.primary
                                   : Colors.grey,
                             ),
-                            title: Text(name),
+                            title: Text(
+                                SchemeStore.displayName(widget.appId, name)),
                             trailing: isCurrent
                                 ? null
                                 : PopupMenuButton<String>(
@@ -262,10 +265,10 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
                                     itemBuilder: (_) => [
                                       PopupMenuItem(
                                           value: 'rename',
-                                          child: Text(t('重命名', 'Rename'))),
+                                          child: Text(t('重命名'))),
                                       PopupMenuItem(
                                           value: 'delete',
-                                          child: Text(t('删除', 'Delete'))),
+                                          child: Text(t('删除'))),
                                     ],
                                   ),
                             onTap: isCurrent
@@ -279,7 +282,7 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
                     ListTile(
                       dense: true,
                       leading: const Icon(Icons.add, color: Colors.green),
-                      title: Text(t('新建方案', 'New Scheme')),
+                      title: Text(t('新建方案')),
                       onTap: _create,
                     ),
                   ],
@@ -292,7 +295,7 @@ class _SchemeSwitcherDialogState extends State<SchemeSwitcherDialog> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(t('关闭', 'Close'))),
+            child: Text(t('关闭'))),
       ],
     );
   }

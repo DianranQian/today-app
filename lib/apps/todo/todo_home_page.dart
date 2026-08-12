@@ -27,7 +27,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
   void _add() {
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
-      _toast(t('请输入待办内容', 'Please enter a task'));
+      _toast(t('请输入待办内容'));
       return;
     }
     TodoDataStore.add(TodoItem(
@@ -60,7 +60,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('今天待办', 'Tasks')),
+        title: Text(t('今天待办')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -74,7 +74,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                 TextField(
                   controller: _titleCtrl,
                   decoration: InputDecoration(
-                    hintText: t('添加待办事项...', 'Add a task...'),
+                    hintText: t('添加待办事项...'),
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
@@ -87,7 +87,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                       child: TextField(
                         controller: _noteCtrl,
                         decoration: InputDecoration(
-                          hintText: t('备注（可选）', 'Note (optional)'),
+                          hintText: t('备注（可选）'),
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
@@ -100,7 +100,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                         backgroundColor: primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text(t('添加', 'Add')),
+                      child: Text(t('添加')),
                     ),
                   ],
                 ),
@@ -130,9 +130,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
                     onPressed: () {
                       TodoDataStore.clearDone();
                       setState(() {});
-                      _toast(t('已清空已完成', 'Cleared completed items'));
+                      _toast(t('已清空已完成'));
                     },
-                    child: Text(t('清空已完成', 'Clear Completed')),
+                    child: Text(t('清空已完成')),
                   ),
               ],
             ),
@@ -147,7 +147,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                       children: [
                         const Text('📝', style: TextStyle(fontSize: 56)),
                         const SizedBox(height: 12),
-                        Text(t('还没有待办\n在上方添加一条吧', 'No tasks yet\nAdd one above'),
+                        Text(t('还没有待办\n在上方添加一条吧'),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Colors.grey[500],
@@ -175,7 +175,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
                               onLongPress: () {
                                 TodoDataStore.remove(todo);
                                 setState(() {});
-                                _toast(t('已删除', 'Deleted'));
+                                _toast(t('已删除'));
                               },
                               child: CheckboxListTile(
                                 value: todo.done,

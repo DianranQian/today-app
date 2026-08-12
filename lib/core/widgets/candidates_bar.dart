@@ -27,7 +27,7 @@ class CandidatesBar<T> extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(t('备选', 'Candidates'),
+            Text(t('备选'),
                 style: const TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w600)),
             const SizedBox(width: 8),

@@ -71,19 +71,19 @@ class _EatAppPageState extends State<EatAppPage> {
           NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
-              label: t('首页', 'Home')),
+              label: t('首页')),
           NavigationDestination(
               icon: Icon(Icons.restaurant_menu_outlined),
               selectedIcon: Icon(Icons.restaurant_menu),
-              label: t('菜单', 'Menu')),
+              label: t('菜单')),
           NavigationDestination(
               icon: Icon(Icons.near_me_outlined),
               selectedIcon: Icon(Icons.near_me),
-              label: t('附近', 'Nearby')),
+              label: t('附近')),
           NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
-              label: t('设置', 'Settings')),
+              label: t('设置')),
         ],
       ),
       ),

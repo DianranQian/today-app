@@ -6,13 +6,13 @@ enum PlaceType { eat, shop, park, culture, sport, night, all }
 extension PlaceTypeExt on PlaceType {
   String get label {
     switch (this) {
-      case PlaceType.eat: return t('吃饭', 'Eating');
-      case PlaceType.shop: return t('逛街', 'Shopping');
-      case PlaceType.park: return t('公园', 'Park');
-      case PlaceType.culture: return t('文化', 'Culture');
-      case PlaceType.sport: return t('运动', 'Sports');
-      case PlaceType.night: return t('夜生活', 'Nightlife');
-      case PlaceType.all: return t('全部', 'All');
+      case PlaceType.eat: return t('吃饭');
+      case PlaceType.shop: return t('逛街');
+      case PlaceType.park: return t('公园');
+      case PlaceType.culture: return t('文化');
+      case PlaceType.sport: return t('运动');
+      case PlaceType.night: return t('夜生活');
+      case PlaceType.all: return t('全部');
     }
   }
 

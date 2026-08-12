@@ -18,7 +18,7 @@ class RollingHint extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     final darkText = Color.lerp(primary, Colors.black, 0.35)!;
-    final msg = text ?? t('正在转动，稍等片刻...', 'Rolling, please wait...');
+    final msg = text ?? t('正在转动，稍等片刻...');
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -204,7 +204,7 @@ class SlotReel<T> extends StatelessWidget {
                           const Icon(Icons.block,
                               size: 20, color: Colors.grey),
                           const SizedBox(height: 4),
-                          Text(t('未开启', 'Off'),
+                          Text(t('未开启'),
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.grey)),
                         ],

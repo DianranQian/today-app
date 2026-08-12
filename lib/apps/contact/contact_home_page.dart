@@ -47,7 +47,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
   void _pick() {
     var contacts = _poolCache ?? ContactDataStore.contacts;
     if (contacts.isEmpty) {
-      _showToast(t('还没有联系人，去管理页添加吧！', 'No contacts yet. Add some in Manage!'));
+      _showToast(t('还没有联系人，去管理页添加吧！'));
       return;
     }
     // 逾期优先：有逾期的人时只从逾期者里随机
@@ -91,7 +91,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('今天联系谁', 'Who to call today?')),
+        title: Text(t('今天联系谁')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
@@ -125,7 +125,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
                     child: Text(
                       overdueCount > 0
                           ? t('有 $overdueCount 位朋友该联系了', '$overdueCount friends are due for a call')
-                          : t('联系得很勤，继续保持！', 'Great job staying in touch!'),
+                          : t('联系得很勤，继续保持！'),
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
@@ -142,7 +142,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
             child: ElevatedButton.icon(
               onPressed: _pick,
               icon: const Icon(Icons.phone_in_talk, size: 24),
-              label: Text(t('今天该联系谁？', 'Who should you call today?'),
+              label: Text(t('今天该联系谁？'),
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -162,7 +162,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
                   child: OutlinedButton.icon(
                     onPressed: _checkIn,
                     icon: const Icon(Icons.check_circle, size: 18),
-                    label: Text(t('已联系，打卡', 'Contacted, Check in')),
+                    label: Text(t('已联系，打卡')),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF2E7D32),
                       side: const BorderSide(color: Color(0xFF2E7D32)),
@@ -177,7 +177,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
                   child: OutlinedButton.icon(
                     onPressed: _pick,
                     icon: const Icon(Icons.refresh, size: 18),
-                    label: Text(t('换一个', 'Try Another')),
+                    label: Text(t('换一个')),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Theme.of(context).colorScheme.primary,
                       side: BorderSide(color: Theme.of(context).colorScheme.primary),
@@ -198,7 +198,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
                 emoji: _picked!.emoji,
               ),
               icon: const Icon(Icons.event_note, size: 18),
-              label: Text(t('加入计划', 'Add to Plan')),
+              label: Text(t('加入计划')),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.primary,
                 side: BorderSide(
@@ -222,7 +222,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
             children: [
               const Text('📞', style: TextStyle(fontSize: 64)),
               const SizedBox(height: 12),
-              Text(t('点击下方按钮\n随机提醒一位该联系的朋友', 'Tap the button below\nfor a random friend to contact'),
+              Text(t('点击下方按钮\n随机提醒一位该联系的朋友'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[500], fontSize: 14, height: 1.5)),
             ],
@@ -300,7 +300,7 @@ class _ContactHomePageState extends State<ContactHomePage> {
                   ),
                   child: Text(
                     c.lastContact == null
-                        ? t('还没联系过', 'Never contacted')
+                        ? t('还没联系过')
                         : overdue > 0
                             ? t('已逾期 $overdue 天', '$overdue days overdue')
                             : t('距上次联系 $days 天', '$days days since last contact'),

@@ -33,13 +33,13 @@ class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
   ];
 
   List<String> get _weekdayHeaders => [
-        t('日', 'Su'),
-        t('一', 'Mo'),
-        t('二', 'Tu'),
-        t('三', 'We'),
-        t('四', 'Th'),
-        t('五', 'Fr'),
-        t('六', 'Sa'),
+        t('日'),
+        t('一'),
+        t('二'),
+        t('三'),
+        t('四'),
+        t('五'),
+        t('六'),
       ];
 
   late int _year;
@@ -90,7 +90,7 @@ class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
         children: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
-            tooltip: t('上个月', 'Previous Month'),
+            tooltip: t('上个月'),
             onPressed: () => _shiftMonth(-1),
           ),
           Text(t('$_year年$_month月', '${_enMonths[_month - 1]} $_year'),
@@ -98,7 +98,7 @@ class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
                   fontSize: 17, fontWeight: FontWeight.w600)),
           IconButton(
             icon: const Icon(Icons.chevron_right),
-            tooltip: t('下个月', 'Next Month'),
+            tooltip: t('下个月'),
             onPressed: () => _shiftMonth(1),
           ),
         ],
@@ -191,7 +191,7 @@ class _MonthCalendarDialogState extends State<_MonthCalendarDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(t('取消', 'Cancel')),
+          child: Text(t('取消')),
         ),
       ],
     );

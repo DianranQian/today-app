@@ -15,7 +15,7 @@ class ContactActions {
           await launchUrl(uri);
         } else {
           if (!context.mounted) return;
-          _toast(context, t('无法拨号', 'Unable to dial'));
+          _toast(context, t('无法拨号'));
         }
       case ContactType.email:
         final uri = Uri(scheme: 'mailto', path: m.value);
@@ -23,7 +23,7 @@ class ContactActions {
           await launchUrl(uri);
         } else {
           if (!context.mounted) return;
-          _toast(context, t('无法打开邮件应用', 'Unable to open email app'));
+          _toast(context, t('无法打开邮件应用'));
         }
       case ContactType.wechat:
       case ContactType.qq:

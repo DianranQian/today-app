@@ -63,11 +63,11 @@ class _TodoAppPageState extends State<TodoAppPage> {
           NavigationDestination(
               icon: Icon(Icons.checklist_outlined),
               selectedIcon: Icon(Icons.checklist),
-              label: t('待办', 'Tasks')),
+              label: t('待办')),
           NavigationDestination(
               icon: Icon(Icons.settings_outlined),
               selectedIcon: Icon(Icons.settings),
-              label: t('设置', 'Settings')),
+              label: t('设置')),
         ],
       ),
       ),

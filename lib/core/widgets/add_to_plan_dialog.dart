@@ -84,9 +84,9 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
       today.add(const Duration(days: 2)),
     ];
     final quickNames = [
-      t('今天', 'Today'),
-      t('明天', 'Tomorrow'),
-      t('后天', 'Day after'),
+      t('今天'),
+      t('明天'),
+      t('后天'),
     ];
     final isCustom = !quickDays.any((d) => _sameDay(d, _date));
 
@@ -114,7 +114,7 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(t('计划日期', 'Plan Date'), style: const TextStyle(fontSize: 13)),
+          Text(t('计划日期'), style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -129,7 +129,7 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
               buildChip(
                 label: isCustom
                     ? '📅 ${formatMdCn(_date)}'
-                    : t('📅 选日期', '📅 Pick a date'),
+                    : t('📅 选日期'),
                 selected: isCustom,
                 onTap: () async {
                   final picked =
@@ -143,7 +143,7 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
           TextField(
             controller: _noteCtrl,
             decoration: InputDecoration(
-              labelText: t('备注（可选）', 'Note (optional)'),
+              labelText: t('备注（可选）'),
               border: const OutlineInputBorder(),
               isDense: true,
             ),
@@ -153,11 +153,11 @@ class _AddToPlanDialogState extends State<_AddToPlanDialog> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(t('取消', 'Cancel'))),
+            child: Text(t('取消'))),
         FilledButton(
           onPressed: () => Navigator.pop(
               context, _PlanDraft(_date, _noteCtrl.text.trim())),
-          child: Text(t('确认加入', 'Add to Plan')),
+          child: Text(t('确认加入')),
         ),
       ],
     );

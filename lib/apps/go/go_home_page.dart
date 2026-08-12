@@ -76,7 +76,7 @@ class _GoHomePageState extends State<GoHomePage> {
       }
     }
     if (pool.isEmpty) {
-      _showToast(t('当前类型下没有去处，去管理页添加吧！', 'No places for this type. Add one in Manage!'));
+      _showToast(t('当前类型下没有去处，去管理页添加吧！'));
       setState(() => _isPicking = false);
       return;
     }
@@ -157,7 +157,7 @@ class _GoHomePageState extends State<GoHomePage> {
     }
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _picked?.name) {
-      _showToast(t('当前条件下就这一个去处啦', 'Only one place under current filters'));
+      _showToast(t('当前条件下就这一个去处啦'));
       return;
     }
     var next = GoDataStore.pickFrom(pool);
@@ -187,7 +187,7 @@ class _GoHomePageState extends State<GoHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('今天去哪', 'Where To Go')),
+        title: Text(t('今天去哪')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
@@ -198,7 +198,7 @@ class _GoHomePageState extends State<GoHomePage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSectionTitle(t('去哪', 'Where to'), t('选择类型', 'Pick a type')),
+          _buildSectionTitle(t('去哪'), t('选择类型')),
           const SizedBox(height: 8),
           _buildTypeSelector(),
           const SizedBox(height: 12),
@@ -226,7 +226,7 @@ class _GoHomePageState extends State<GoHomePage> {
             child: ElevatedButton.icon(
               onPressed: _isPicking ? null : _pick,
               icon: const Icon(Icons.casino, size: 24),
-              label: Text(_isPicking ? t('正在选...', 'Rolling...') : t('随机选一个！', 'Pick one!'),
+              label: Text(_isPicking ? t('正在选...') : t('随机选一个！'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -261,10 +261,10 @@ class _GoHomePageState extends State<GoHomePage> {
   /// 预算上限选择
   Widget _buildBudgetSelector() {
     final options = <int?, String>{
-      null: t('不限', 'Any'),
-      1: t('¥ 低', '¥ Low'),
-      2: t('¥¥ 中', '¥¥ Mid'),
-      3: t('¥¥¥ 高', '¥¥¥ High'),
+      null: t('不限'),
+      1: t('¥ 低'),
+      2: t('¥¥ 中'),
+      3: t('¥¥¥ 高'),
     };
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -339,7 +339,7 @@ class _GoHomePageState extends State<GoHomePage> {
             children: [
               const Text('🤔', style: TextStyle(fontSize: 64)),
               const SizedBox(height: 12),
-              Text(t('选择类型\n点击下方按钮开始', 'Pick a type\ntap the button below to start'),
+              Text(t('选择类型\n点击下方按钮开始'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[500], fontSize: 14, height: 1.5)),
             ],
@@ -398,7 +398,7 @@ class _GoHomePageState extends State<GoHomePage> {
                 emoji: _picked!.emoji,
               ),
               icon: const Icon(Icons.event_note, size: 18),
-              label: Text(t('加入计划', 'Add to Plan')),
+              label: Text(t('加入计划')),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.primary,
                 side: BorderSide(
@@ -427,7 +427,7 @@ class _GoHomePageState extends State<GoHomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: SlotReel(
-                label: t('去处', 'Places'),
+                label: t('去处'),
                 items: _rollItems,
                 controller: _wheelController,
                 emojiOf: (p) => p.emoji,

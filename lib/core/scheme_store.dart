@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'language.dart';
 
 /// 多方案管理（菜单一 / 菜单二 …）
 ///
@@ -20,6 +21,18 @@ class SchemeStore {
       case 'wear': return '衣柜';
       case 'contact': return '电话簿';
       default: return '方案一';
+    }
+  }
+
+  /// 方案显示名：默认方案显示翻译（菜单一→Menu 1），自定义方案显示原名
+  static String displayName(String appId, String scheme) {
+    if (scheme != defaultSchemeName(appId)) return scheme;
+    switch (appId) {
+      case 'eat': return t('菜单一', 'Menu 1');
+      case 'go': return t('地点集', 'Place Set');
+      case 'wear': return t('衣柜', 'Wardrobe');
+      case 'contact': return t('电话簿', 'Phone Book');
+      default: return scheme;
     }
   }
 

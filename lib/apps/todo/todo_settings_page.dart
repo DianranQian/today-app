@@ -11,13 +11,13 @@ class TodoSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('设置', 'Settings')),
+        title: Text(t('设置')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
       body: SubAppSettingsPanel(
         appId: 'todo',
-        appName: t('今天待办', 'Tasks'),
+        appName: t('今天待办'),
         reload: TodoDataStore.load,
         onClearHistory: TodoDataStore.clearAll,
         // 待办清单无「避免近期重复」「随机抽取」概念，隐藏

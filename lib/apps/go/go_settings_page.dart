@@ -11,7 +11,7 @@ class GoSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('设置', 'Settings')),
+        title: Text(t('设置')),
         centerTitle: true,
         toolbarHeight: 44,
       ),

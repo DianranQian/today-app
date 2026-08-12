@@ -55,9 +55,9 @@ String? quickDayName(DateTime d) {
   final today = DateTime(now.year, now.month, now.day);
   final diff = d.difference(today).inDays;
   return switch (diff) {
-    0 => t('今天', 'Today'),
-    1 => t('明天', 'Tomorrow'),
-    2 => t('后天', 'Day after'),
+    0 => t('今天'),
+    1 => t('明天'),
+    2 => t('后天'),
     _ => null,
   };
 }
@@ -71,10 +71,10 @@ String formatMd(DateTime d) => '${d.month}/${d.day}';
 
 extension SeasonExt on Season {
   String get label => switch (this) {
-        Season.spring => t('春', 'Spring'),
-        Season.summer => t('夏', 'Summer'),
-        Season.autumn => t('秋', 'Autumn'),
-        Season.winter => t('冬', 'Winter'),
+        Season.spring => t('春'),
+        Season.summer => t('夏'),
+        Season.autumn => t('秋'),
+        Season.winter => t('冬'),
       };
 
   static Season fromString(String s) {

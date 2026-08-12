@@ -30,7 +30,7 @@ class _NearbyPageState extends State<NearbyPage> {
     final location = Location();
     if (!await location.serviceEnabled()) {
       final ok = await location.requestService();
-      if (!ok) throw Exception(t('需要开启系统定位服务', 'Please enable system location services'));
+      if (!ok) throw Exception(t('需要开启系统定位服务'));
     }
     var permission = await location.hasPermission();
     if (permission == PermissionStatus.denied) {
@@ -38,12 +38,11 @@ class _NearbyPageState extends State<NearbyPage> {
     }
     if (permission == PermissionStatus.denied ||
         permission == PermissionStatus.deniedForever) {
-      throw Exception(t('需要定位权限才能搜索附近美食，请到系统设置中授权',
-          'Location permission is required to find nearby restaurants. Please allow it in system settings'));
+      throw Exception(t('需要定位权限才能搜索附近美食，请到系统设置中授权'));
     }
     final pos = await location.getLocation();
     if (pos.latitude == null || pos.longitude == null) {
-      throw Exception(t('定位失败，请稍后重试', 'Location failed, please try again later'));
+      throw Exception(t('定位失败，请稍后重试'));
     }
     return pos;
   }
@@ -57,8 +56,7 @@ class _NearbyPageState extends State<NearbyPage> {
         final lng = double.tryParse(parts[1].trim());
         if (lat != null && lng != null) return (lat, lng);
       }
-      throw Exception(t('坐标格式错误，请用 经度,纬度 格式（如 121.47,31.23）',
-          'Invalid coordinates. Use longitude,latitude format (e.g. 121.47,31.23)'));
+      throw Exception(t('坐标格式错误，请用 经度,纬度 格式（如 121.47,31.23）'));
     }
     final pos = await _getPosition();
     return (pos.latitude!, pos.longitude!);
@@ -79,7 +77,7 @@ class _NearbyPageState extends State<NearbyPage> {
         _loading = false;
         _locationText = t('坐标：${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}',
             'Coords: ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}');
-        if (pois.isEmpty) _error = t('附近 3 公里内没有找到餐厅', 'No restaurants found within 3 km');
+        if (pois.isEmpty) _error = t('附近 3 公里内没有找到餐厅');
       });
     } catch (e) {
       if (!mounted) return;
@@ -114,7 +112,7 @@ class _NearbyPageState extends State<NearbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(t('附近美食', 'Nearby Food'))),
+      appBar: AppBar(title: Text(t('附近美食'))),
       body: Column(
         children: [
           Padding(
@@ -127,8 +125,7 @@ class _NearbyPageState extends State<NearbyPage> {
                   controller: _coordCtrl,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    hintText: t('经纬度（可选，如 121.47,31.23）',
-                        'Coordinates (optional, e.g. 121.47,31.23)'),
+                    hintText: t('经纬度（可选，如 121.47,31.23）'),
                     border: const OutlineInputBorder(),
                     isDense: true,
                     prefixIcon: const Icon(Icons.edit_location, size: 18),
@@ -147,7 +144,7 @@ class _NearbyPageState extends State<NearbyPage> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.my_location),
-                    label: Text(_loading ? t('正在搜索...', 'Searching...') : t('定位并搜索附近美食', 'Locate & search nearby food')),
+                    label: Text(_loading ? t('正在搜索...') : t('定位并搜索附近美食')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
@@ -176,7 +173,7 @@ class _NearbyPageState extends State<NearbyPage> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.auto_awesome, size: 18),
-                      label: Text(_aiLoading ? t('AI 思考中...', 'AI thinking...') : t('AI 智能分析：附近值得吃哪家？', 'AI picks: which one is worth trying?')),
+                      label: Text(_aiLoading ? t('AI 思考中...') : t('AI 智能分析：附近值得吃哪家？')),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF6C4FBF),
                         side: const BorderSide(color: Color(0xFF6C4FBF)),
@@ -200,7 +197,7 @@ class _NearbyPageState extends State<NearbyPage> {
                             children: [
                               const Icon(Icons.auto_awesome, size: 16, color: Color(0xFF6C4FBF)),
                               const SizedBox(width: 6),
-                              Text(t('AI 推荐', 'AI Pick'),
+                              Text(t('AI 推荐'),
                                   style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -236,10 +233,10 @@ class _NearbyPageState extends State<NearbyPage> {
                       children: [
                         const Text('🍽️', style: TextStyle(fontSize: 48)),
                         const SizedBox(height: 8),
-                        Text(t('搜索后展示附近餐厅', 'Nearby restaurants appear after searching'),
+                        Text(t('搜索后展示附近餐厅'),
                             style: TextStyle(color: Colors.grey[500], fontSize: 14)),
                         const SizedBox(height: 4),
-                        Text(t('支持按评分排序，并可用 AI 帮你分析', 'Sorted by rating, with AI analysis available'),
+                        Text(t('支持按评分排序，并可用 AI 帮你分析'),
                             style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                       ],
                     ),

@@ -39,26 +39,25 @@ class _ContactSettingsPageState extends State<ContactSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('设置', 'Settings')),
+        title: Text(t('设置')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
       body: SubAppSettingsPanel(
         appId: 'contact',
-        appName: t('今天联系谁', 'Who to call today?'),
+        appName: t('今天联系谁'),
         reload: ContactDataStore.load,
         onClearHistory: () {
           // 联系人无历史概念，清空所有联系人（需二次确认）
           showDialog<void>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: Text(t('清空所有联系人', 'Clear all contacts')),
-              content: Text(t('将删除全部联系人，此操作不可撤销。确定吗？',
-                  'This will delete ALL contacts. This cannot be undone. Continue?')),
+              title: Text(t('清空所有联系人')),
+              content: Text(t('将删除全部联系人，此操作不可撤销。确定吗？')),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: Text(t('取消', 'Cancel'))),
+                    child: Text(t('取消'))),
                 TextButton(
                   onPressed: () {
                     Navigator.pop(ctx);
@@ -66,12 +65,12 @@ class _ContactSettingsPageState extends State<ContactSettingsPage> {
                     ContactDataStore.save();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(t('所有联系人已清空', 'All contacts cleared')),
+                        content: Text(t('所有联系人已清空')),
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
                   },
-                  child: Text(t('确定', 'Confirm'),
+                  child: Text(t('确定'),
                       style: const TextStyle(color: Colors.red)),
                 ),
               ],
@@ -81,7 +80,7 @@ class _ContactSettingsPageState extends State<ContactSettingsPage> {
         extra: Card(
           child: ListTile(
             leading: const Icon(Icons.hourglass_empty, color: Colors.orange),
-            title: Text(t('新增联系人默认频率', 'Default frequency for new contacts')),
+            title: Text(t('新增联系人默认频率')),
             trailing: DropdownButton<ContactFrequency>(
               value: _defaultFrequency,
               items: [

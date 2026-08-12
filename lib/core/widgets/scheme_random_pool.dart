@@ -64,10 +64,9 @@ class _SchemeRandomPoolPickerState extends State<SchemeRandomPoolPicker> {
           ListTile(
             dense: true,
             leading: const Icon(Icons.casino, color: Colors.orange),
-            title: Text(t('参与随机的方案', 'Schemes in random pool'),
+            title: Text(t('参与随机的方案'),
                 style: const TextStyle(fontSize: 14)),
-            subtitle: Text(t('勾选的方案会一起参与随机抽取（按名称去重）',
-                'Checked schemes are pooled for random picks (deduped by name)'),
+            subtitle: Text(t('勾选的方案会一起参与随机抽取（按名称去重）'),
                 style: const TextStyle(fontSize: 11)),
           ),
           for (final name in _schemes)
@@ -75,7 +74,8 @@ class _SchemeRandomPoolPickerState extends State<SchemeRandomPoolPicker> {
               dense: true,
               value: _pool.contains(name),
               onChanged: (v) => _toggle(name, v ?? false),
-              title: Text(name, style: const TextStyle(fontSize: 13)),
+              title: Text(SchemeStore.displayName(widget.appId, name),
+                  style: const TextStyle(fontSize: 13)),
             ),
         ],
       ),

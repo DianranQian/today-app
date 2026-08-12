@@ -59,11 +59,10 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t('忌口/不吃', 'Avoid'),
+            Text(t('忌口/不吃'),
                 style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
-            Text(t('选中的食材不会出现在推荐里',
-                'Selected ingredients will not be recommended'),
+            Text(t('选中的食材不会出现在推荐里'),
                 style: TextStyle(fontSize: 12, color: Colors.grey[500])),
             const SizedBox(height: 12),
             Wrap(
@@ -89,7 +88,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: TextField(
                     controller: _avoidCustomCtrl,
                     decoration: InputDecoration(
-                      labelText: t('自定义忌口', 'Custom avoid list'),
+                      labelText: t('自定义忌口'),
                       border: const OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -103,7 +102,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(t('添加', 'Add')),
+                  child: Text(t('添加')),
                 ),
               ],
             ),
@@ -128,7 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('设置', 'Settings')),
+        title: Text(t('设置')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -137,8 +136,8 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               children: [
                 SwitchListTile(
-                  title: Text(t('不重复推荐', 'No repeats')),
-                  subtitle: Text(t('连续两次不推荐同一道菜', 'Never recommend the same dish twice in a row')),
+                  title: Text(t('不重复推荐')),
+                  subtitle: Text(t('连续两次不推荐同一道菜')),
                   value: DataStore.settings.noRepeat,
                   onChanged: (v) {
                     setState(() => DataStore.settings.noRepeat = v);
@@ -147,8 +146,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  title: Text(t('避免近期重复', 'Avoid recent repeats')),
-                  subtitle: Text(t('7天内吃过的不会再次推荐', 'Dishes eaten in the last 7 days will not be recommended')),
+                  title: Text(t('避免近期重复')),
+                  subtitle: Text(t('7天内吃过的不会再次推荐')),
                   value: DataStore.settings.avoidRecent,
                   onChanged: (v) {
                     setState(() => DataStore.settings.avoidRecent = v);
@@ -157,8 +156,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const Divider(height: 1),
                 SwitchListTile(
-                  title: Text(t('按季节推荐', 'Seasonal picks')),
-                  subtitle: Text(t('自动读取当前季节，当季菜品优先推荐', 'Reads the current season and prioritizes in-season dishes')),
+                  title: Text(t('按季节推荐')),
+                  subtitle: Text(t('自动读取当前季节，当季菜品优先推荐')),
                   value: DataStore.settings.seasonRecommend,
                   onChanged: (v) {
                     setState(() => DataStore.settings.seasonRecommend = v);
@@ -179,15 +178,15 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.upload_file, color: Colors.orange),
-                  title: Text(t('导出本应用数据', 'Export app data')),
-                  subtitle: Text(t('菜谱/饮品/历史（ZIP 含照片，JSON 纯数据）', 'Recipes/drinks/history (ZIP includes photos, JSON is data only)')),
+                  title: Text(t('导出本应用数据')),
+                  subtitle: Text(t('菜谱/饮品/历史（ZIP 含照片，JSON 纯数据）')),
                   onTap: () => _exportApp(),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.download, color: Colors.orange),
-                  title: Text(t('导入本应用数据', 'Import app data')),
-                  subtitle: Text(t('从 ZIP/JSON 恢复（立即生效）', 'Restore from ZIP/JSON (takes effect immediately)')),
+                  title: Text(t('导入本应用数据')),
+                  subtitle: Text(t('从 ZIP/JSON 恢复（立即生效）')),
                   onTap: () => _importApp(),
                 ),
               ],
@@ -199,46 +198,46 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.library_add, color: Colors.orange),
-                  title: Text(t('补充最新内置菜谱', 'Merge latest built-in recipes')),
-                  subtitle: Text(t('将最新版本内置菜谱中缺失的菜合并进来', 'Merge recipes missing from the latest built-in list')),
+                  title: Text(t('补充最新内置菜谱')),
+                  subtitle: Text(t('将最新版本内置菜谱中缺失的菜合并进来')),
                   onTap: () {
                     final added = DataStore.mergeNewDefaults();
                     setState(() {});
-                    _showToast(added > 0 ? t('已补充 $added 道菜', 'Added $added recipes') : t('菜谱已是最新', 'Recipes are up to date'));
+                    _showToast(added > 0 ? t('已补充 $added 道菜', 'Added $added recipes') : t('菜谱已是最新'));
                   },
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.restore, color: Colors.orange),
-                  title: Text(t('恢复默认菜单', 'Restore default menu')),
-                  subtitle: Text(t('重置菜肴和主食为默认列表', 'Reset dishes and staples to defaults')),
-                  onTap: () => _confirmDialog(t('恢复默认菜单', 'Restore default menu'), t('将替换当前所有自定义菜品，确定吗？', 'This will replace all your custom dishes. Continue?'), () {
+                  title: Text(t('恢复默认菜单')),
+                  subtitle: Text(t('重置菜肴和主食为默认列表')),
+                  onTap: () => _confirmDialog(t('恢复默认菜单'), t('将替换当前所有自定义菜品，确定吗？'), () {
                     DataStore.dishes = DataStore.getDefaultDishes();
                     DataStore.staples = DataStore.getDefaultStaples();
                     DataStore.save();
                     setState(() {});
-                    _showToast(t('已恢复默认菜单', 'Default menu restored'));
+                    _showToast(t('已恢复默认菜单'));
                   }),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.delete_sweep, color: Colors.red),
-                  title: Text(t('清空历史记录', 'Clear history')),
-                  onTap: () => _confirmDialog(t('清空历史', 'Clear history'), t('确定删除所有历史记录吗？', 'Delete all history records?'), () {
+                  title: Text(t('清空历史记录')),
+                  onTap: () => _confirmDialog(t('清空历史'), t('确定删除所有历史记录吗？'), () {
                     DataStore.clearHistory();
                     setState(() {});
-                    _showToast(t('历史已清空', 'History cleared'));
+                    _showToast(t('历史已清空'));
                   }),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.restart_alt, color: Colors.red),
-                  title: Text(t('重置所有数据', 'Reset all data')),
-                  subtitle: Text(t('清除所有自定义数据和历史', 'Clear all custom data and history')),
-                  onTap: () => _confirmDialog(t('重置所有数据', 'Reset all data'), t('此操作不可撤销！所有自定义菜品和记录将被清除，确定吗？', 'This cannot be undone! All custom dishes and records will be deleted. Continue?'), () {
+                  title: Text(t('重置所有数据')),
+                  subtitle: Text(t('清除所有自定义数据和历史')),
+                  onTap: () => _confirmDialog(t('重置所有数据'), t('此操作不可撤销！所有自定义菜品和记录将被清除，确定吗？'), () {
                     DataStore.resetToDefault();
                     setState(() {});
-                    _showToast(t('已重置', 'Reset done'));
+                    _showToast(t('已重置'));
                   }),
                 ),
               ],
@@ -248,14 +247,14 @@ class _SettingsPageState extends State<SettingsPage> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.favorite, color: Colors.red),
-              title: Text(t('赛博乞讨', 'Tip jar')),
-              subtitle: Text(t('来都来了，不赏两个？♥', 'Since you are here, how about a tip? ♥')),
+              title: Text(t('赛博乞讨')),
+              subtitle: Text(t('来都来了，不赏两个？♥')),
               onTap: () => _showDonationDialog(),
               trailing: const Icon(Icons.open_in_new, color: Colors.grey),
             ),
           ),
           const SizedBox(height: 24),
-          Text(t('历史记录', 'History'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          Text(t('历史记录'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           if (DataStore.history.isEmpty)
             Center(child: Padding(
@@ -264,7 +263,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   const Text('📭', style: TextStyle(fontSize: 40)),
                   const SizedBox(height: 8),
-                  Text(t('还没有记录', 'No records yet'), style: const TextStyle(color: Colors.grey)),
+                  Text(t('还没有记录'), style: const TextStyle(color: Colors.grey)),
                 ],
               ),
             ))
@@ -287,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              t('今天吃什么 v0.2.0', 'What to Eat Today v0.2.0'),
+              t('今天吃什么 v0.2.0'),
               style: TextStyle(color: Colors.grey[400], fontSize: 12),
             ),
           ),
@@ -303,11 +302,11 @@ class _SettingsPageState extends State<SettingsPage> {
         title: Text(title),
         content: Text(content),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t('取消', 'Cancel'))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t('取消'))),
           TextButton(onPressed: () {
             Navigator.pop(ctx);
             onConfirm();
-          }, child: Text(t('确定', 'Confirm'), style: const TextStyle(color: Colors.red))),
+          }, child: Text(t('确定'), style: const TextStyle(color: Colors.red))),
         ],
       ),
     );
@@ -325,18 +324,18 @@ class _SettingsPageState extends State<SettingsPage> {
     final action = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(t('导出「今天吃什么」数据', 'Export What to Eat data')),
-        content: Text(t('ZIP 含照片，JSON 为纯数据。', 'ZIP includes photos; JSON is data only.')),
+        title: Text(t('导出「今天吃什么」数据')),
+        content: Text(t('ZIP 含照片，JSON 为纯数据。')),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, 'zip'),
-              child: Text(t('ZIP（含照片）', 'ZIP (with photos)'))),
+              child: Text(t('ZIP（含照片）'))),
           TextButton(
               onPressed: () => Navigator.pop(ctx, 'json'),
-              child: Text(t('JSON（纯数据）', 'JSON (data only)'))),
+              child: Text(t('JSON（纯数据）'))),
           TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t('取消', 'Cancel'))),
+              child: Text(t('取消'))),
         ],
       ),
     );
@@ -348,20 +347,20 @@ class _SettingsPageState extends State<SettingsPage> {
       final shareAction = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(t('导出完成', 'Export complete')),
+          title: Text(t('导出完成')),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'share'),
-                child: Text(t('分享', 'Share'))),
+                child: Text(t('分享'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text(t('关闭', 'Close'))),
+                child: Text(t('关闭'))),
           ],
         ),
       );
       if (shareAction == 'share') {
         await Share.shareXFiles([XFile(file.path)],
-            subject: t('今天吃什么 数据', 'What to Eat data'), text: t('今天吃什么 数据', 'What to Eat data'));
+            subject: t('今天吃什么 数据'), text: t('今天吃什么 数据'));
       }
     } catch (e) {
       _showToast(t('导出失败：$e', 'Export failed: $e'));
@@ -396,13 +395,13 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             const Icon(Icons.favorite, color: Colors.red, size: 20),
             const SizedBox(width: 8),
-            Text(t('赛博乞讨', 'Tip jar')),
+            Text(t('赛博乞讨')),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(t('来都来了，不赏两个？♥', 'Since you are here, how about a tip? ♥')),
+            Text(t('来都来了，不赏两个？♥')),
             const SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -422,7 +421,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Icon(Icons.image_not_supported, size: 48, color: Colors.grey[400]),
                         const SizedBox(height: 4),
-                        Text(t('请放置收款码', 'Place your payment QR code here'),
+                        Text(t('请放置收款码'),
                             style: TextStyle(color: Colors.grey[500], fontSize: 12)),
                       ],
                     ),
@@ -431,13 +430,12 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(t('微信扫码支持，金额随意',
-                'Scan with WeChat to support us, any amount is welcome'),
+            Text(t('微信扫码支持，金额随意'),
               style: const TextStyle(color: Colors.grey, fontSize: 13)),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t('关闭', 'Close'))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(t('关闭'))),
         ],
       ),
     );

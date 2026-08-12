@@ -6,9 +6,9 @@ enum ContactFrequency { weekly, monthly, quarterly }
 extension ContactFrequencyExt on ContactFrequency {
   String get label {
     switch (this) {
-      case ContactFrequency.weekly: return t('每周', 'Weekly');
-      case ContactFrequency.monthly: return t('每月', 'Monthly');
-      case ContactFrequency.quarterly: return t('每季度', 'Quarterly');
+      case ContactFrequency.weekly: return t('每周');
+      case ContactFrequency.monthly: return t('每月');
+      case ContactFrequency.quarterly: return t('每季度');
     }
   }
 
@@ -35,11 +35,11 @@ enum ContactType { phone, wechat, email, qq, other }
 extension ContactTypeExt on ContactType {
   String get label {
     switch (this) {
-      case ContactType.phone: return t('手机', 'Phone');
-      case ContactType.wechat: return t('微信', 'WeChat');
-      case ContactType.email: return t('邮箱', 'Email');
+      case ContactType.phone: return t('手机');
+      case ContactType.wechat: return t('微信');
+      case ContactType.email: return t('邮箱');
       case ContactType.qq: return 'QQ';
-      case ContactType.other: return t('其他', 'Other');
+      case ContactType.other: return t('其他');
     }
   }
 

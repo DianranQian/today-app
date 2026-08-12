@@ -103,7 +103,7 @@ class _WearHomePageState extends State<WearHomePage> {
       }
     }
     if (pool.isEmpty) {
-      _showToast(t('当前条件下没有穿搭，试试放宽温度或场景', 'No outfits match these filters. Try loosening them.'));
+      _showToast(t('当前条件下没有穿搭，试试放宽温度或场景'));
       setState(() => _isPicking = false);
       return;
     }
@@ -185,7 +185,7 @@ class _WearHomePageState extends State<WearHomePage> {
         pool: _poolCache);
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _picked?.name) {
-      _showToast(t('当前条件下就这一套啦', 'Only one outfit matches these filters'));
+      _showToast(t('当前条件下就这一套啦'));
       return;
     }
     var next = WearDataStore.pickFrom(pool);
@@ -215,7 +215,7 @@ class _WearHomePageState extends State<WearHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('今天穿什么', 'Outfits')),
+        title: Text(t('今天穿什么')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
@@ -230,7 +230,7 @@ class _WearHomePageState extends State<WearHomePage> {
           TargetDateSelector(onChanged: () => setState(() {})),
           const SizedBox(height: 12),
           _buildSectionTitle(
-              t('穿什么', 'Outfit'), t('${targetSeason.label}季', targetSeason.label)),
+              t('穿什么'), t('${targetSeason.label}季', targetSeason.label)),
           const SizedBox(height: 8),
           _buildSceneSelector(),
           const SizedBox(height: 8),
@@ -263,7 +263,7 @@ class _WearHomePageState extends State<WearHomePage> {
             child: ElevatedButton.icon(
               onPressed: _isPicking ? null : _pick,
               icon: const Icon(Icons.checkroom, size: 24),
-              label: Text(_isPicking ? t('正在选...', 'Rolling...') : t('随机搭配一套！', 'Mix it!'),
+              label: Text(_isPicking ? t('正在选...') : t('随机搭配一套！'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -443,7 +443,7 @@ class _WearHomePageState extends State<WearHomePage> {
   Widget _buildTempSelector() {
     return Row(
       children: [
-        Text(t('今天温度', 'Temp today'),
+        Text(t('今天温度'),
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
         const SizedBox(width: 12),
         IconButton(
@@ -461,7 +461,7 @@ class _WearHomePageState extends State<WearHomePage> {
                   }),
         ),
         Text(
-          _temperature == null ? t('不限', 'Any') : '$_temperature°C',
+          _temperature == null ? t('不限') : '$_temperature°C',
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
         IconButton(
@@ -487,7 +487,7 @@ class _WearHomePageState extends State<WearHomePage> {
                     _temperature = null;
                     _picked = null;
                   }),
-          child: Text(t('清除', 'Clear')),
+          child: Text(t('清除')),
         ),
       ],
     );
@@ -505,7 +505,7 @@ class _WearHomePageState extends State<WearHomePage> {
             children: [
               const Text('🤔', style: TextStyle(fontSize: 44)),
               const SizedBox(height: 8),
-              Text(t('选好条件，点下方按钮', 'Pick your filters, tap below'),
+              Text(t('选好条件，点下方按钮'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey[500], fontSize: 13)),
             ],
@@ -519,7 +519,7 @@ class _WearHomePageState extends State<WearHomePage> {
         t('${_picked!.seasons.map((s) => s.label).join('/')}季',
             _picked!.seasons.map((s) => s.label).join('/'))
       else
-        t('四季通用', 'All seasons'),
+        t('四季通用'),
       if (_picked!.tempMin != null || _picked!.tempMax != null)
         '${_picked!.tempMin ?? '~'}~${_picked!.tempMax ?? '~'}°C',
     ];
@@ -575,7 +575,7 @@ class _WearHomePageState extends State<WearHomePage> {
                   emoji: _picked!.emoji,
                 ),
                 icon: const Icon(Icons.event_note, size: 18),
-                label: Text(t('加入计划', 'Add to Plan')),
+                label: Text(t('加入计划')),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.primary,
                   side: BorderSide(
@@ -604,7 +604,7 @@ class _WearHomePageState extends State<WearHomePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: SlotReel(
-                label: t('穿搭', 'Outfit'),
+                label: t('穿搭'),
                 items: _rollItems,
                 controller: _wheelController,
                 emojiOf: (o) => o.emoji,
@@ -616,7 +616,7 @@ class _WearHomePageState extends State<WearHomePage> {
                   WearGender.female =>
                     const Icon(Icons.female, size: 12, color: Colors.pink),
                   WearGender.unisex =>
-                    Text(t('通用', 'Unisex'),
+                    Text(t('通用'),
                         style: TextStyle(
                             fontSize: 9, color: Colors.grey[600])),
                 },

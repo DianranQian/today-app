@@ -78,11 +78,11 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
   void _addDish() {
     final name = _dishNameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast(t('请输入菜名', 'Please enter a dish name'));
+      _showToast(t('请输入菜名'));
       return;
     }
     if (DataStore.dishes.any((d) => d.name == name)) {
-      _showToast(t('这道菜已经存在了', 'This dish already exists'));
+      _showToast(t('这道菜已经存在了'));
       return;
     }
     DataStore.dishes.add(FoodItem(
@@ -103,17 +103,17 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     _dishIngredientsCtrl.clear();
     _dishImagePath = null;
     setState(() {});
-    _showToast(t('已添加 ', 'Added '));
+    _showToast(t('已添加 '));
   }
 
   void _addStaple() {
     final name = _stapleNameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast(t('请输入主食名称', 'Please enter a staple name'));
+      _showToast(t('请输入主食名称'));
       return;
     }
     if (DataStore.staples.any((s) => s.name == name)) {
-      _showToast(t('这个主食已经存在了', 'This staple already exists'));
+      _showToast(t('这个主食已经存在了'));
       return;
     }
     DataStore.staples.add(FoodItem(
@@ -135,7 +135,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     _stapleIngredientsCtrl.clear();
     _stapleImagePath = null;
     setState(() {});
-    _showToast(t('已添加 ', 'Added '));
+    _showToast(t('已添加 '));
   }
 
   void _deleteDish(int index) {
@@ -194,7 +194,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         .map((d) => d.toJson())
         .toList();
     if (items.isEmpty) {
-      throw Exception(t('AI 返回内容无法匹配菜谱，请重试', 'AI result could not be matched to recipes. Please retry'));
+      throw Exception(t('AI 返回内容无法匹配菜谱，请重试'));
     }
     await ProfileStore.save('eat', 'AI精选', items);
     return 'AI精选';
@@ -211,7 +211,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           child: OutlinedButton.icon(
             onPressed: onPick,
             icon: const Icon(Icons.add_photo_alternate, size: 18),
-            label: Text(t('添加图片', 'Add image')),
+            label: Text(t('添加图片')),
             style: OutlinedButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.primary,
               side: BorderSide(
@@ -221,7 +221,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         ),
         if (imagePath != null)
           IconButton(
-            tooltip: t('清除图片', 'Clear image'),
+            tooltip: t('清除图片'),
             icon: const Icon(Icons.close, color: Colors.red),
             onPressed: onClear,
           ),
@@ -258,7 +258,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
       } else if (file.path != null) {
         bytes = await File(file.path!).readAsBytes();
       } else {
-        _showToast(t('无法读取文件内容', 'Could not read file content'));
+        _showToast(t('无法读取文件内容'));
         return;
       }
       final text = DataStore.decodeFileBytes(bytes);
@@ -267,7 +267,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(t('导入结果', 'Import Result')),
+          title: Text(t('导入结果')),
           content: Text(
             result.errors.isEmpty
                 ? result.toString()
@@ -277,7 +277,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(t('好的', 'OK')),
+              child: Text(t('好的')),
             ),
           ],
         ),
@@ -303,13 +303,13 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(t('菜谱文件格式说明', 'Recipe File Format')),
+        title: Text(t('菜谱文件格式说明')),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(t('文件为 JSON 数组，每道菜一个对象：', 'The file is a JSON array with one object per dish:')),
+              Text(t('文件为 JSON 数组，每道菜一个对象：')),
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(10),
@@ -352,7 +352,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(t('知道了', 'Got it')),
+            child: Text(t('知道了')),
           ),
         ],
       ),
@@ -363,22 +363,22 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('管理菜单', 'Manage Menu')),
+        title: Text(t('管理菜单')),
         actions: [
           SchemeSwitcherButton(
               appId: 'eat', onSwitched: () => DataStore.load()),
           IconButton(
-            tooltip: t('配置集', 'Profiles'),
+            tooltip: t('配置集'),
             icon: const Icon(Icons.folder_copy_outlined),
             onPressed: _openProfiles,
           ),
           IconButton(
-            tooltip: t('导入菜谱', 'Import recipes'),
+            tooltip: t('导入菜谱'),
             icon: const Icon(Icons.file_upload_outlined),
             onPressed: _importRecipes,
           ),
           IconButton(
-            tooltip: t('菜谱格式说明', 'Format help'),
+            tooltip: t('菜谱格式说明'),
             icon: const Icon(Icons.help_outline),
             onPressed: _showFormatHelp,
           ),
@@ -386,9 +386,9 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: t('菜肴', 'Dishes'), icon: const Icon(Icons.restaurant_menu)),
-            Tab(text: t('主食', 'Staples'), icon: const Icon(Icons.rice_bowl)),
-            Tab(text: t('饮品', 'Drinks'), icon: const Icon(Icons.local_drink)),
+            Tab(text: t('菜肴'), icon: const Icon(Icons.restaurant_menu)),
+            Tab(text: t('主食'), icon: const Icon(Icons.rice_bowl)),
+            Tab(text: t('饮品'), icon: const Icon(Icons.local_drink)),
           ],
         ),
       ),
@@ -416,7 +416,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(t('添加菜肴', 'Add a dish'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                Text(t('添加菜肴'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -424,7 +424,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       child: TextField(
                         controller: _dishNameCtrl,
                         decoration: InputDecoration(
-                          labelText: t('菜名', 'Dish name'),
+                          labelText: t('菜名'),
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
@@ -454,7 +454,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       child: DropdownButtonFormField<MealTime>(
                         value: _dishMeal,
                         decoration: InputDecoration(
-                          labelText: t('适合餐段', 'Meal time'),
+                          labelText: t('适合餐段'),
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
@@ -472,7 +472,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       child: DropdownButtonFormField<CookMode>(
                         value: _dishMode,
                         decoration: InputDecoration(
-                          labelText: t('适合方式', 'Cooking mode'),
+                          labelText: t('适合方式'),
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
@@ -491,7 +491,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                 TextField(
                   controller: _dishIngredientsCtrl,
                   decoration: InputDecoration(
-                    labelText: t('原料（用逗号分隔）', 'Ingredients (comma-separated)'),
+                    labelText: t('原料（用逗号分隔）'),
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
@@ -508,7 +508,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                     ),
-                    child: Text(t('添加', 'Add')),
+                    child: Text(t('添加')),
                   ),
                 ),
               ],
@@ -522,7 +522,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           controller: _dishSearchCtrl,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search),
-            hintText: t('按菜名或食材搜索', 'Search by name or ingredient'),
+            hintText: t('按菜名或食材搜索'),
             border: const OutlineInputBorder(),
             isDense: true,
           ),
@@ -534,7 +534,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         if (dishes.isEmpty)
           Center(child: Padding(
             padding: const EdgeInsets.all(32),
-            child: Text(t('没有找到匹配的菜肴', 'No matching dishes'), style: const TextStyle(color: Colors.grey)),
+            child: Text(t('没有找到匹配的菜肴'), style: const TextStyle(color: Colors.grey)),
           ))
         else
           ...dishes.asMap().entries.map((entry) {
@@ -578,7 +578,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(t('添加主食', 'Add a staple'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                Text(t('添加主食'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -586,7 +586,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       child: TextField(
                         controller: _stapleNameCtrl,
                         decoration: InputDecoration(
-                          labelText: t('主食名称', 'Staple name'),
+                          labelText: t('主食名称'),
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
@@ -613,7 +613,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                 DropdownButtonFormField<MealTime>(
                   value: _stapleMeal,
                   decoration: InputDecoration(
-                    labelText: t('适合餐段', 'Meal time'),
+                    labelText: t('适合餐段'),
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
@@ -629,7 +629,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                 TextField(
                   controller: _stapleIngredientsCtrl,
                   decoration: InputDecoration(
-                    labelText: t('原料（用逗号分隔）', 'Ingredients (comma-separated)'),
+                    labelText: t('原料（用逗号分隔）'),
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
@@ -646,7 +646,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                     ),
-                    child: Text(t('添加', 'Add')),
+                    child: Text(t('添加')),
                   ),
                 ),
               ],
@@ -660,7 +660,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           controller: _stapleSearchCtrl,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search),
-            hintText: t('按名称或食材搜索', 'Search by name or ingredient'),
+            hintText: t('按名称或食材搜索'),
             border: const OutlineInputBorder(),
             isDense: true,
           ),
@@ -672,7 +672,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         if (staples.isEmpty)
           Center(child: Padding(
             padding: const EdgeInsets.all(32),
-            child: Text(t('没有找到匹配的主食', 'No matching staples'), style: const TextStyle(color: Colors.grey)),
+            child: Text(t('没有找到匹配的主食'), style: const TextStyle(color: Colors.grey)),
           ))
         else
           ...staples.asMap().entries.map((entry) {
@@ -707,11 +707,11 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
   void _addDrink() {
     final name = _drinkNameCtrl.text.trim();
     if (name.isEmpty) {
-      _showToast(t('请输入饮品名称', 'Please enter a drink name'));
+      _showToast(t('请输入饮品名称'));
       return;
     }
     if (DataStore.drinks.any((d) => d.name == name)) {
-      _showToast(t('这个饮品已经存在了', 'This drink already exists'));
+      _showToast(t('这个饮品已经存在了'));
       return;
     }
     DataStore.drinks.add(FoodItem(
@@ -748,7 +748,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(t('添加饮品', 'Add a drink'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                Text(t('添加饮品'), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -756,7 +756,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       child: TextField(
                         controller: _drinkNameCtrl,
                         decoration: InputDecoration(
-                          labelText: t('饮品名称', 'Drink name'),
+                          labelText: t('饮品名称'),
                           border: const OutlineInputBorder(),
                           isDense: true,
                         ),
@@ -783,7 +783,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                 DropdownButtonFormField<MealTime>(
                   value: _drinkMeal,
                   decoration: InputDecoration(
-                    labelText: t('适合餐段', 'Meal time'),
+                    labelText: t('适合餐段'),
                     border: const OutlineInputBorder(),
                     isDense: true,
                   ),
@@ -807,7 +807,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                     ),
-                    child: Text(t('添加', 'Add')),
+                    child: Text(t('添加')),
                   ),
                 ),
               ],
@@ -820,7 +820,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
           controller: _drinkSearchCtrl,
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search),
-            hintText: t('按名称搜索', 'Search by name'),
+            hintText: t('按名称搜索'),
             border: const OutlineInputBorder(),
             isDense: true,
           ),
@@ -831,7 +831,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
         if (drinks.isEmpty)
           Center(child: Padding(
             padding: const EdgeInsets.all(32),
-            child: Text(t('没有找到匹配的饮品', 'No matching drinks'), style: const TextStyle(color: Colors.grey)),
+            child: Text(t('没有找到匹配的饮品'), style: const TextStyle(color: Colors.grey)),
           ))
         else
           ...drinks.asMap().entries.map((entry) {

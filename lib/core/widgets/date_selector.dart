@@ -43,9 +43,9 @@ class TargetDateSelector extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final quickNames = [
-      t('今天', 'Today'),
-      t('明天', 'Tomorrow'),
-      t('后天', 'Day after'),
+      t('今天'),
+      t('明天'),
+      t('后天'),
     ];
     final custom = customTargetDate;
 
@@ -84,7 +84,7 @@ class TargetDateSelector extends StatelessWidget {
             ),
           chip(
             label: custom == null
-                ? t('📅 选日期', '📅 Pick a date')
+                ? t('📅 选日期')
                 : '📅 ${formatMdCn(custom)}',
             selected: custom != null,
             onTap: () async {

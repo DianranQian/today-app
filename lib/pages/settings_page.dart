@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import '../core/app_settings.dart';
 import '../core/backup.dart';
 import '../core/donation.dart';
+import '../core/l10n/l10n.dart';
 import '../core/language.dart';
 import '../core/theme.dart';
 
@@ -42,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final selected = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${app.emoji} ${t(app.label, app.labelEn)} · ${t('主题色', 'Theme Color')}'),
+        title: Text('${app.emoji} ${t(app.label, app.labelEn)} · ${t('主题色')}'),
         content: Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -74,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: Text(t('取消', 'Cancel'))),
+              onPressed: () => Navigator.pop(ctx), child: Text(t('取消'))),
         ],
       ),
     );
@@ -113,22 +114,20 @@ class _SettingsPageState extends State<SettingsPage> {
       final action = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(t('导出完成', 'Export Complete')),
+          title: Text(t('导出完成')),
           content: Text(withImages
-              ? t('备份已生成（数据 + 照片）。可以分享保存，或存入下载目录。',
-                  'Backup created (data + photos). Share it or save to Downloads.')
-              : t('JSON 数据已生成（不含照片）。可以分享保存，或存入下载目录。',
-                  'JSON data created (no photos). Share it or save to Downloads.')),
+              ? t('备份已生成（数据 + 照片）。可以分享保存，或存入下载目录。')
+              : t('JSON 数据已生成（不含照片）。可以分享保存，或存入下载目录。')),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'share'),
-                child: Text(t('分享', 'Share'))),
+                child: Text(t('分享'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'download'),
-                child: Text(t('存入下载', 'Save to Downloads'))),
+                child: Text(t('存入下载'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text(t('关闭', 'Close'))),
+                child: Text(t('关闭'))),
           ],
         ),
       );
@@ -143,16 +142,15 @@ class _SettingsPageState extends State<SettingsPage> {
         if (downloads != null) {
           final dest = '${downloads.path}${file.uri.pathSegments.last}';
           file.copySync(dest);
-          _toast(t('已存入下载目录', 'Saved to Downloads folder'));
+          _toast(t('已存入下载目录'));
         } else {
-          _toast(t('无法访问下载目录，已保留在应用目录',
-              'Cannot access Downloads, kept in app folder'));
+          _toast(t('无法访问下载目录，已保留在应用目录'));
         }
       }
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('${t('导出失败', 'Export failed')}: $e');
+      _toast('${t('导出失败')}: $e');
     }
   }
 
@@ -174,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('${t('导入失败', 'Import failed')}: $e');
+      _toast('${t('导入失败')}: $e');
     }
   }
 
@@ -188,7 +186,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('通用设置', 'Settings')),
+        title: Text(t('通用设置')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -200,8 +198,8 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.palette, color: Colors.orange),
-                  title: Text(t('主题色', 'Theme Color')),
-                  subtitle: Text(t('为每个子应用选择喜欢的颜色', 'Pick a color for each sub-app')),
+                  title: Text(t('主题色')),
+                  subtitle: Text(t('为每个子应用选择喜欢的颜色')),
                 ),
                 for (final app in AppId.values)
                   ListTile(
@@ -311,16 +309,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: const Text('语言 / Language'),
                   trailing: DropdownButton<String>(
                     value: currentLang,
-                    items: const [
-                      DropdownMenuItem(value: 'zh', child: Text('中文')),
-                      DropdownMenuItem(value: 'en', child: Text('English')),
+                    items: [
+                      for (final l in L10n.supportedLanguages)
+                        DropdownMenuItem(value: l.$1, child: Text(l.$2)),
                     ],
                     onChanged: (v) {
                       if (v == null) return;
                       setLanguage(v);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('语言已切换，重启应用生效 / Restart to apply'),
+                          content: Text('语言已切换 / Language switched'),
                           behavior: SnackBarBehavior.floating,
                         ),
                       );

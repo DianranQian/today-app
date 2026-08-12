@@ -87,7 +87,7 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
       final action = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(t('导出完成', 'Export Complete')),
+          title: Text(t('导出完成')),
           content: Text(withImages
               ? t('已生成「${widget.appName}」数据备份（含该应用的照片）。',
                   'Backup created for "${widget.appName}" (includes photos).')
@@ -96,13 +96,13 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'share'),
-                child: Text(t('分享', 'Share'))),
+                child: Text(t('分享'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'download'),
-                child: Text(t('存入下载', 'Save to Downloads'))),
+                child: Text(t('存入下载'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: Text(t('关闭', 'Close'))),
+                child: Text(t('关闭'))),
           ],
         ),
       );
@@ -115,10 +115,9 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
         if (downloads != null) {
           final dest = '${downloads.path}${file.uri.pathSegments.last}';
           file.copySync(dest);
-          _toast(t('已存入下载目录', 'Saved to Downloads folder'));
+          _toast(t('已存入下载目录'));
         } else {
-          _toast(t('无法访问下载目录，已保留在应用目录',
-              'Cannot access Downloads folder; file kept in app folder'));
+          _toast(t('无法访问下载目录，已保留在应用目录'));
         }
       }
     } catch (e) {
@@ -161,9 +160,8 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
             child: Column(
               children: [
                 SwitchListTile(
-                  title: Text(t('避免近期重复', 'Avoid Recent Repeats')),
-                  subtitle: Text(t('7 天内用过的不会再次推荐',
-                      'Items used within 7 days won\'t be suggested again')),
+                  title: Text(t('避免近期重复')),
+                  subtitle: Text(t('7 天内用过的不会再次推荐')),
                   value: _avoidRecent,
                   onChanged: (v) {
                     setState(() => _avoidRecent = v);
@@ -187,7 +185,7 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
             children: [
               ListTile(
                 leading: const Icon(Icons.upload_file, color: Colors.orange),
-                title: Text(t('导出 ZIP 备份', 'Export ZIP Backup')),
+                title: Text(t('导出 ZIP 备份')),
                 subtitle: Text(t('${widget.appName} 数据 + 该应用照片',
                     '${widget.appName} data + photos')),
                 onTap: _busy ? null : () => _export(true),
@@ -195,7 +193,7 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.code, color: Colors.orange),
-                title: Text(t('导出 JSON 数据', 'Export JSON Data')),
+                title: Text(t('导出 JSON 数据')),
                 subtitle: Text(t('${widget.appName} 纯数据，轻量易分享',
                     '${widget.appName} data only, easy to share')),
                 onTap: _busy ? null : () => _export(false),
@@ -203,19 +201,18 @@ class _SubAppSettingsPanelState extends State<SubAppSettingsPanel> {
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.download, color: Colors.orange),
-                title: Text(t('导入数据', 'Import Data')),
-                subtitle: Text(t('从 ZIP/JSON 恢复（立即生效）',
-                    'Restore from ZIP/JSON (takes effect immediately)')),
+                title: Text(t('导入数据')),
+                subtitle: Text(t('从 ZIP/JSON 恢复（立即生效）')),
                 onTap: _busy ? null : _import,
               ),
               const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.delete_sweep, color: Colors.red),
                 title: Text(widget.clearLabel ??
-                    t('清空历史', 'Clear History')),
+                    t('清空历史')),
                 onTap: () {
                   widget.onClearHistory();
-                  _toast(t('已清空', 'Cleared'));
+                  _toast(t('已清空'));
                 },
               ),
             ],

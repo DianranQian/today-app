@@ -81,7 +81,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
   Future<void> _saveAs() async {
     final name = _newNameCtrl.text.trim();
     if (name.isEmpty) {
-      _toast(t('请输入配置名称', 'Please enter a profile name'));
+      _toast(t('请输入配置名称'));
       return;
     }
     await ProfileStore.save(widget.appId, name, widget.currentItems);
@@ -94,7 +94,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
     setState(() => _busy = true);
     final items = await ProfileStore.load(widget.appId, name);
     if (items.isEmpty) {
-      _toast(t('配置数据为空', 'Profile data is empty'));
+      _toast(t('配置数据为空'));
       setState(() => _busy = false);
       return;
     }
@@ -125,7 +125,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
   Future<void> _aiCurate() async {
     final curator = widget.aiCurate;
     if (curator == null) {
-      _toast(t('该子应用暂不支持 AI 汇总', 'AI summarize is not supported for this app'));
+      _toast(t('该子应用暂不支持 AI 汇总'));
       return;
     }
     setState(() => _busy = true);
@@ -148,7 +148,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     return AlertDialog(
-      title: Text(t('配置管理', 'Profile Manager')),
+      title: Text(t('配置管理')),
       content: SizedBox(
         width: 320,
         child: Column(
@@ -162,8 +162,8 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                   onPressed: _busy ? null : _aiCurate,
                   icon: const Icon(Icons.auto_awesome, size: 18),
                   label: Text(_busy
-                      ? t('AI 汇总中...', 'AI summarizing...')
-                      : t('AI 汇总生成配置', 'Generate profile with AI')),
+                      ? t('AI 汇总中...')
+                      : t('AI 汇总生成配置')),
                 ),
               ),
               const SizedBox(height: 8),
@@ -174,7 +174,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                   child: TextField(
                     controller: _newNameCtrl,
                     decoration: InputDecoration(
-                      labelText: t('新配置名称', 'New profile name'),
+                      labelText: t('新配置名称'),
                       border: const OutlineInputBorder(),
                       isDense: true,
                     ),
@@ -187,20 +187,19 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                     backgroundColor: primary,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(t('另存为', 'Save As')),
+                  child: Text(t('另存为')),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            Text(t('我的配置', 'My Profiles'), style: const TextStyle(fontSize: 13)),
+            Text(t('我的配置'), style: const TextStyle(fontSize: 13)),
             const SizedBox(height: 4),
             Flexible(
               child: _names.isEmpty
               ? Padding(
                   padding: const EdgeInsets.all(8),
                   child: Text(
-                      t('暂无自定义配置（「默认」为内置数据）',
-                          'No custom profiles yet ("Default" is built-in)'),
+                      t('暂无自定义配置（「默认」为内置数据）'),
                       style:
                           const TextStyle(fontSize: 12, color: Colors.grey)),
                 )
@@ -216,7 +215,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                tooltip: t('应用', 'Apply'),
+                                tooltip: t('应用'),
                                 icon: const Icon(Icons.check_circle_outline,
                                     color: Colors.green),
                                 onPressed: _busy
@@ -224,13 +223,13 @@ class _ProfileDialogState extends State<_ProfileDialog> {
                                     : () => _apply(name),
                               ),
                               IconButton(
-                                tooltip: t('导出', 'Export'),
+                                tooltip: t('导出'),
                                 icon: const Icon(Icons.ios_share,
                                     color: Colors.blue),
                                 onPressed: () => _export(name),
                               ),
                               IconButton(
-                                tooltip: t('删除', 'Delete'),
+                                tooltip: t('删除'),
                                 icon: const Icon(Icons.delete_outline,
                                     color: Colors.red),
                                 onPressed: () => _delete(name),
@@ -247,7 +246,7 @@ class _ProfileDialogState extends State<_ProfileDialog> {
       actions: [
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(t('关闭', 'Close'))),
+            child: Text(t('关闭'))),
       ],
     );
   }
