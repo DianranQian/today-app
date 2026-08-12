@@ -317,7 +317,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /// 点击主食按钮：换一个主食（不写历史，仅刷新展示）
   void _swapStaple() {
     if (_isPicking) return;
-    final pool = DataStore.getFilteredStaples(mealTime: _selectedMeal);
+    final pool = DataStore.getFilteredStaples(
+        mealTime: _selectedMeal, pool: _staplePoolCache);
     if (pool.isEmpty) return;
     if (pool.length == 1 && pool.first.name == _pickedStaple?.name) {
       _showToast(t('主食就这一样啦'));
@@ -349,9 +350,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /// 点击饮品按钮：换一杯饮品（不写历史，仅刷新展示）
   void _swapDrink() {
     if (_isPicking) return;
-    final pool = DataStore.getFilteredDrinks(mealTime: _selectedMeal);
+    final pool = DataStore.getFilteredDrinks(
+        mealTime: _selectedMeal, pool: _drinkPoolCache);
     if (pool.isEmpty) return;
-    final next = pool[DateTime.now().microsecondsSinceEpoch % pool.length];
+    final next = DataStore.pickFrom(pool,
+        seasonPriority: DataStore.settings.seasonRecommend,
+            season: core_season.targetSeason);
     setState(() {
       _pickedDrink = next;
       if (_candidates.isNotEmpty && _pickedDish != null) {

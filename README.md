@@ -25,6 +25,17 @@
 - 🔒 **隐私友好**：不收集任何数据，不读系统通讯录，联系人手动录入且仅存本机
 - 💰 **开源免费**：全靠自愿打赏（App 内「赛博乞讨」）
 
+## API 配置（可选）
+
+「附近」与「AI 推荐」功能需要申请对应 Key，在 App 内 **通用设置 → API 配置** 中填写，不填不影响其他功能：
+
+| Key | 用途 | 申请地址 | 注意 |
+|---|---|---|---|
+| **高德地图 Key** | 附近美食/去处搜索（POI） | [console.amap.com](https://console.amap.com) | 需申请 **Web 服务** 类型 Key（不是 Android/iOS Key） |
+| **DeepSeek Key** | AI 推荐/汇总（附近点评、菜单生成） | [platform.deepseek.com](https://platform.deepseek.com) | 普通 API Key 即可 |
+
+> Key 仅存本机，不会出现在备份文件中。
+
 ## 构建
 
 ```bash
