@@ -29,11 +29,17 @@ class TodayApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'What to Do',
-      debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(seed: AppSeeds.eat),
-      home: const MainShell(),
+    // 监听语言变化，切换后立即重建整个 App
+    return ValueListenableBuilder<String>(
+      valueListenable: langNotifier,
+      builder: (context, lang, _) {
+        return MaterialApp(
+          title: 'What to Do',
+          debugShowCheckedModeBanner: false,
+          theme: buildAppTheme(seed: AppSeeds.eat),
+          home: const MainShell(),
+        );
+      },
     );
   }
 }
@@ -84,12 +90,12 @@ class HomeEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('今天做什么'),
+        title: Text(t('今天做什么', 'What to Do')),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
           IconButton(
-            tooltip: '通用设置',
+            tooltip: t('通用设置', 'Settings'),
             icon: const Icon(Icons.settings_outlined),
             onPressed: () =>
                 Navigator.of(context).push(MaterialPageRoute(

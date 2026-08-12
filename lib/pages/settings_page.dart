@@ -42,7 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final selected = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${app.emoji} ${app.label} · 主题色'),
+        title: Text('${app.emoji} ${t(app.label, app.labelEn)} · ${t('主题色', 'Theme Color')}'),
         content: Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -74,7 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+              onPressed: () => Navigator.pop(ctx), child: Text(t('取消', 'Cancel'))),
         ],
       ),
     );
@@ -113,20 +113,22 @@ class _SettingsPageState extends State<SettingsPage> {
       final action = await showDialog<String>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('导出完成'),
+          title: Text(t('导出完成', 'Export Complete')),
           content: Text(withImages
-              ? '备份已生成（数据 + 照片）。可以分享保存，或存入下载目录。'
-              : 'JSON 数据已生成（不含照片）。可以分享保存，或存入下载目录。'),
+              ? t('备份已生成（数据 + 照片）。可以分享保存，或存入下载目录。',
+                  'Backup created (data + photos). Share it or save to Downloads.')
+              : t('JSON 数据已生成（不含照片）。可以分享保存，或存入下载目录。',
+                  'JSON data created (no photos). Share it or save to Downloads.')),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'share'),
-                child: const Text('分享')),
+                child: Text(t('分享', 'Share'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx, 'download'),
-                child: const Text('存入下载')),
+                child: Text(t('存入下载', 'Save to Downloads'))),
             TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('关闭')),
+                child: Text(t('关闭', 'Close'))),
           ],
         ),
       );
@@ -141,15 +143,16 @@ class _SettingsPageState extends State<SettingsPage> {
         if (downloads != null) {
           final dest = '${downloads.path}${file.uri.pathSegments.last}';
           file.copySync(dest);
-          _toast('已存入下载目录');
+          _toast(t('已存入下载目录', 'Saved to Downloads folder'));
         } else {
-          _toast('无法访问下载目录，已保留在应用目录');
+          _toast(t('无法访问下载目录，已保留在应用目录',
+              'Cannot access Downloads, kept in app folder'));
         }
       }
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('导出失败：$e');
+      _toast('${t('导出失败', 'Export failed')}: $e');
     }
   }
 
@@ -166,11 +169,12 @@ class _SettingsPageState extends State<SettingsPage> {
       final restored = await BackupService.importBackup(path);
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('导入成功（$restored 项），重启应用后生效');
+      _toast(t('导入成功（$restored 项），重启应用后生效',
+          'Imported $restored items, restart to apply'));
     } catch (e) {
       if (!mounted) return;
       setState(() => _busy = false);
-      _toast('导入失败：$e');
+      _toast('${t('导入失败', 'Import failed')}: $e');
     }
   }
 
@@ -184,7 +188,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('通用设置'),
+        title: Text(t('通用设置', 'Settings')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -194,15 +198,15 @@ class _SettingsPageState extends State<SettingsPage> {
           Card(
             child: Column(
               children: [
-                const ListTile(
-                  leading: Icon(Icons.palette, color: Colors.orange),
-                  title: Text('主题色'),
-                  subtitle: Text('为每个子应用选择喜欢的颜色'),
+                ListTile(
+                  leading: const Icon(Icons.palette, color: Colors.orange),
+                  title: Text(t('主题色', 'Theme Color')),
+                  subtitle: Text(t('为每个子应用选择喜欢的颜色', 'Pick a color for each sub-app')),
                 ),
                 for (final app in AppId.values)
                   ListTile(
                     leading: Text(app.emoji, style: const TextStyle(fontSize: 22)),
-                    title: Text(app.label),
+                    title: Text(t(app.label, app.labelEn)),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

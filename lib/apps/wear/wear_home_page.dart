@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/image_helper.dart';
+import '../../core/language.dart';
 import '../../core/season.dart';
 import '../../core/theme.dart';
 import '../../core/plan_store.dart';
@@ -195,7 +196,7 @@ class _WearHomePageState extends State<WearHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('今天穿什么'),
+        title: Text(t('今天穿什么', 'Outfits')),
         centerTitle: true,
         toolbarHeight: 44,
       ),
@@ -203,22 +204,11 @@ class _WearHomePageState extends State<WearHomePage> {
         padding: const EdgeInsets.all(16),
         children: [
           // 目标日期
-          _buildSectionTitle('穿哪天的', '选择日期（影响季节搭配）'),
-          const SizedBox(height: 8),
           TargetDateSelector(onChanged: () => setState(() {})),
           const SizedBox(height: 12),
-          _buildSectionTitle('穿什么', '选择场景 · ${targetSeason.label}季'),
-          const SizedBox(height: 8),
-          _buildSceneSelector(),
-          const SizedBox(height: 12),
-          _buildGenderSelector(),
-          const SizedBox(height: 8),
-          _buildGroupSelector(),
-          const SizedBox(height: 8),
-          _buildStyleSelector(),
-          const SizedBox(height: 12),
-          _buildTempSelector(),
-          const SizedBox(height: 24),
+          // 筛选条件（场景/性别/人群/风格/温度 合并一张卡片）
+          _buildFilterCard(),
+          const SizedBox(height: 16),
           _buildResultCard(),
           const SizedBox(height: 16),
 
@@ -234,14 +224,13 @@ class _WearHomePageState extends State<WearHomePage> {
             const SizedBox(height: 16),
           ],
 
-          const SizedBox(height: 4),
           SizedBox(
             width: double.infinity,
-            height: 52,
+            height: 50,
             child: ElevatedButton.icon(
               onPressed: _isPicking ? null : _pick,
               icon: const Icon(Icons.checkroom, size: 24),
-              label: Text(_isPicking ? '正在选...' : '随机搭配一套！',
+              label: Text(_isPicking ? t('正在选...', 'Rolling...') : t('随机搭配一套！', 'Mix it!'),
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -249,7 +238,7 @@ class _WearHomePageState extends State<WearHomePage> {
                 foregroundColor: Colors.white,
                 disabledForegroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(26),
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 elevation: 4,
               ),
@@ -260,211 +249,246 @@ class _WearHomePageState extends State<WearHomePage> {
     );
   }
 
-  Widget _buildSectionTitle(String title, String subtitle) {
-    return Row(
-      children: [
-        Text(title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        const SizedBox(width: 8),
-        Text(subtitle,
-            style: TextStyle(fontSize: 13, color: Colors.grey[500])),
-      ],
+  /// 筛选卡片：场景/性别/人群/风格/温度 合并显示，紧凑布局
+  Widget _buildFilterCard() {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          children: [
+            _buildFilterRow(
+              Icons.checkroom,
+              t('穿什么', 'Outfit'),
+              Text('${t('场景', 'Scene')} · ${targetSeason.label}季',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+              _buildSceneChips(),
+            ),
+            _buildFilterRow(Icons.male, t('性别', 'Gender'), null, _buildGenderChips()),
+            _buildFilterRow(Icons.groups, t('人群', 'Group'), null, _buildGroupChips()),
+            _buildFilterRow(Icons.style, t('风格', 'Style'), null, _buildStyleChips()),
+            const Divider(height: 1),
+            _buildTempRow(),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildSceneSelector() {
+  /// 筛选行：图标 + 标题 + 右侧 Wrap chips
+  Widget _buildFilterRow(IconData icon, String title, Widget? trailing, Widget chips) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 6),
+          SizedBox(
+            width: 44,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: Text(title,
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            ),
+          ),
+          if (trailing != null) ...[
+            trailing,
+            const SizedBox(width: 8),
+          ],
+          Expanded(child: chips),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSceneChips() {
     const scenes = [
       WearScene.all, WearScene.daily, WearScene.sport, WearScene.formal,
       WearScene.date, WearScene.commute,
     ];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: scenes.map((s) {
-          final isSelected = _selectedScene == s;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(s.label),
-              selected: isSelected,
-              onSelected: _isPicking
-                  ? null
-                  : (_) => setState(() {
-                        _selectedScene = s;
-                        _picked = null;
-                      }),
-              selectedColor: Theme.of(context).colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : null,
-                fontWeight: isSelected ? FontWeight.w600 : null,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: scenes.map((s) {
+        final isSelected = _selectedScene == s;
+        return ChoiceChip(
+          label: Text(s.label, style: const TextStyle(fontSize: 12)),
+          visualDensity: VisualDensity.compact,
+          selected: isSelected,
+          onSelected: _isPicking
+              ? null
+              : (_) => setState(() {
+                    _selectedScene = s;
+                    _picked = null;
+                  }),
+          selectedColor: Theme.of(context).colorScheme.primary,
+          labelStyle: TextStyle(
+            color: isSelected ? Colors.white : null,
+            fontWeight: isSelected ? FontWeight.w600 : null,
+          ),
+        );
+      }).toList(),
     );
   }
 
   /// 性别选择（记忆偏好）
-  Widget _buildGenderSelector() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: WearGender.values.map((g) {
-          final isSelected = _selectedGender == g;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              avatar: Icon(
-                switch (g) {
-                  WearGender.male => Icons.male,
-                  WearGender.female => Icons.female,
-                  WearGender.unisex => Icons.accessibility_new,
-                },
-                size: 16,
-                // 未选中按性别配色（男蓝/女粉/通用灰），不再用主题色
-                color: isSelected
-                    ? Colors.white
-                    : switch (g) {
-                        WearGender.male => Colors.blue,
-                        WearGender.female => Colors.pink,
-                        WearGender.unisex => Colors.grey,
-                      },
-              ),
-              label: Text(g.label),
-              selected: isSelected,
-              onSelected: _isPicking
-                  ? null
-                  : (_) => setState(() {
-                        _selectedGender = g;
-                        _picked = null;
-                        _savePrefs();
-                      }),
-              selectedColor: Theme.of(context).colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : null,
-                fontWeight: isSelected ? FontWeight.w600 : null,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+  Widget _buildGenderChips() {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: WearGender.values.map((g) {
+        final isSelected = _selectedGender == g;
+        return ChoiceChip(
+          avatar: Icon(
+            switch (g) {
+              WearGender.male => Icons.male,
+              WearGender.female => Icons.female,
+              WearGender.unisex => Icons.accessibility_new,
+            },
+            size: 14,
+            // 未选中按性别配色（男蓝/女粉/通用灰），不再用主题色
+            color: isSelected
+                ? Colors.white
+                : switch (g) {
+                    WearGender.male => Colors.blue,
+                    WearGender.female => Colors.pink,
+                    WearGender.unisex => Colors.grey,
+                  },
+          ),
+          label: Text(g.label, style: const TextStyle(fontSize: 12)),
+          visualDensity: VisualDensity.compact,
+          selected: isSelected,
+          onSelected: _isPicking
+              ? null
+              : (_) => setState(() {
+                    _selectedGender = g;
+                    _picked = null;
+                    _savePrefs();
+                  }),
+          selectedColor: Theme.of(context).colorScheme.primary,
+          labelStyle: TextStyle(
+            color: isSelected ? Colors.white : null,
+            fontWeight: isSelected ? FontWeight.w600 : null,
+          ),
+        );
+      }).toList(),
     );
   }
 
   /// 人群选择（记忆偏好）
-  Widget _buildGroupSelector() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: WearGroup.values.map((g) {
-          final isSelected = _selectedGroup == g;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(g.label),
-              selected: isSelected,
-              onSelected: _isPicking
-                  ? null
-                  : (_) => setState(() {
-                        _selectedGroup = g;
-                        _picked = null;
-                        _savePrefs();
-                      }),
-              selectedColor: Theme.of(context).colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : null,
-                fontWeight: isSelected ? FontWeight.w600 : null,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+  Widget _buildGroupChips() {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: WearGroup.values.map((g) {
+        final isSelected = _selectedGroup == g;
+        return ChoiceChip(
+          label: Text(g.label, style: const TextStyle(fontSize: 12)),
+          visualDensity: VisualDensity.compact,
+          selected: isSelected,
+          onSelected: _isPicking
+              ? null
+              : (_) => setState(() {
+                    _selectedGroup = g;
+                    _picked = null;
+                    _savePrefs();
+                  }),
+          selectedColor: Theme.of(context).colorScheme.primary,
+          labelStyle: TextStyle(
+            color: isSelected ? Colors.white : null,
+            fontWeight: isSelected ? FontWeight.w600 : null,
+          ),
+        );
+      }).toList(),
     );
   }
 
   /// 风格选择
-  Widget _buildStyleSelector() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: WearStyle.values.map((s) {
-          final isSelected = _selectedStyle == s;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ChoiceChip(
-              label: Text(s.label),
-              selected: isSelected,
-              onSelected: _isPicking
-                  ? null
-                  : (_) => setState(() {
-                        _selectedStyle = s;
-                        _picked = null;
-                      }),
-              selectedColor: Theme.of(context).colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : null,
-                fontWeight: isSelected ? FontWeight.w600 : null,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+  Widget _buildStyleChips() {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: WearStyle.values.map((s) {
+        final isSelected = _selectedStyle == s;
+        return ChoiceChip(
+          label: Text(s.label, style: const TextStyle(fontSize: 12)),
+          visualDensity: VisualDensity.compact,
+          selected: isSelected,
+          onSelected: _isPicking
+              ? null
+              : (_) => setState(() {
+                    _selectedStyle = s;
+                    _picked = null;
+                  }),
+          selectedColor: Theme.of(context).colorScheme.primary,
+          labelStyle: TextStyle(
+            color: isSelected ? Colors.white : null,
+            fontWeight: isSelected ? FontWeight.w600 : null,
+          ),
+        );
+      }).toList(),
     );
   }
 
   /// 温度选择：可选，填了按区间过滤
-  Widget _buildTempSelector() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Icon(Icons.thermostat, size: 18, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 8),
-            const Text('今天温度', style: TextStyle(fontSize: 14)),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
-              onPressed: _isPicking
-                  ? null
-                  : () => setState(() {
-                        if (_temperature == null) {
-                          _temperature = 20;
-                        } else if (_temperature! > -20) {
-                          _temperature = _temperature! - 1;
-                        }
-                        _picked = null;
-                      }),
-            ),
-            Text(
-              _temperature == null ? '不限' : '$_temperature°C',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: _isPicking
-                  ? null
-                  : () => setState(() {
-                        if (_temperature == null) {
-                          _temperature = 20;
-                        } else if (_temperature! < 45) {
-                          _temperature = _temperature! + 1;
-                        }
-                        _picked = null;
-                      }),
-            ),
-            TextButton(
-              onPressed: _isPicking
-                  ? null
-                  : () => setState(() {
-                        _temperature = null;
-                        _picked = null;
-                      }),
-              child: const Text('清除'),
-            ),
-          ],
-        ),
+  Widget _buildTempRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: Row(
+        children: [
+          Icon(Icons.thermostat, size: 16, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 6),
+          SizedBox(
+            width: 44,
+            child: Text(t('温度', 'Temp'),
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.remove_circle_outline, size: 20),
+            onPressed: _isPicking
+                ? null
+                : () => setState(() {
+                      if (_temperature == null) {
+                        _temperature = 20;
+                      } else if (_temperature! > -20) {
+                        _temperature = _temperature! - 1;
+                      }
+                      _picked = null;
+                    }),
+          ),
+          Text(
+            _temperature == null ? t('不限', 'Any') : '$_temperature°C',
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          ),
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.add_circle_outline, size: 20),
+            onPressed: _isPicking
+                ? null
+                : () => setState(() {
+                      if (_temperature == null) {
+                        _temperature = 20;
+                      } else if (_temperature! < 45) {
+                        _temperature = _temperature! + 1;
+                      }
+                      _picked = null;
+                    }),
+          ),
+          const Spacer(),
+          TextButton(
+            style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+            onPressed: _isPicking
+                ? null
+                : () => setState(() {
+                      _temperature = null;
+                      _picked = null;
+                    }),
+            child: Text(t('清除', 'Clear')),
+          ),
+        ],
       ),
     );
   }
@@ -476,14 +500,14 @@ class _WearHomePageState extends State<WearHomePage> {
     if (_picked == null) {
       return Card(
         child: Container(
-          padding: const EdgeInsets.all(40),
+          padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             children: [
-              const Text('🤔', style: TextStyle(fontSize: 64)),
-              const SizedBox(height: 12),
-              Text('选择场景（可选填温度）\n点击下方按钮开始',
+              const Text('🤔', style: TextStyle(fontSize: 44)),
+              const SizedBox(height: 8),
+              Text(t('选好条件，点下方按钮', 'Pick your filters, tap below'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 14, height: 1.5)),
+                  style: TextStyle(color: Colors.grey[500], fontSize: 13)),
             ],
           ),
         ),
@@ -550,7 +574,7 @@ class _WearHomePageState extends State<WearHomePage> {
                   emoji: _picked!.emoji,
                 ),
                 icon: const Icon(Icons.event_note, size: 18),
-                label: const Text('加入计划'),
+                label: Text(t('加入计划', 'Add to Plan')),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.primary,
                   side: BorderSide(

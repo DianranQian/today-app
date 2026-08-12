@@ -61,6 +61,16 @@ extension AppIdExt on AppId {
     }
   }
 
+  String get labelEn {
+    switch (this) {
+      case AppId.eat: return 'Food';
+      case AppId.go: return 'Places';
+      case AppId.wear: return 'Outfits';
+      case AppId.contact: return 'Contacts';
+      case AppId.todo: return 'Tasks';
+    }
+  }
+
   String get emoji {
     switch (this) {
       case AppId.eat: return '🍜';
