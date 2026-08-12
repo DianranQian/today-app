@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/language.dart';
 import '../../core/widgets/profile_dialog.dart';
+import '../../core/widgets/scheme_switcher.dart';
 import '../../core/image_helper.dart';
 import 'contact_actions.dart';
 import 'contact_models.dart';
@@ -170,6 +171,8 @@ class _ContactManagePageState extends State<ContactManagePage> {
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
+          SchemeSwitcherButton(
+              appId: 'contact', onSwitched: () => ContactDataStore.load()),
           IconButton(
             tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),

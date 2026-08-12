@@ -7,6 +7,7 @@ import '../../../core/language.dart';
 import '../../../core/profile_store.dart';
 import '../../../core/services/ai_service.dart';
 import '../../../core/widgets/profile_dialog.dart';
+import '../../../core/widgets/scheme_switcher.dart';
 import '../models/food_item.dart';
 import '../data/data_store.dart';
 
@@ -354,6 +355,8 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
       appBar: AppBar(
         title: Text(t('管理菜单', 'Manage Menu')),
         actions: [
+          SchemeSwitcherButton(
+              appId: 'eat', onSwitched: () => DataStore.load()),
           IconButton(
             tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),

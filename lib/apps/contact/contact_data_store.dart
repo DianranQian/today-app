@@ -16,7 +16,7 @@ class ContactDataStore {
     final contactsJson =
         prefs.getString(SchemeStore.dataKey('contact', scheme, 'contacts'));
     var json = contactsJson;
-    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName('contact')) {
       json = prefs.getString('contact_contacts');
     }
     if (json != null && json.isNotEmpty) {

@@ -152,7 +152,7 @@ class DataStore {
       SharedPreferences prefs, String scheme, String listKey) {
     final schemeJson = prefs.getString(SchemeStore.dataKey('eat', scheme, listKey));
     if (schemeJson != null && schemeJson.isNotEmpty) return schemeJson;
-    if (scheme == SchemeStore.defaultSchemeName) {
+    if (scheme == SchemeStore.defaultSchemeName('eat')) {
       final legacy = SchemeStore.schemeListKeys['eat']![listKey]!;
       final legacyJson = prefs.getString(legacy);
       if (legacyJson != null && legacyJson.isNotEmpty) return legacyJson;

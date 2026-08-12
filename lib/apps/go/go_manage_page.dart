@@ -5,6 +5,7 @@ import 'dart:convert';
 import '../../core/profile_store.dart';
 import '../../core/services/ai_service.dart';
 import '../../core/widgets/profile_dialog.dart';
+import '../../core/widgets/scheme_switcher.dart';
 import 'go_models.dart';
 import 'go_data_store.dart';
 
@@ -143,6 +144,8 @@ class _GoManagePageState extends State<GoManagePage> {
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
+          SchemeSwitcherButton(
+              appId: 'go', onSwitched: () => GoDataStore.load()),
           IconButton(
             tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),

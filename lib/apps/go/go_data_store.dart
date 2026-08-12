@@ -16,7 +16,7 @@ class GoDataStore {
 
     final placesJson = prefs.getString(SchemeStore.dataKey('go', scheme, 'places'));
     var json = placesJson;
-    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName('go')) {
       json = prefs.getString('go_places');
     }
     if (json != null && json.isNotEmpty) {

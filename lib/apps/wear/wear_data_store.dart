@@ -18,7 +18,7 @@ class WearDataStore {
     final outfitsJson =
         prefs.getString(SchemeStore.dataKey('wear', scheme, 'outfits'));
     var json = outfitsJson;
-    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+    if ((json == null || json.isEmpty) && scheme == SchemeStore.defaultSchemeName('wear')) {
       json = prefs.getString('wear_outfits');
     }
     if (json != null && json.isNotEmpty) {

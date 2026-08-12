@@ -11,7 +11,7 @@ class TodoDataStore {
     final scheme = await SchemeStore.current('todo');
     final prefs = await SharedPreferences.getInstance();
     var raw = prefs.getString(SchemeStore.dataKey('todo', scheme, 'items'));
-    if ((raw == null || raw.isEmpty) && scheme == SchemeStore.defaultSchemeName) {
+    if ((raw == null || raw.isEmpty) && scheme == SchemeStore.defaultSchemeName('todo')) {
       raw = prefs.getString('todo_items');
     }
     if (raw != null && raw.isNotEmpty) {

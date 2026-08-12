@@ -10,7 +10,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('迁移：旧键复制到「菜单一」，旧键保留', () async {
+  test('迁移：旧键复制到默认方案，旧键保留', () async {
     SharedPreferences.setMockInitialValues({
       'dishes': '[{"name":"A"}]',
       'go_places': '[{"name":"P"}]',
@@ -20,9 +20,18 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('eat_scheme_菜单一_dishes'), '[{"name":"A"}]');
     expect(prefs.getString('dishes'), '[{"name":"A"}]');
-    expect(prefs.getString('go_scheme_菜单一_places'), '[{"name":"P"}]');
+    expect(prefs.getString('go_scheme_方案一_places'), '[{"name":"P"}]');
     expect(await SchemeStore.current('eat'), '菜单一');
-    expect(await SchemeStore.randomPool('go'), ['菜单一']);
+    expect(await SchemeStore.current('go'), '方案一');
+    expect(await SchemeStore.randomPool('go'), ['方案一']);
+  });
+
+  test('默认方案名按应用区分：eat=菜单一，其他=方案一', () async {
+    expect(SchemeStore.defaultSchemeName('eat'), '菜单一');
+    expect(SchemeStore.defaultSchemeName('go'), '方案一');
+    expect(SchemeStore.defaultSchemeName('wear'), '方案一');
+    expect(SchemeStore.defaultSchemeName('contact'), '方案一');
+    expect(SchemeStore.defaultSchemeName('todo'), '方案一');
   });
 
   test('迁移幂等：二次调用不重复写入', () async {
@@ -75,6 +84,16 @@ void main() {
     expect(await SchemeStore.randomPool('eat'), ['菜单一']);
     await SchemeStore.setRandomPool('eat', ['菜单一', '菜单二']);
     expect(await SchemeStore.randomPool('eat'), ['菜单一', '菜单二']);
+  });
+
+  test('notify 每次操作都触发通知（即使同 appId 值不变）', () async {
+    await SchemeStore.migrateLegacy('eat');
+    var count = 0;
+    SchemeStore.notifier.addListener(() => count++);
+    await SchemeStore.create('eat', '菜单二'); // notify
+    await SchemeStore.create('eat', '菜单三'); // 值不变也要通知
+    await SchemeStore.setRandomPool('eat', ['菜单一']);
+    expect(count, greaterThanOrEqualTo(3));
   });
 
   test('rawPoolItems：仅当前方案返回 null', () async {

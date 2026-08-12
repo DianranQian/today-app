@@ -64,7 +64,7 @@ class _SchemeSwitcherButtonState extends State<SchemeSwitcherButton> {
       ),
       icon: const Icon(Icons.swap_horiz, size: 18),
       label: Text(
-        _name.isEmpty ? SchemeStore.defaultSchemeName : _name,
+        _name.isEmpty ? SchemeStore.defaultSchemeName(widget.appId) : _name,
         style: const TextStyle(fontSize: 13),
       ),
     );

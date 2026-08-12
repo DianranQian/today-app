@@ -6,6 +6,7 @@ import 'dart:convert';
 import '../../core/profile_store.dart';
 import '../../core/services/ai_service.dart';
 import '../../core/widgets/profile_dialog.dart';
+import '../../core/widgets/scheme_switcher.dart';
 import 'wear_models.dart';
 import 'wear_data_store.dart';
 
@@ -152,6 +153,8 @@ class _WearManagePageState extends State<WearManagePage> {
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
+          SchemeSwitcherButton(
+              appId: 'wear', onSwitched: () => WearDataStore.load()),
           IconButton(
             tooltip: t('配置集', 'Profiles'),
             icon: const Icon(Icons.folder_copy_outlined),

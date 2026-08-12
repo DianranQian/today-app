@@ -12,8 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 ///
 /// 方案化列表键（旧键 → 方案内键名），历史/设置/忌口等全局键不动。
 class SchemeStore {
-  /// 默认方案名（= 软件自带数据，仅初始内容，可编辑）
-  static const String defaultSchemeName = '菜单一';
+  /// 默认内置方案名（eat 叫「菜单一」，其余叫「方案一」）
+  static String defaultSchemeName(String appId) =>
+      appId == 'eat' ? '菜单一' : '方案一';
 
   /// 各子应用的方案化列表键：方案内键名 → 旧键名（迁移兜底用）
   static const Map<String, Map<String, String>> schemeListKeys = {
@@ -39,7 +40,7 @@ class SchemeStore {
   static String cachedCurrent(String appId) {
     final c = _currentCache[appId];
     if (c != null && c.isNotEmpty) return c;
-    return defaultSchemeName;
+    return defaultSchemeName(appId);
   }
 
   static Future<List<String>> list(String appId) async {
@@ -56,7 +57,7 @@ class SchemeStore {
       _currentCache[appId] = v;
       return v;
     }
-    return defaultSchemeName;
+    return defaultSchemeName(appId);
   }
 
   /// 参与随机的方案列表；未设置时默认仅当前方案
@@ -67,21 +68,22 @@ class SchemeStore {
     return v;
   }
 
-  /// 旧数据迁移（零破坏）：旧键复制到「菜单一」方案键，旧键保留不删
+  /// 旧数据迁移（零破坏）：旧键复制到默认方案键，旧键保留不删
   static Future<void> migrateLegacy(String appId) async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(_schemesKey(appId))) return;
+    final defaultName = defaultSchemeName(appId);
     final legacy = schemeListKeys[appId] ?? const <String, String>{};
     for (final entry in legacy.entries) {
       final v = prefs.getString(entry.value);
       if (v != null && v.isNotEmpty) {
-        prefs.setString(dataKey(appId, defaultSchemeName, entry.key), v);
+        prefs.setString(dataKey(appId, defaultName, entry.key), v);
       }
     }
-    prefs.setStringList(_schemesKey(appId), [defaultSchemeName]);
-    prefs.setString(_currentKey(appId), defaultSchemeName);
-    prefs.setStringList(_randomKey(appId), [defaultSchemeName]);
-    _currentCache[appId] = defaultSchemeName;
+    prefs.setStringList(_schemesKey(appId), [defaultName]);
+    prefs.setString(_currentKey(appId), defaultName);
+    prefs.setStringList(_randomKey(appId), [defaultName]);
+    _currentCache[appId] = defaultName;
   }
 
   /// 新建空白方案（重名拒绝）
@@ -192,7 +194,10 @@ class SchemeStore {
     return result;
   }
 
+  /// 通知壳层/设置页刷新。
+  /// ValueNotifier 值不变时不通知，先置空再写回，保证每次都触发匹配的通知
   static void notify(String appId) {
+    notifier.value = '';
     notifier.value = appId;
   }
 
