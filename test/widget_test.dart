@@ -33,9 +33,10 @@ void main() {
 
     // 子应用首页可见（随机按钮 + 底部导航）
     expect(find.text('随机选一个！'), findsOneWidget);
-    expect(find.text('菜单'), findsOneWidget);
     expect(find.text('附近'), findsOneWidget);
     expect(find.text('设置'), findsOneWidget);
+    // 「菜单」出现 2 次：底部导航 label + AppBar 当前方案名
+    expect(find.text('菜单'), findsNWidgets(2));
   });
 
   testWidgets('主框架有工具/计划 Tab，计划页可切换', (WidgetTester tester) async {

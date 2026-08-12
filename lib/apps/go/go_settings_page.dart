@@ -15,9 +15,9 @@ class GoSettingsPage extends StatelessWidget {
         centerTitle: true,
         toolbarHeight: 44,
       ),
-      body: const SubAppSettingsPanel(
+      body: SubAppSettingsPanel(
         appId: 'go',
-        appName: '今天去哪',
+        appName: t('今天去哪'),
         reload: GoDataStore.load,
         onClearHistory: GoDataStore.clearHistory,
       ),

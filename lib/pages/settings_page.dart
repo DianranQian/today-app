@@ -102,6 +102,21 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  /// 颜色名英文（t() 动态 key 回退用）
+  String _colorEnOf(String cn) {
+    switch (cn) {
+      case '橙': return 'Orange';
+      case '蓝': return 'Blue';
+      case '粉': return 'Pink';
+      case '红': return 'Red';
+      case '青': return 'Teal';
+      case '棕': return 'Brown';
+      case '靛': return 'Indigo';
+      case '暖灰': return 'Warm Grey';
+      default: return '';
+    }
+  }
+
   /// 通用导出（JSON 纯数据 / ZIP 含照片）
   Future<void> _exportAs(bool withImages) async {
     setState(() => _busy = true);
@@ -134,8 +149,8 @@ class _SettingsPageState extends State<SettingsPage> {
       if (action == 'share') {
         await Share.shareXFiles(
           [XFile(file.path)],
-          subject: 'What to Do 数据备份',
-          text: 'What to Do 数据备份',
+          subject: t('What to Do 数据备份'),
+          text: t('What to Do 数据备份'),
         );
       } else if (action == 'download') {
         final downloads = await getDownloadsDirectory();
@@ -218,7 +233,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text(_colorOf(app),
+                        Text(t(_colorOf(app), _colorEnOf(_colorOf(app))),
                             style: const TextStyle(fontSize: 13)),
                         const Icon(Icons.chevron_right, color: Colors.grey),
                       ],
@@ -233,15 +248,16 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Text('API 配置（可留空）',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Text(t('API 配置（可留空）'),
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 4, 16, 0),
-                  child: Text('附近美食、AI 分析需要对应 Key，到官网免费申请',
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                  child: Text(
+                      t('附近美食、AI 分析需要对应 Key，到官网免费申请'),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -249,8 +265,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     controller: _amapKeyCtrl,
                     obscureText: !_amapKeyVisible,
                     decoration: InputDecoration(
-                      labelText: '高德地图 Key',
-                      hintText: 'console.amap.com 申请（Web服务 Key）',
+                      labelText: t('高德地图 Key'),
+                      hintText: t('console.amap.com 申请（Web服务 Key）'),
                       border: const OutlineInputBorder(),
                       isDense: true,
                       suffixIcon: IconButton(
@@ -276,8 +292,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     controller: _deepseekKeyCtrl,
                     obscureText: !_deepseekKeyVisible,
                     decoration: InputDecoration(
-                      labelText: 'DeepSeek Key',
-                      hintText: 'platform.deepseek.com 申请',
+                      labelText: t('DeepSeek Key'),
+                      hintText: t('platform.deepseek.com 申请'),
                       border: const OutlineInputBorder(),
                       isDense: true,
                       suffixIcon: IconButton(

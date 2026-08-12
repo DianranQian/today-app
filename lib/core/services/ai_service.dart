@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../app_settings.dart';
+import '../language.dart';
 import 'amap_api.dart';
 
 class AiService {
@@ -13,7 +14,8 @@ class AiService {
   /// 通用对话（配置 AI 汇总等场景）
   static Future<String> chat(String systemPrompt, String userContent) async {
     if (!hasKey) {
-      throw Exception('尚未配置 DeepSeek Key，请到「通用设置」中填写');
+      throw Exception(
+          t('尚未配置 DeepSeek Key，请到「通用设置」中填写'));
     }
     final resp = await http.post(
       Uri.parse(_endpoint),
@@ -31,7 +33,8 @@ class AiService {
       }),
     ).timeout(const Duration(seconds: 30));
     if (resp.statusCode != 200) {
-      throw Exception('AI 请求失败（HTTP ${resp.statusCode}）：'
+      throw Exception(t('AI 请求失败（HTTP ${resp.statusCode}）：',
+          'AI request failed (HTTP ${resp.statusCode}): ') +
           '${utf8.decode(resp.bodyBytes, allowMalformed: true)}');
     }
     final json = jsonDecode(utf8.decode(resp.bodyBytes));
@@ -62,10 +65,11 @@ class AiService {
     String poiLabel = '餐饮',
   }) async {
     if (!hasKey) {
-      throw Exception('尚未配置 DeepSeek Key，请到「设置」中填写');
+      throw Exception(
+          t('尚未配置 DeepSeek Key，请到「设置」中填写'));
     }
     if (pois.isEmpty) {
-      throw Exception('附近暂无数据，请先搜索');
+      throw Exception(t('附近暂无数据，请先搜索'));
     }
     final resp = await http.post(
       Uri.parse(_endpoint),

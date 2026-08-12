@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../app_settings.dart';
+import '../language.dart';
 
 class NearbyPoi {
   final String name;
@@ -49,7 +50,8 @@ class AmapApi {
   static Future<List<NearbyPoi>> around(double lat, double lng,
       {int radius = 3000, String types = '050000'}) async {
     if (!hasKey) {
-      throw Exception('尚未配置高德地图 Key，请到「设置」中填写');
+      throw Exception(
+          t('尚未配置高德地图 Key，请到「设置」中填写'));
     }
     final params = <String, String>{
       'key': _key,
@@ -66,11 +68,13 @@ class AmapApi {
     final uri = Uri.parse('$_base?$qs');
     final resp = await http.get(uri).timeout(const Duration(seconds: 15));
     if (resp.statusCode != 200) {
-      throw Exception('请求失败：HTTP ${resp.statusCode}');
+      throw Exception(t('请求失败：HTTP ${resp.statusCode}',
+          'Request failed: HTTP ${resp.statusCode}'));
     }
     final json = jsonDecode(utf8.decode(resp.bodyBytes));
     if (json['status'] != '1') {
-      throw Exception('高德接口错误：${json['info']}');
+      throw Exception(
+          t('高德接口错误：${json['info']}', 'AMap API error: ${json['info']}'));
     }
     final list = (json['pois'] as List? ?? [])
         .map((p) => NearbyPoi.fromJson(p as Map<String, dynamic>))

@@ -4,6 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'scheme_store.dart';
+import 'language.dart';
 
 /// 数据备份：全量/子应用级 导出导入（JSON + 图片打包为 ZIP）
 class BackupService {
@@ -168,7 +169,9 @@ class BackupService {
           }
         }
       }
-      if (data == null) throw Exception('备份包缺少 data.json');
+      if (data == null) {
+        throw Exception(t('备份包缺少 data.json'));
+      }
       final prefs = await SharedPreferences.getInstance();
       final allowed = await allKeys();
       for (final entry in data.entries) {
@@ -198,7 +201,9 @@ class BackupService {
   static Future<File> exportApp(String appId,
       {bool withImages = true}) async {
     final keys = await appKeys(appId);
-    if (keys.isEmpty) throw Exception('未知子应用：$appId');
+    if (keys.isEmpty) {
+      throw Exception(t('未知子应用：$appId', 'Unknown app: $appId'));
+    }
     final data = await _collectKeys(keys.toList());
     final docs = await getApplicationDocumentsDirectory();
     final ts = DateTime.now().toIso8601String().split('.').first
@@ -235,7 +240,9 @@ class BackupService {
   /// 返回恢复的键数量；调用方需自行热更新对应 store（load()）。
   static Future<int> importApp(String appId, String path) async {
     final keys = await appKeys(appId);
-    if (keys.isEmpty) throw Exception('未知子应用：$appId');
+    if (keys.isEmpty) {
+      throw Exception(t('未知子应用：$appId', 'Unknown app: $appId'));
+    }
     final bytes = File(path).readAsBytesSync();
     int restored = 0;
 
@@ -260,7 +267,9 @@ class BackupService {
           }
         }
       }
-      if (data == null) throw Exception('备份包缺少 data.json');
+      if (data == null) {
+        throw Exception(t('备份包缺少 data.json'));
+      }
       final prefs = await SharedPreferences.getInstance();
       for (final key in keys) {
         final v = data[key];

@@ -13,10 +13,10 @@ import 'language.dart';
 ///
 /// 方案化列表键（旧键 → 方案内键名），历史/设置/忌口等全局键不动。
 class SchemeStore {
-  /// 默认内置方案名（eat=菜单一 / go=地点集 / wear=衣柜 / contact=电话簿）
+  /// 默认内置方案名（eat=菜单 / go=地点集 / wear=衣柜 / contact=电话簿）
   static String defaultSchemeName(String appId) {
     switch (appId) {
-      case 'eat': return '菜单一';
+      case 'eat': return '菜单';
       case 'go': return '地点集';
       case 'wear': return '衣柜';
       case 'contact': return '电话簿';
@@ -24,14 +24,14 @@ class SchemeStore {
     }
   }
 
-  /// 方案显示名：默认方案显示翻译（菜单一→Menu 1），自定义方案显示原名
+  /// 方案显示名：默认方案显示翻译（菜单→Menu），自定义方案显示原名
   static String displayName(String appId, String scheme) {
     if (scheme != defaultSchemeName(appId)) return scheme;
     switch (appId) {
-      case 'eat': return t('菜单一', 'Menu 1');
-      case 'go': return t('地点集', 'Place Set');
-      case 'wear': return t('衣柜', 'Wardrobe');
-      case 'contact': return t('电话簿', 'Phone Book');
+      case 'eat': return t('菜单');
+      case 'go': return t('地点集');
+      case 'wear': return t('衣柜');
+      case 'contact': return t('电话簿');
       default: return scheme;
     }
   }
@@ -138,10 +138,14 @@ class SchemeStore {
   /// 新建空白方案（重名拒绝）
   static Future<void> create(String appId, String name) async {
     final trimmed = name.trim();
-    if (trimmed.isEmpty) throw ArgumentError('方案名不能为空');
+    if (trimmed.isEmpty) {
+      throw ArgumentError(t('方案名不能为空'));
+    }
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_schemesKey(appId)) ?? <String>[];
-    if (list.contains(trimmed)) throw ArgumentError('方案已存在');
+    if (list.contains(trimmed)) {
+      throw ArgumentError(t('方案已存在'));
+    }
     list.add(trimmed);
     await prefs.setStringList(_schemesKey(appId), list);
     notify(appId);
@@ -155,7 +159,9 @@ class SchemeStore {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_schemesKey(appId)) ?? <String>[];
     if (!list.contains(oldName)) return;
-    if (list.contains(trimmed)) throw ArgumentError('方案已存在');
+    if (list.contains(trimmed)) {
+      throw ArgumentError(t('方案已存在'));
+    }
     final keys = schemeListKeys[appId] ?? const <String, String>{};
     for (final entry in keys.entries) {
       final src = dataKey(appId, oldName, entry.key);
@@ -183,7 +189,7 @@ class SchemeStore {
   static Future<void> remove(String appId, String name) async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString(_currentKey(appId)) == name) {
-      throw ArgumentError('不能删除当前方案');
+      throw ArgumentError(t('不能删除当前方案'));
     }
     final list = prefs.getStringList(_schemesKey(appId)) ?? <String>[];
     if (!list.contains(name)) return;

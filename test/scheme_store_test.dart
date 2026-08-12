@@ -18,16 +18,16 @@ void main() {
     await SchemeStore.migrateLegacy('eat');
     await SchemeStore.migrateLegacy('go');
     final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getString('eat_scheme_菜单一_dishes'), '[{"name":"A"}]');
+    expect(prefs.getString('eat_scheme_菜单_dishes'), '[{"name":"A"}]');
     expect(prefs.getString('dishes'), '[{"name":"A"}]');
     expect(prefs.getString('go_scheme_地点集_places'), '[{"name":"P"}]');
-    expect(await SchemeStore.current('eat'), '菜单一');
+    expect(await SchemeStore.current('eat'), '菜单');
     expect(await SchemeStore.current('go'), '地点集');
     expect(await SchemeStore.randomPool('go'), ['地点集']);
   });
 
   test('默认方案名按应用区分', () async {
-    expect(SchemeStore.defaultSchemeName('eat'), '菜单一');
+    expect(SchemeStore.defaultSchemeName('eat'), '菜单');
     expect(SchemeStore.defaultSchemeName('go'), '地点集');
     expect(SchemeStore.defaultSchemeName('wear'), '衣柜');
     expect(SchemeStore.defaultSchemeName('contact'), '电话簿');
@@ -37,22 +37,22 @@ void main() {
     await SchemeStore.migrateLegacy('eat');
     await SchemeStore.migrateLegacy('eat');
     final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getStringList('eat_schemes'), ['菜单一']);
+    expect(prefs.getStringList('eat_schemes'), ['菜单']);
   });
 
   test('创建 / 重命名 / 删除', () async {
     await SchemeStore.migrateLegacy('eat');
     await SchemeStore.create('eat', '菜单二');
-    expect(await SchemeStore.list('eat'), ['菜单一', '菜单二']);
+    expect(await SchemeStore.list('eat'), ['菜单', '菜单二']);
     await SchemeStore.rename('eat', '菜单二', '周末');
-    expect(await SchemeStore.list('eat'), ['菜单一', '周末']);
+    expect(await SchemeStore.list('eat'), ['菜单', '周末']);
     await SchemeStore.remove('eat', '周末');
-    expect(await SchemeStore.list('eat'), ['菜单一']);
+    expect(await SchemeStore.list('eat'), ['菜单']);
   });
 
   test('重名拒绝', () async {
     await SchemeStore.migrateLegacy('eat');
-    expect(() => SchemeStore.create('eat', '菜单一'), throwsArgumentError);
+    expect(() => SchemeStore.create('eat', '菜单'), throwsArgumentError);
   });
 
   test('当前方案禁止删除', () async {
@@ -69,20 +69,20 @@ void main() {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('eat_scheme_菜单二_dishes', '[{"name":"X"}]');
     await SchemeStore.switchTo('eat', '菜单二');
-    await SchemeStore.setRandomPool('eat', ['菜单一', '菜单二']);
+    await SchemeStore.setRandomPool('eat', ['菜单', '菜单二']);
     await SchemeStore.rename('eat', '菜单二', '周末');
     expect(prefs.getString('eat_scheme_周末_dishes'), '[{"name":"X"}]');
     expect(prefs.getString('eat_scheme_菜单二_dishes'), isNull);
     expect(await SchemeStore.current('eat'), '周末');
-    expect(await SchemeStore.randomPool('eat'), ['菜单一', '周末']);
+    expect(await SchemeStore.randomPool('eat'), ['菜单', '周末']);
   });
 
   test('随机池默认仅当前方案；可多选', () async {
     await SchemeStore.migrateLegacy('eat');
     await SchemeStore.create('eat', '菜单二');
-    expect(await SchemeStore.randomPool('eat'), ['菜单一']);
-    await SchemeStore.setRandomPool('eat', ['菜单一', '菜单二']);
-    expect(await SchemeStore.randomPool('eat'), ['菜单一', '菜单二']);
+    expect(await SchemeStore.randomPool('eat'), ['菜单']);
+    await SchemeStore.setRandomPool('eat', ['菜单', '菜单二']);
+    expect(await SchemeStore.randomPool('eat'), ['菜单', '菜单二']);
   });
 
   test('notify 每次操作都触发通知（即使同 appId 值不变）', () async {
@@ -91,7 +91,7 @@ void main() {
     SchemeStore.notifier.addListener(() => count++);
     await SchemeStore.create('eat', '菜单二'); // notify
     await SchemeStore.create('eat', '菜单三'); // 值不变也要通知
-    await SchemeStore.setRandomPool('eat', ['菜单一']);
+    await SchemeStore.setRandomPool('eat', ['菜单']);
     expect(count, greaterThanOrEqualTo(3));
   });
 
@@ -104,11 +104,11 @@ void main() {
     await SchemeStore.migrateLegacy('eat');
     await SchemeStore.create('eat', '菜单二');
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('eat_scheme_菜单一_dishes',
+    prefs.setString('eat_scheme_菜单_dishes',
         '[{"name":"A"},{"name":"B"}]');
     prefs.setString('eat_scheme_菜单二_dishes',
         '[{"name":"B"},{"name":"C"}]');
-    await SchemeStore.setRandomPool('eat', ['菜单一', '菜单二']);
+    await SchemeStore.setRandomPool('eat', ['菜单', '菜单二']);
     final raw = await SchemeStore.rawPoolItems('eat', 'dishes');
     expect(raw!.map((m) => m['name']).toList(), ['A', 'B', 'C']);
   });

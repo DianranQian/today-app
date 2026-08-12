@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'language.dart';
 
 /// 计划类型（来源子应用）
 enum PlanType { eat, go, wear, contact }
@@ -7,10 +8,10 @@ enum PlanType { eat, go, wear, contact }
 extension PlanTypeExt on PlanType {
   String get label {
     switch (this) {
-      case PlanType.eat: return '吃';
-      case PlanType.go: return '去';
-      case PlanType.wear: return '穿';
-      case PlanType.contact: return '联系';
+      case PlanType.eat: return t('吃');
+      case PlanType.go: return t('去');
+      case PlanType.wear: return t('穿');
+      case PlanType.contact: return t('联系');
     }
   }
 
