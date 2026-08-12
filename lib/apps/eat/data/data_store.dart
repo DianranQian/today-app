@@ -198,6 +198,22 @@ class DataStore {
     return items.isEmpty ? List<FoodItem>.from(dishes) : items;
   }
 
+  /// 随机池主食列表：仅当前方案时返回内存数据；多方案时合并（按 name 去重）
+  static Future<List<FoodItem>> loadRandomStaplePool() async {
+    final raw = await SchemeStore.rawPoolItems('eat', 'staples');
+    if (raw == null) return List<FoodItem>.from(staples);
+    final items = raw.map((m) => FoodItem.fromJson(m)).toList();
+    return items.isEmpty ? List<FoodItem>.from(staples) : items;
+  }
+
+  /// 随机池饮品列表：仅当前方案时返回内存数据；多方案时合并（按 name 去重）
+  static Future<List<FoodItem>> loadRandomDrinkPool() async {
+    final raw = await SchemeStore.rawPoolItems('eat', 'drinks');
+    if (raw == null) return List<FoodItem>.from(drinks);
+    final items = raw.map((m) => FoodItem.fromJson(m)).toList();
+    return items.isEmpty ? List<FoodItem>.from(drinks) : items;
+  }
+
   static List<FoodItem> getFilteredDishes({
     MealTime? mealTime,
     CookMode? cookMode,

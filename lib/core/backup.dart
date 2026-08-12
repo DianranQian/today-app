@@ -19,6 +19,31 @@ class BackupService {
     'app_language',
   ];
 
+  /// 布尔类型键（getBool/setBool 存取，备份时转字符串）
+  static const _boolKeys = {
+    'go_avoid_recent', 'wear_avoid_recent', 'contact_avoid_recent',
+    'eat_avoid_recent',
+  };
+
+  static bool _isBoolKey(String key) => _boolKeys.contains(key);
+
+  static String? _readPref(SharedPreferences prefs, String key) {
+    if (_isBoolKey(key)) {
+      final v = prefs.getBool(key);
+      return v == null ? null : v.toString();
+    }
+    return prefs.getString(key);
+  }
+
+  static Future<void> _writePref(
+      SharedPreferences prefs, String key, String value) async {
+    if (_isBoolKey(key)) {
+      await prefs.setBool(key, value == 'true');
+    } else {
+      await prefs.setString(key, value);
+    }
+  }
+
   /// 参与备份的全部键：全局键 + 所有方案的方案化数据键 + 方案元数据键
   static Future<Set<String>> allKeys() async {
     final keys = <String>{..._globalKeys};
@@ -92,7 +117,7 @@ class BackupService {
     final prefs = await SharedPreferences.getInstance();
     final data = <String, dynamic>{};
     for (final key in keys) {
-      final v = prefs.getString(key);
+      final v = _readPref(prefs, key);
       if (v != null) data[key] = v;
     }
     return data;
@@ -103,7 +128,7 @@ class BackupService {
     final prefs = await SharedPreferences.getInstance();
     final data = <String, dynamic>{};
     for (final key in await allKeys()) {
-      final v = prefs.getString(key);
+      final v = _readPref(prefs, key);
       if (v != null) data[key] = v;
     }
 
@@ -131,7 +156,7 @@ class BackupService {
     final prefs = await SharedPreferences.getInstance();
     final data = <String, dynamic>{};
     for (final key in await allKeys()) {
-      final v = prefs.getString(key);
+      final v = _readPref(prefs, key);
       if (v != null) data[key] = v;
     }
     final docs = await getApplicationDocumentsDirectory();
@@ -176,7 +201,7 @@ class BackupService {
       final allowed = await allKeys();
       for (final entry in data.entries) {
         if (!allowed.contains(entry.key)) continue;
-        await prefs.setString(entry.key, entry.value as String);
+        await _writePref(prefs, entry.key, entry.value as String);
         restored++;
       }
     } else {
@@ -187,7 +212,7 @@ class BackupService {
       final allowed = await allKeys();
       for (final entry in data.entries) {
         if (!allowed.contains(entry.key)) continue;
-        await prefs.setString(entry.key, entry.value as String);
+        await _writePref(prefs, entry.key, entry.value as String);
         restored++;
       }
     }
@@ -274,7 +299,7 @@ class BackupService {
       for (final key in keys) {
         final v = data[key];
         if (v is String && v.isNotEmpty) {
-          await prefs.setString(key, v);
+          await _writePref(prefs, key, v);
           restored++;
         }
       }
@@ -285,7 +310,7 @@ class BackupService {
       for (final key in keys) {
         final v = data[key];
         if (v is String && v.isNotEmpty) {
-          await prefs.setString(key, v);
+          await _writePref(prefs, key, v);
           restored++;
         }
       }

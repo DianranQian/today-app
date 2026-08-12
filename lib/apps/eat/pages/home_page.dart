@@ -49,6 +49,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   /// 随机池主菜缓存（多方案合并），null = 用当前方案内存数据
   List<FoodItem>? _dishPoolCache;
+  List<FoodItem>? _staplePoolCache;
+  List<FoodItem>? _drinkPoolCache;
 
   @override
   void initState() {
@@ -62,8 +64,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _reloadDishPool() async {
-    final pool = await DataStore.loadRandomDishPool();
-    if (mounted) setState(() => _dishPoolCache = pool);
+    final dish = await DataStore.loadRandomDishPool();
+    final staple = await DataStore.loadRandomStaplePool();
+    final drink = await DataStore.loadRandomDrinkPool();
+    if (mounted) {
+      setState(() {
+        _dishPoolCache = dish;
+        _staplePoolCache = staple;
+        _drinkPoolCache = drink;
+      });
+    }
   }
 
   @override
@@ -128,7 +138,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     var staplePool = <FoodItem>[];
     var drinkPool = <FoodItem>[];
     if (_selectedMode == CookMode.cook) {
-      staplePool = DataStore.getFilteredStaples(mealTime: _selectedMeal);
+      staplePool = DataStore.getFilteredStaples(
+          mealTime: _selectedMeal, pool: _staplePoolCache);
       if (staplePool.isNotEmpty) {
         if (DataStore.settings.avoidRecent) {
           final recent = DataStore.getRecentStapleNames();
@@ -151,7 +162,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     if (_wantDrink) {
-      drinkPool = DataStore.getFilteredDrinks(mealTime: _selectedMeal);
+      drinkPool = DataStore.getFilteredDrinks(
+          mealTime: _selectedMeal, pool: _drinkPoolCache);
       if (drinkPool.isNotEmpty) {
         if (DataStore.settings.avoidRecent) {
           final recent = DataStore.getRecentDrinkNames();
