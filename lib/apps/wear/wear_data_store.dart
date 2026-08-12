@@ -25,7 +25,7 @@ class WearDataStore {
     if (json != null && json.isNotEmpty) {
       try {
         final parsed = (jsonDecode(json) as List)
-            .map((e) => OutfitItem.fromJson(e as Map<String, dynamic>))
+            .map((e) => _patchLegacyFields(e as Map<String, dynamic>))
             .where((o) => o.name.isNotEmpty)
             .toList();
         outfits = parsed.isEmpty ? getDefaultOutfits() : parsed;
@@ -67,8 +67,39 @@ class WearDataStore {
   static Future<List<OutfitItem>> loadRandomPool() async {
     final raw = await SchemeStore.rawPoolItems('wear', 'outfits');
     if (raw == null) return List<OutfitItem>.from(outfits);
-    final items = raw.map((m) => OutfitItem.fromJson(m)).toList();
+    final items = raw.map((m) => _patchLegacyFields(m)).toList();
     return items.isEmpty ? List<OutfitItem>.from(outfits) : items;
+  }
+
+  /// 旧版数据修复：早期模型缺 gender/group/style 字段（解析为默认值），
+  /// 若与内置默认库同名，用内置条目的属性补齐（旧数据本就是内置库内容）
+  static OutfitItem _patchLegacyFields(Map<String, dynamic> json) {
+    final item = OutfitItem.fromJson(json);
+    if (json['gender'] != null &&
+        json['group'] != null &&
+        json['style'] != null) {
+      return item;
+    }
+    OutfitItem? def;
+    for (final o in getDefaultOutfits()) {
+      if (o.name == item.name) {
+        def = o;
+        break;
+      }
+    }
+    if (def == null) return item;
+    return OutfitItem(
+      name: item.name,
+      emoji: item.emoji,
+      scene: item.scene,
+      seasons: item.seasons,
+      gender: json['gender'] == null ? def.gender : item.gender,
+      group: json['group'] == null ? def.group : item.group,
+      style: json['style'] == null ? def.style : item.style,
+      tempMin: item.tempMin,
+      tempMax: item.tempMax,
+      imagePath: item.imagePath,
+    );
   }
 
   /// 按场景 + 性别 + 人群 + 风格 + 当前季节 + 温度过滤
