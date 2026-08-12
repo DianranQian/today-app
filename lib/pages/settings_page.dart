@@ -132,8 +132,8 @@ class _SettingsPageState extends State<SettingsPage> {
       if (action == 'share') {
         await Share.shareXFiles(
           [XFile(file.path)],
-          subject: '今天做什么 数据备份',
-          text: '今天做什么 数据备份',
+          subject: 'What to Do 数据备份',
+          text: 'What to Do 数据备份',
         );
       } else if (action == 'download') {
         final downloads = await getDownloadsDirectory();
@@ -337,7 +337,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const SizedBox(height: 24),
           Center(
             child: Text(
-              '今天做什么 v0.1.0 · GPL-3.0 开源',
+              'What to Do v0.1.0 · GPL-3.0 开源',
               style: TextStyle(color: Colors.grey[400], fontSize: 12),
             ),
           ),

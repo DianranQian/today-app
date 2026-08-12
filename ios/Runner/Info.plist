@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>今天做什么</string>
+	<string>What to Do</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>用于「附近」功能定位并推荐周边的餐厅与去处</string>
 	<key>NSCameraUsageDescription</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>today_app</string>
+	<string>what_to_do</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

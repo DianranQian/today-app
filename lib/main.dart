@@ -28,7 +28,7 @@ class TodayApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '今天做什么',
+      title: 'What to Do',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(seed: AppSeeds.eat),
       home: const MainShell(),
@@ -70,7 +70,7 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
-/// 「今天做什么」入口页：四个子应用 + 打赏
+/// 「What to Do」入口页：四个子应用 + 打赏
 class HomeEntryPage extends StatelessWidget {
   const HomeEntryPage({super.key});
 
@@ -82,7 +82,7 @@ class HomeEntryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('今天做什么'),
+        title: const Text('What to Do'),
         centerTitle: true,
         toolbarHeight: 44,
         actions: [
@@ -151,7 +151,7 @@ class HomeEntryPage extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Text(
-                    '今天做什么 v0.1.0 · ♥ 支持一下',
+                    'What to Do v0.1.0 · ♥ 支持一下',
                     style: TextStyle(color: Colors.grey[400], fontSize: 12),
                   ),
                 ),
@@ -160,7 +160,7 @@ class HomeEntryPage extends StatelessWidget {
           else
             Center(
               child: Text(
-                '今天做什么 v0.1.0',
+                'What to Do v0.1.0',
                 style: TextStyle(color: Colors.grey[400], fontSize: 12),
               ),
             ),
