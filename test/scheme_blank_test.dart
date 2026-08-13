@@ -77,4 +77,27 @@ void main() {
     await WearDataStore.load();
     expect(WearDataStore.outfits, isEmpty, reason: '新方案不应填充内置衣柜');
   });
+
+  test('createWithData：AI 精选新建方案入库并切换（重名自动编号）', () async {
+    await SchemeStore.migrateLegacy('eat');
+    // 第一次：AI精选
+    final name1 = await SchemeStore.createWithData('eat', 'AI精选', 'dishes', [
+      {'name': '番茄炒蛋'},
+    ]);
+    expect(name1, 'AI精选');
+    expect(await SchemeStore.current('eat'), 'AI精选');
+    // 第二次：AI精选 2
+    final name2 = await SchemeStore.createWithData('eat', 'AI精选', 'dishes', [
+      {'name': '青椒肉丝'},
+    ]);
+    expect(name2, 'AI精选 2');
+    expect(await SchemeStore.current('eat'), 'AI精选 2');
+    // 数据可读回
+    final prefs = await SharedPreferences.getInstance();
+    final json = prefs.getString('eat_scheme_AI精选_dishes');
+    expect(json, contains('番茄炒蛋'));
+    expect(prefs.getString('eat_scheme_AI精选 2_dishes'), contains('青椒肉丝'));
+    // 列表包含两个方案
+    expect(await SchemeStore.list('eat'), containsAll(['AI精选', 'AI精选 2']));
+  });
 }

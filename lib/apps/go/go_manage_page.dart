@@ -3,7 +3,6 @@ import '../../core/image_helper.dart';
 import '../../core/language.dart';
 import '../../core/scheme_store.dart';
 import 'dart:convert';
-import '../../core/profile_store.dart';
 import '../../core/services/ai_service.dart';
 import '../../core/widgets/profile_dialog.dart';
 import '../../core/widgets/scheme_switcher.dart';
@@ -124,7 +123,7 @@ class _GoManagePageState extends State<GoManagePage> {
     );
   }
 
-  /// AI 汇总：挑选一组适合周末的去处，存为「AI精选」配置
+  /// AI 汇总：挑选一组适合周末的去处，新建「AI精选」方案入库并切换
   Future<String> _aiCurateGo() async {
     final names = GoDataStore.places.map((p) => p.name).toList();
     final raw = await AiService.chat(
@@ -138,10 +137,12 @@ class _GoManagePageState extends State<GoManagePage> {
         .map((p) => p.toJson())
         .toList();
     if (items.isEmpty) {
-      throw Exception('AI 返回内容无法匹配去处，请重试');
+      throw Exception(t('AI 返回内容无法匹配去处，请重试'));
     }
-    await ProfileStore.save('go', 'AI精选', items);
-    return 'AI精选';
+    final name = await SchemeStore.createWithData(
+        'go', t('AI精选', 'AI Picks'), 'places', items);
+    await GoDataStore.load();
+    return name;
   }
   void _showToast(String msg) {
     if (!mounted) return;

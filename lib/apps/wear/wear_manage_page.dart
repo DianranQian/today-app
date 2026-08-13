@@ -3,7 +3,7 @@ import '../../core/language.dart';
 import '../../core/season.dart';
 import '../../core/image_helper.dart';
 import 'dart:convert';
-import '../../core/profile_store.dart';
+import '../../core/scheme_store.dart';
 import '../../core/services/ai_service.dart';
 import '../../core/widgets/profile_dialog.dart';
 import '../../core/widgets/scheme_switcher.dart';
@@ -118,7 +118,7 @@ class _WearManagePageState extends State<WearManagePage> {
     );
   }
 
-  /// AI 汇总：挑选一组适合日常的穿搭，存为「AI精选」配置
+  /// AI 汇总：挑选一组适合日常的穿搭，新建「AI精选」方案入库并切换
   Future<String> _aiCurateWear() async {
     final names = WearDataStore.outfits.map((o) => o.name).toList();
     final raw = await AiService.chat(
@@ -134,8 +134,10 @@ class _WearManagePageState extends State<WearManagePage> {
     if (items.isEmpty) {
       throw Exception(t('AI 返回内容无法匹配穿搭，请重试'));
     }
-    await ProfileStore.save('wear', 'AI精选', items);
-    return 'AI精选';
+    final name = await SchemeStore.createWithData(
+        'wear', t('AI精选', 'AI Picks'), 'outfits', items);
+    await WearDataStore.load();
+    return name;
   }
   void _showToast(String msg) {
     if (!mounted) return;

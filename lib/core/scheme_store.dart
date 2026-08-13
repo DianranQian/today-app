@@ -151,6 +151,28 @@ class SchemeStore {
     notify(appId);
   }
 
+  /// 重名自动编号：AI精选 → AI精选 2 → AI精选 3
+  static Future<String> nextName(String appId, String base) async {
+    final existing = await list(appId);
+    if (!existing.contains(base)) return base;
+    var i = 2;
+    while (existing.contains('$base $i')) {
+      i++;
+    }
+    return '$base $i';
+  }
+
+  /// 新建方案并写入条目数据，然后切换过去（AI 精选等场景），返回方案名
+  static Future<String> createWithData(String appId, String baseName,
+      String listKey, List<Map<String, dynamic>> items) async {
+    final name = await nextName(appId, baseName);
+    await create(appId, name);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(dataKey(appId, name, listKey), jsonEncode(items));
+    await switchTo(appId, name);
+    return name;
+  }
+
   /// 重命名（连带迁移数据键 + 更新 current/random）
   static Future<void> rename(
       String appId, String oldName, String newName) async {

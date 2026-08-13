@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../../core/image_helper.dart';
 import '../../../core/language.dart';
 import '../../../core/scheme_store.dart';
-import '../../../core/profile_store.dart';
 import '../../../core/services/ai_service.dart';
 import '../../../core/widgets/profile_dialog.dart';
 import '../../../core/widgets/scheme_switcher.dart';
@@ -180,7 +179,7 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     );
   }
 
-  /// AI 汇总：从当前菜库挑选一组适合周末的菜，存为「AI精选」配置
+  /// AI 汇总：从当前菜库挑选一组适合周末的菜，新建「AI精选」方案入库并切换
   Future<String> _aiCurateEat() async {
     final names = DataStore.dishes.map((d) => d.name).toList();
     final raw = await AiService.chat(
@@ -196,8 +195,10 @@ class _ManagePageState extends State<ManagePage> with SingleTickerProviderStateM
     if (items.isEmpty) {
       throw Exception(t('AI 返回内容无法匹配菜谱，请重试'));
     }
-    await ProfileStore.save('eat', 'AI精选', items);
-    return 'AI精选';
+    final name = await SchemeStore.createWithData(
+        'eat', t('AI精选', 'AI Picks'), 'dishes', items);
+    await DataStore.load();
+    return name;
   }
 
   /// 选图行：缩略图预览 + 选图/清除按钮
