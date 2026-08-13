@@ -26,16 +26,23 @@ class _ContactHomePageState extends State<ContactHomePage> {
   void initState() {
     super.initState();
     SchemeStore.notifier.addListener(_onSchemeChanged);
-    _reloadPool();
+    _reloadAfterSwitch();
   }
 
   void _onSchemeChanged() {
-    if (SchemeStore.notifier.value == 'contact') _reloadPool();
+    if (SchemeStore.notifier.value == 'contact') _reloadAfterSwitch();
   }
 
-  Future<void> _reloadPool() async {
+  /// 切换方案后：先加载新方案数据，再刷新随机池缓存，清空旧选中结果
+  Future<void> _reloadAfterSwitch() async {
+    await ContactDataStore.load();
     final pool = await ContactDataStore.loadRandomPool();
-    if (mounted) setState(() => _poolCache = pool);
+    if (mounted) {
+      setState(() {
+        _poolCache = pool;
+        _picked = null;
+      });
+    }
   }
 
   @override

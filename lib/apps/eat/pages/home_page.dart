@@ -56,14 +56,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     SchemeStore.notifier.addListener(_onSchemeChanged);
-    _reloadDishPool();
+    _reloadAfterSwitch();
   }
 
   void _onSchemeChanged() {
-    if (SchemeStore.notifier.value == 'eat') _reloadDishPool();
+    if (SchemeStore.notifier.value == 'eat') _reloadAfterSwitch();
   }
 
-  Future<void> _reloadDishPool() async {
+  /// 切换方案后：先加载新方案数据，再刷新随机池缓存，清空旧选中结果
+  Future<void> _reloadAfterSwitch() async {
+    await DataStore.load();
     final dish = await DataStore.loadRandomDishPool();
     final staple = await DataStore.loadRandomStaplePool();
     final drink = await DataStore.loadRandomDrinkPool();
@@ -72,6 +74,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _dishPoolCache = dish;
         _staplePoolCache = staple;
         _drinkPoolCache = drink;
+        _pickedDish = null;
+        _pickedStaple = null;
+        _pickedDrink = null;
+        _candidates.clear();
       });
     }
   }

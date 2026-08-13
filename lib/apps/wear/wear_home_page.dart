@@ -47,17 +47,25 @@ class _WearHomePageState extends State<WearHomePage> {
   void initState() {
     super.initState();
     SchemeStore.notifier.addListener(_onSchemeChanged);
-    _reloadPool();
+    _reloadAfterSwitch();
     _loadPrefs();
   }
 
   void _onSchemeChanged() {
-    if (SchemeStore.notifier.value == 'wear') _reloadPool();
+    if (SchemeStore.notifier.value == 'wear') _reloadAfterSwitch();
   }
 
-  Future<void> _reloadPool() async {
+  /// 切换方案后：先加载新方案数据，再刷新随机池缓存，清空旧选中结果
+  Future<void> _reloadAfterSwitch() async {
+    await WearDataStore.load();
     final pool = await WearDataStore.loadRandomPool();
-    if (mounted) setState(() => _poolCache = pool);
+    if (mounted) {
+      setState(() {
+        _poolCache = pool;
+        _picked = null;
+        _candidates.clear();
+      });
+    }
   }
 
   /// 记忆性别/人群偏好

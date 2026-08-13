@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/language.dart';
+import '../../core/scheme_store.dart';
 import '../../core/widgets/profile_dialog.dart';
 import '../../core/widgets/scheme_switcher.dart';
 import '../../core/image_helper.dart';
@@ -32,6 +33,7 @@ class _ContactManagePageState extends State<ContactManagePage> {
   @override
   void initState() {
     super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
     // 读取设置页配置的默认频率
     SharedPreferences.getInstance().then((prefs) {
       if (!mounted) return;
@@ -40,8 +42,16 @@ class _ContactManagePageState extends State<ContactManagePage> {
     });
   }
 
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'contact') return;
+    ContactDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
   @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _nameCtrl.dispose();
     _emojiCtrl.dispose();
     _relationCtrl.dispose();

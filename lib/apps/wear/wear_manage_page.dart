@@ -30,7 +30,21 @@ class _WearManagePageState extends State<WearManagePage> {
   String? _imagePath;
 
   @override
+  void initState() {
+    super.initState();
+    SchemeStore.notifier.addListener(_onSchemeChanged);
+  }
+
+  void _onSchemeChanged() {
+    if (SchemeStore.notifier.value != 'wear') return;
+    WearDataStore.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
+    SchemeStore.notifier.removeListener(_onSchemeChanged);
     _nameCtrl.dispose();
     _emojiCtrl.dispose();
     _searchCtrl.dispose();
