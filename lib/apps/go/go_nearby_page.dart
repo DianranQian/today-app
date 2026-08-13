@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:location/location.dart';
 import '../../core/language.dart';
 import '../../core/services/amap_api.dart';
@@ -220,9 +221,14 @@ class _GoNearbyPageState extends State<GoNearbyPage> {
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxHeight: 140),
                             child: SingleChildScrollView(
-                              child: SelectableText(_aiResult!,
-                                  style: const TextStyle(
-                                      fontSize: 13, height: 1.6)),
+                              child: MarkdownBody(
+                                data: _aiResult!,
+                                styleSheet: MarkdownStyleSheet.fromTheme(
+                                        Theme.of(context))
+                                    .copyWith(
+                                  p: const TextStyle(fontSize: 13, height: 1.6),
+                                ),
+                              ),
                             ),
                           ),
                         ],
