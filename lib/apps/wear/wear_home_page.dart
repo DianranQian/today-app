@@ -611,23 +611,27 @@ class _WearHomePageState extends State<WearHomePage> {
             height: wheelHeight + 40,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: SlotReel(
-                label: t('穿搭'),
-                items: _rollItems,
-                controller: _wheelController,
-                emojiOf: (o) => o.emoji,
-                nameOf: (o) => o.name,
-                // Icon 组件颜色绝对可控，规避字体/emoji 渲染覆盖
-                badgeBuilder: (o) => switch (o.gender) {
-                  WearGender.male =>
-                    const Icon(Icons.male, size: 12, color: Colors.blue),
-                  WearGender.female =>
-                    const Icon(Icons.female, size: 12, color: Colors.pink),
-                  WearGender.unisex =>
-                    Text(t('通用'),
-                        style: TextStyle(
-                            fontSize: 9, color: Colors.grey[600])),
-                },
+              child: Row(
+                children: [
+                  SlotReel(
+                    label: t('穿搭'),
+                    items: _rollItems,
+                    controller: _wheelController,
+                    emojiOf: (o) => o.emoji,
+                    nameOf: (o) => o.name,
+                    // Icon 组件颜色绝对可控，规避字体/emoji 渲染覆盖
+                    badgeBuilder: (o) => switch (o.gender) {
+                      WearGender.male =>
+                        const Icon(Icons.male, size: 12, color: Colors.blue),
+                      WearGender.female =>
+                        const Icon(Icons.female, size: 12, color: Colors.pink),
+                      WearGender.unisex =>
+                        Text(t('通用'),
+                            style: TextStyle(
+                                fontSize: 9, color: Colors.grey[600])),
+                    },
+                  ),
+                ],
               ),
             ),
           ),

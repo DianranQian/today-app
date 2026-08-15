@@ -434,12 +434,16 @@ class _GoHomePageState extends State<GoHomePage> {
             height: wheelHeight + 40,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: SlotReel(
-                label: t('去处'),
-                items: _rollItems,
-                controller: _wheelController,
-                emojiOf: (p) => p.emoji,
-                nameOf: (p) => p.name,
+              child: Row(
+                children: [
+                  SlotReel(
+                    label: t('去处'),
+                    items: _rollItems,
+                    controller: _wheelController,
+                    emojiOf: (p) => p.emoji,
+                    nameOf: (p) => p.name,
+                  ),
+                ],
               ),
             ),
           ),
